@@ -1,38 +1,26 @@
-import connectionDb from '../database/connectionDb'
-import { DataTypes } from 'sequelize'
+import { DataTypes } from 'sequelize';
+import connectionDb from '../database/connectionDb.js';
 
-
-
-    const AdminModel = connectionDb.define('Admin', {
-      id: {
+const Admin = connectionDb.define('Admin', {
+    id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
-      },
-      username: {
+        autoIncrement: true,
+    },
+    username: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true
-      },
-      password: {
+        unique: true,
+    },
+    password: {
         type: DataTypes.STRING,
-        allowNull: false
-      },
-      rol: {
-        type: DataTypes.STRING,
-        allowNull: false
-      }
-    }, {
-      tableName: 'admins',
-      timestamps: false
-    });
-  
-    AdminModel.associate = (models) => {
-      AdminModel.hasMany(models.Enrollment, {
-        foreignKey: 'id_admin',
-        as: 'enrollments'
-      });
-    };
-  
+        allowNull: false,
+    },
+    role: {
+        type: DataTypes.ENUM('admin', 'superadmin'),
+        allowNull: false,
+        defaultValue: 'admin',
+    },
+});
 
-  export default Admin;
+export default Admin; 
