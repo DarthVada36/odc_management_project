@@ -1,18 +1,36 @@
-import { Sequelize } from 'sequelize'
-import connectionDb from './database/connectionDb.js'
-import express from 'express'
-import cors from 'cors'
-import dotenv from 'dotenv'
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { initializeDb } from './database/connectionDb.js';
 
-dotenv.config()
+dotenv.config();
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cors())
+const app = express();
 
-const PORT = process.env.PORT || 3000
-app.listen(PORT, () => {
-    console.log(`Servidor corriendo en el puerto ${PORT}`)
-})
+// Middlewares
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
-export const app = express()
+// Puerto
+const PORT = process.env.PORT || 3000;
+
+// Inicializar servidor y base de datos
+const startServer = async () => {
+    try {
+        // Inicializar la conexión a la base de datos
+        await initializeDb();
+
+        // Iniciar el servidor solo si la base de datos está conectada
+        app.listen(PORT, () => {
+            console.log(`🚀 Servidor corriendo en el puerto ${PORT}`);
+        });
+    } catch (error) {
+        console.error(`😱 Error al iniciar el servidor:`, error.message);
+        process.exit(1); // Detener el proceso si algo falla
+    }
+};
+
+startServer();
+
+export default app;
