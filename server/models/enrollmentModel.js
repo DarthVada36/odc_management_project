@@ -1,30 +1,3 @@
-<<<<<<< HEAD
-import connectionDb from "../database/connectionDb";
-import { DataTypes } from "sequelize"; 
-
-
-const  Enrollment = connectionDb.define('Enrollment', {
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
-    studentId: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    courseId: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-    },
-    enrollmentDate: {
-        type: DataTypes.DATE,
-        allowNull: false
-    }
-}, {
-    tableName: 'enrollments'
-}); 
-=======
 import { DataTypes } from 'sequelize';
 import connectionDb from '../database/connectionDb.js';
 
@@ -111,4 +84,3 @@ const Enrollment = connectionDb.define('Enrollment', {
 });
 
 export default Enrollment;
->>>>>>> f68a9ea0805d8dc12ad700b8503b4b1dec95a0fe
