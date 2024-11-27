@@ -1,5 +1,5 @@
-import { DataTypes } from 'sequelize';
-import connectionDb from '../database/connectionDb.js';
+import { DataTypes } from 'sequelize'
+import connectionDb from '../database/connectionDb.js'
 
 const Enrollment = connectionDb.define('Enrollment', {
     id: {
@@ -81,6 +81,6 @@ const Enrollment = connectionDb.define('Enrollment', {
         allowNull: false,
         defaultValue: DataTypes.NOW,
     },
-});
+})
 
-export default Enrollment;
+export default Enrollment
