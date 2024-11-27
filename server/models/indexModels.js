@@ -1,46 +1,35 @@
-import connectionDb from '../database/connectionDb.js';
+import Role from './roleModel.js';
 import Admin from './adminModel.js';
 import Course from './courseModel.js';
 import Enrollment from './enrollmentModel.js';
+import Minor from './minorModel.js';
+import connectionDb from '../database/connectionDb.js';
 
-// Configuración de relaciones
 
-// Relación 1:N entre Courses y Enrollments
-Course.hasMany(Enrollment, {
-    foreignKey: 'id_course',
-    as: 'enrollments', // Alias opcional para acceder a las inscripciones desde un curso
-});
+// Roles y Admins
+Role.hasMany(Admin, { foreignKey: 'role_id', as: 'admins' });
+Admin.belongsTo(Role, { foreignKey: 'role_id', as: 'role' });
 
-Enrollment.belongsTo(Course, {
-    foreignKey: 'id_course',
-    as: 'course', // Alias opcional para acceder al curso desde una inscripción
-});
+// Enrollments y Courses
+Course.hasMany(Enrollment, { foreignKey: 'id_course', as: 'enrollments' });
+Enrollment.belongsTo(Course, { foreignKey: 'id_course', as: 'course' });
 
-// Relación 1:N entre Admins y Enrollments
-Admin.hasMany(Enrollment, {
-    foreignKey: 'id_admin',
-    as: 'enrollments', // Alias opcional para acceder a las inscripciones gestionadas por un admin
-});
+// Enrollments y Admins
+Admin.hasMany(Enrollment, { foreignKey: 'id_admin', as: 'enrollments' });
+Enrollment.belongsTo(Admin, { foreignKey: 'id_admin', as: 'admin' });
 
-Enrollment.belongsTo(Admin, {
-    foreignKey: 'id_admin',
-    as: 'admin', // Alias opcional para acceder al admin desde una inscripción
-});
+// Enrollments y Minors
+Enrollment.hasMany(Minor, { foreignKey: 'enrollment_id', as: 'minors' });
+Minor.belongsTo(Enrollment, { foreignKey: 'enrollment_id', as: 'enrollment' });
 
-// Relación opcional de auto-referencia en Enrollments (related_enrollment_id)
-Enrollment.belongsTo(Enrollment, {
-    foreignKey: 'related_enrollment_id',
-    as: 'relatedEnrollment', // Alias para acceder a la inscripción relacionada
-});
-
-// Función para sincronizar los modelos con la base de datos
+// Exportar modelos y función de sincronización
 const syncModels = async () => {
-    try {
-        await connectionDb.sync({ alter: true }); // Crea o actualiza las tablas según los modelos
-        console.log('Modelos sincronizados con la base de datos 🚀');
-    } catch (error) {
-        console.error('Error al sincronizar los modelos con la base de datos 😱:', error.message);
-    }
+  try {
+    await connectionDb.sync({ alter: true }); // Actualiza la base de datos según los modelos
+    console.log('Modelos sincronizados con la base de datos (^_-)db(-_^) 🚀');
+  } catch (error) {
+    console.error('Error al sincronizar modelos:', error.message);
+  }
 };
 
-export { Admin, Course, Enrollment, syncModels }; // Exportamos los modelos y la función para usarlos en otras partes del proyecto
+export { Role, Admin, Minor, Enrollment, Course, syncModels };
