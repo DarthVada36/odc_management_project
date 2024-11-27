@@ -1,5 +1,9 @@
-@import "boosted/scss/boosted"; // Importa Boosted (que incluye Bootstrap SCSS)
-@import "./variables";          // Tus variables personalizadas
+// Tus variables personalizadas
+@use "./variables" as *;
+// Importa Boosted y Bootstrap SCSS
+@use "../../node_modules/boosted/scss/boosted";
+
+
 
 // Estilos globales
 body {
@@ -9,4 +13,3 @@ body {
   background-color: #f8f9fa;
 }
 
-// Puedes añadir más estilos globales aquí si los necesitas

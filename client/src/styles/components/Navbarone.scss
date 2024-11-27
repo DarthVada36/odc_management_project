@@ -1,18 +1,18 @@
-@import "../variables";
+@use "../main.css";
 
 // Navbar general
 .navbar {
-  background-color: $dark;
+  background-color: --bs-black;
 
   .navbar-brand img {
     max-height: 50px;
   }
 
   .nav-link {
-    color: $primary !important;
+    color: --bs-primary !important;
 
     &:hover {
-      color: lighten($primary, 10%) !important;
+      color: lighten(red, 10%) !important;
     }
   }
 
