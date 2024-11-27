@@ -1,0 +1,47 @@
+@import "../variables";
+
+// Navbar general
+.navbar {
+  background-color: $dark;
+
+  .navbar-brand img {
+    max-height: 50px;
+  }
+
+  .nav-link {
+    color: $primary !important;
+
+    &:hover {
+      color: lighten($primary, 10%) !important;
+    }
+  }
+
+  .nav-icon {
+    background: none;
+    border: none;
+    cursor: pointer;
+
+    img {
+      border-radius: 50%;
+      transition: transform 0.2s ease;
+    }
+
+    &:hover img {
+      transform: scale(1.1);
+    }
+  }
+}
+
+// Media queries para responsividad
+@media (max-width: 768px) {
+  .navbar {
+    .nav-link {
+      font-size: 1rem;
+    }
+
+    .nav-icon img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}

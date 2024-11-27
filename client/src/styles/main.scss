@@ -1,0 +1,12 @@
+@import "boosted/scss/boosted"; // Importa Boosted (que incluye Bootstrap SCSS)
+@import "./variables";          // Tus variables personalizadas
+
+// Estilos globales
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f8f9fa;
+}
+
+// Puedes añadir más estilos globales aquí si los necesitas

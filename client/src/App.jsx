@@ -1,17 +1,20 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './index.css'
+import React from "react";
+import Navbar from "./components/Navbarone"; // Importamos el Navbar
+import "./styles/main.scss"; // Aseguramos cargar los estilos globales
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <h1>ODC Project</h1>
-      <h2>:/</h2>
-    </>
-  )
+    <div>
+      {/* Renderizamos el Navbar */}
+      <Navbar />
+      
+      {/* Contenido principal de la página */}
+      <main className="container mt-5">
+        <h1>Welcome to Orange Themed App</h1>
+        <p>This is the main content of the app.</p>
+      </main>
+    </div>
+  );
 }
 
-export default App
+export default App;
