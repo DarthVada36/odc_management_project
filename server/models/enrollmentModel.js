@@ -17,30 +17,21 @@ const Enrollment = connectionDb.define('Enrollment', {
         unique: true,
     },
     gender: {
-        type: DataTypes.ENUM('mujer', 'hombre', 'otros generos'),
-        allowNull: true, // Opcional
+        type: DataTypes.ENUM('mujer', 'hombre', 'otros generos', 'NS/NC'),
+        allowNull: true,
     },
     age: {
         type: DataTypes.INTEGER,
-        allowNull: true, // Almacena la edad exacta
+        allowNull: true,
         validate: {
-            min: 0, // Edad mínima
-            max: 120, // Edad máxima
+            min: 0,
+            max: 120,
         },
     },
     is_first_activity: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
         allowNull: false,
-    },
-    accompanying_minors: {
-        type: DataTypes.BOOLEAN,
-        allowNull: false,
-        defaultValue: false,
-    },
-    minors_data: {
-        type: DataTypes.JSON, // Almacena un array con {name, age}
-        allowNull: true,
     },
     id_admin: {
         type: DataTypes.INTEGER,
@@ -58,13 +49,9 @@ const Enrollment = connectionDb.define('Enrollment', {
         },
         allowNull: false,
     },
-    related_enrollment_id: {
+    group_id: {
         type: DataTypes.INTEGER,
-        allowNull: true, // Campo opcional
-        references: {
-            model: 'enrollments',
-            key: 'id', // Clave foránea en la misma tabla
-        },
+        allowNull: true, // Opcional, asignado automáticamente para inscripciones en grupo
     },
     accepts_newsletter: {
         type: DataTypes.BOOLEAN,
