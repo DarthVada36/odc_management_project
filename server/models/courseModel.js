@@ -41,4 +41,4 @@ const Course = connectionDb.define('Course', {
     },
 });
 
-export default Course; // Exportamos el modelo
+export default Course; 

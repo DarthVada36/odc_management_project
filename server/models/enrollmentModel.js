@@ -17,7 +17,7 @@ const Enrollment = connectionDb.define('Enrollment', {
         unique: true,
     },
     gender: {
-        type: DataTypes.ENUM('male', 'female', 'other'),
+        type: DataTypes.ENUM('mujer', 'hombre', 'otros generos'),
         allowNull: true, // Opcional
     },
     age: {

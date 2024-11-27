@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { initializeDb } from './database/connectionDb.js';
+import { syncModels } from './models/indexModels.js';
 
 dotenv.config();
 
@@ -20,6 +21,8 @@ const startServer = async () => {
     try {
         // Inicializar la conexión a la base de datos
         await initializeDb();
+
+        await syncModels();
 
         // Iniciar el servidor solo si la base de datos está conectada
         app.listen(PORT, () => {
