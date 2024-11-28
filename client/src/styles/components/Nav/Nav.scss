@@ -1,0 +1,73 @@
+@use '../../main.scss';
+
+// Navbar.scss
+.navbar {
+    background-color: var(--bs-dark);
+    padding: var(--bs-navbar-padding-y) var(--bs-navbar-padding-x);
+
+    .navbar-brand {
+        .two-lined {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.2;
+        }
+
+        img {
+            transition: transform 0.3s ease;
+
+            &:hover {
+                transform: scale(1.05);
+            }
+        }
+    }
+
+    .nav-link {
+        color: var(--bs-navbar-color);
+        font-weight: var(--bs-navbar-nav-font-weight);
+        padding: var(--bs-nav-link-padding-y) var(--bs-nav-link-padding-x);
+
+        &:hover {
+            color: var(--bs-primary);
+        }
+
+        &.active {
+            color: var(--bs-primary);
+        }
+    }
+
+    .nav-icon {
+        padding: var(--bs-navbar-nav-icon-padding-y)
+            var(--bs-navbar-nav-icon-padding-x);
+
+        img {
+            transition: transform 0.2s ease;
+        }
+
+        &:hover img {
+            transform: scale(1.1);
+        }
+    }
+
+    .btn-primary {
+        background-color: var(--bs-primary);
+        border-color: var(--bs-primary);
+
+        &:hover {
+            background-color: var(--bs-primary-text-emphasis);
+            border-color: var(--bs-primary-text-emphasis);
+        }
+    }
+}
+
+@media (max-width: 991.98px) {
+    .navbar {
+        .navbar-collapse {
+            background-color: var(--bs-dark);
+            padding: 1rem;
+
+            .nav-item {
+                margin: 0.5rem 0;
+            }
+        }
+    }
+}
