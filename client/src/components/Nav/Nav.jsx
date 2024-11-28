@@ -39,37 +39,37 @@ const Nav = () => {
     return (
         <header className="relative">
             {/* Language selector - desktop only */}
-            <div className="items-center justify-end hidden h-8 px-6 bg-black border-b border-gray-800 laptop:flex">
-                <div className="flex gap-2 text-white">
+            <div className="items-center justify-end hidden h-10 pb-1 text-[5.8vh] bg-black border-b px-[11.2rem] border-neutral-600 laptop:flex">
+                <div className="flex gap-2 font-bold text-white">
                     <button className="hover:text-orange">ES</button>
-                    <span>|</span>
+                    <span></span>
                     <button className="hover:text-orange">EN</button>
                 </div>
             </div>
 
             {/* Main navbar */}
-            <nav className="flex items-center justify-between w-full h-20 px-6 bg-black">
+            <nav className="flex items-center justify-between w-full h-[6.3rem] px-32 bg-black">
                 {/* Left section with logo and menu */}
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-4 pl-[3.2rem]">
                     <Logo />
 
                     {/* Brand text */}
-                    <div className="flex flex-col">
-                        <span className="text-2xl font-bold text-orange">
+                    <div className="flex flex-col pl-3 mb-[0.3rem]">
+                        <span className="text-[1.65rem] font-bold text-orange pb-6">
                             Orange
                         </span>
-                        <span className="text-2xl font-bold text-white">
+                        <span className="text-2xl text-[1.65rem] font-bold text-white -mt-[1.8rem]">
                             Digital Center
                         </span>
                     </div>
 
                     {/* Desktop menu */}
-                    <div className="items-center hidden gap-6 ml-8 laptop:flex">
+                    <div className="items-center hidden gap-6 ml-8 mt-[2.6rem] laptop:flex">
                         {menuItems.map((item) => (
                             <a
                                 key={item}
                                 href="#"
-                                className="text-white transition-colors hover:text-orange"
+                                className="-mt-1 font-bold text-white transition-colors font-inter hover:text-orange"
                             >
                                 {item}
                             </a>
@@ -77,12 +77,12 @@ const Nav = () => {
                     </div>
                 </div>
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center mt-[1.8rem] gap-4 px-[2.4rem]">
                     <button className="p-2 text-white hover:text-orange">
                         <img
                             src={sessionLeaveIcon}
                             alt="Cerrar sesión"
-                            className="w-6 h-6"
+                            className="w-8 h-8"
                         />
                     </button>
 
@@ -117,9 +117,9 @@ const Nav = () => {
                         </div>
 
                         {/* Language selector in mobile menu */}
-                        <div className="flex justify-end gap-2 p-6 text-white">
+                        <div className="flex justify-end gap-2 p-6 font-bold text-white">
                             <button className="hover:text-orange">ES</button>
-                            <span>|</span>
+                            <span></span>
                             <button className="hover:text-orange">EN</button>
                         </div>
                     </div>
