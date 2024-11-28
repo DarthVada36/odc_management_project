@@ -1,15 +1,13 @@
-// Tus variables personalizadas
-@use "./variables" as *;
-// Importa Boosted y Bootstrap SCSS
-@use "../../node_modules/boosted/scss/boosted";
+// Variables personalizadas
+@use './variables' as *;
 
-
+// Importa Boosted
+@use 'boosted/scss/boosted';
 
 // Estilos globales
 body {
-  font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 0;
-  background-color: #f8f9fa;
+    font-family: var(--bs-body-font-family);
+    margin: 0;
+    padding: 0;
+    background-color: var(--bs-body-bg);
 }
-
