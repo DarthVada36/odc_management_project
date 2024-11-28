@@ -1,0 +1,13 @@
+:root {
+    --bs-navbar-padding-x: 0;
+    --bs-navbar-padding-y: 0;
+    --bs-navbar-brand-height: 30px;
+    --bs-navbar-brand-padding-y: 0.625rem;
+    --bs-navbar-nav-link-padding-x: 1rem;
+    --bs-navbar-toggler-focus-width: 0;
+
+    @media (min-width: 768px) {
+        --bs-navbar-brand-height: 50px;
+        --bs-navbar-brand-padding-y: 1.1875rem;
+    }
+}

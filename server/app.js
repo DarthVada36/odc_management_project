@@ -1,20 +1,20 @@
-import express from 'express';
-import cors from 'cors';
-import dotenv from 'dotenv';
-import { initializeDb } from './database/connectionDb.js';
-import { syncModels } from './models/indexModels.js';
+import express from 'express'
+import cors from 'cors'
+import dotenv from 'dotenv'
+import { initializeDb } from './database/connectionDb.js'
+import { syncModels } from './models/indexModels.js'
 
-dotenv.config();
+dotenv.config()
 
-const app = express();
+const app = express()
 
 // Middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+app.use(cors())
 
 // Puerto
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000
 
 // Inicializar servidor y base de datos
 const startServer = async () => {
@@ -34,6 +34,6 @@ const startServer = async () => {
   }
 };
 
-startServer();
+startServer()
 
-export default app;
+export default app
