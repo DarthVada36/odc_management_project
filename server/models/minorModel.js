@@ -1,29 +1,28 @@
 import { DataTypes } from 'sequelize';
 import connectionDb from '../database/connectionDb.js';
 
-const Admin = connectionDb.define('Admin', {
+const Minor = connectionDb.define('Minor', {
     id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
         autoIncrement: true,
     },
-    username: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
-    },
-    password: {
+    name: {
         type: DataTypes.STRING,
         allowNull: false,
     },
-    role_id: {
+    age: {
+        type: DataTypes.INTEGER,
+        allowNull: false,
+    },
+    enrollment_id: {
         type: DataTypes.INTEGER,
         references: {
-            model: 'roles',
+            model: 'enrollments',
             key: 'id',
         },
         allowNull: false,
     },
 });
 
-export default Admin;
+export default Minor;
