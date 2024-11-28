@@ -1,10 +1,5 @@
-<<<<<<< HEAD
 import { DataTypes } from 'sequelize'
 import connectionDb from '../database/connectionDb.js'
-=======
-import { DataTypes } from 'sequelize';
-import connectionDb from '../database/connectionDb.js';
->>>>>>> e17d9bc (feat: fix enrollmentModel)
 
 const Enrollment = connectionDb.define('Enrollment', {
     id: {
@@ -88,8 +83,4 @@ const Enrollment = connectionDb.define('Enrollment', {
     },
 })
 
-<<<<<<< HEAD
 export default Enrollment
-=======
-export default Enrollment;
->>>>>>> e17d9bc (feat: fix enrollmentModel)
