@@ -1,13 +1,16 @@
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import tailwindcss from "tailwindcss";
+import autoprefixer from "autoprefixer";
 
 export default defineConfig({
   plugins: [react()],
   css: {
-    preprocessorOptions: {
-      scss: {
-        includePaths: ['./node_modules'], // Para que encuentre Boosted y Bootstrap
-      },
+    postcss: {
+      plugins: [
+        tailwindcss(),
+        autoprefixer(),
+      ],
     },
   },
 });
