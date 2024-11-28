@@ -5,7 +5,6 @@ import sessionLeaveIcon from '../../assets/icons/session-leave.svg'
 
 const Nav = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false)
-
     const menuItems = ['Cursos', 'Dashboard', 'Contacto']
 
     const Logo = () => (
