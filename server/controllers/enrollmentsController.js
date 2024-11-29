@@ -105,35 +105,35 @@ export const createEnrollment = async (req, res) => {
 
 // UPDATE ENROLLMENT BY ID
 
-export const updateEnrollmentByIda = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { fullname, email, gender, age, is_first_activity, id_admin, id_course, group_id, accepts_newsletter, createdAt, updatedAt, minors } = req.body;
-        const enrollment = await Enrollment.update(
-            {
-                fullname,
-                email,
-                gender,
-                age,
-                is_first_activity,
-                id_admin,
-                id_course,
-                group_id,
-                accepts_newsletter,
-                createdAt,
-                updatedAt
-            },
-            {
-                where: { id }
-            });
-        if (!enrollment) {
-            return res.status(404).json({ message: "Inscripción no encontrada" });
-        }
-        res.status(200).json(enrollment);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
+// export const updateEnrollmentById = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const { fullname, email, gender, age, is_first_activity, id_admin, id_course, group_id, accepts_newsletter, createdAt, updatedAt, minors } = req.body;
+//         const enrollment = await Enrollment.update(
+//             {
+//                 fullname,
+//                 email,
+//                 gender,
+//                 age,
+//                 is_first_activity,
+//                 id_admin,
+//                 id_course,
+//                 group_id,
+//                 accepts_newsletter,
+//                 createdAt,
+//                 updatedAt
+//             },
+//             {
+//                 where: { id }
+//             });
+//         if (!enrollment) {
+//             return res.status(404).json({ message: "Inscripción no encontrada" });
+//         }
+//         res.status(200).json(enrollment);
+//     } catch (error) {
+//         res.status(500).json({ message: error.message });
+//     }
+// };
 
 // UPDATE ENROLLMENT BY ID INCLUDING MINORS
 export const updateEnrollmentById = async (req, res) => {
