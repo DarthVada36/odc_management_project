@@ -8,16 +8,34 @@ const UserTable = () => {
         ];
    
     return (
-        <div className="bg-white shadow-md rounded p-4">
-            <button>
+        <div className="bg-white shadow-md p-4">
+            <button className="bg-orange text-white px-4 py-2 rounded mb-4">
                 Crear nuevo usuario
             </button>
-            <table>
-                <thead>
+            <table className="table-auto w-full border border-gray-300">
+                <thead className="bg-orange text-white">
                     <tr>
-
+                        <th className="p-2">Nombre</th>
+                        <th className="p-2">Email</th>
+                        <th className="p-2">Acciones</th>
                     </tr>                                           
                 </thead>
+                <tbody>
+                {users.map((user, index) => (
+            <tr key={index} className="text-center border-b border-gray-300">
+              <td className="p-2">{user.name}</td>
+              <td className="p-2">{user.email}</td>
+              <td className="p-2">
+                <button className="bg-orange text-white px-2 py-1 rounded mr-2">
+                  Editar
+                </button>
+                <button className="bg-black text-white px-2 py-1 rounded">
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
             </table>
         </div>
     )

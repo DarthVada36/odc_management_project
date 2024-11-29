@@ -7,19 +7,16 @@ import AdminPanel from '../components/AdminPanel'
 const Layout = () => {
     return (
         <div>
-            <Nav />
-            <Outlet />
-            {/* Barra lateral */}
-            <Sidebar />
-            {/* Panel administrativo */}
-        <div className="flex-grow bg-gray-100 p-6">
-        <AdminPanel />
+      <Nav />
+      <div className="flex">
+        <Sidebar />
+        <div className="flex-1 bg-gray-100 p-6">
+          <Outlet />
+          <AdminPanel />
         </div>
-              
-           
-            <Footer />
-        </div>
-    )
+      </div>
+      <Footer />
+    </div>
+  )
 }
-
 export default Layout;
