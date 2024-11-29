@@ -4,6 +4,7 @@ import dotenv from 'dotenv'
 import { initializeDb } from './database/connectionDb.js'
 import { syncModels } from './models/indexModels.js'
 import enrollmentRoutes from './routes/enrollmentRoutes.js'
+import courseRoutes from './routes/courseRoutes.js'
 
 dotenv.config()
 
@@ -19,6 +20,7 @@ const PORT = process.env.PORT || 3000
 
 // Rutas
 app.use('/api/enrollments', enrollmentRoutes);
+app.use('/api/courses', courseRoutes);
 
 
 
