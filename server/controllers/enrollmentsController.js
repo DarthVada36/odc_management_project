@@ -10,7 +10,7 @@ export const getAllEnrollments = async (req, res) => {
                 {
                     model: Minor,
                     as: 'minors',
-                    attributes: ['id', 'name', 'age' ],
+                    attributes: ['id', 'name', 'age'],
                 },
             ],
         });
@@ -43,7 +43,7 @@ export const getEnrollmentByIdWithMinors = async (req, res) => {
                 {
                     model: Minor,
                     as: 'minors',
-                    attributes: ['id', 'name', 'age' ],
+                    attributes: ['id', 'name', 'age'],
                 },
             ],
         });
@@ -54,30 +54,30 @@ export const getEnrollmentByIdWithMinors = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-};  
+};
 
 // CREATE ENROLLMENT INCLUDING MINORS
 export const createEnrollment = async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
         const { fullname, email, gender, age, is_first_activity, id_admin, id_course, group_id, accepts_newsletter, createdAt, updatedAt, minors } = req.body;
-        
+
         const enrollment = await Enrollment.create({
             fullname,
             email,
-            gender, 
-            age, 
-            is_first_activity, 
-            id_admin, 
-            id_course, 
-            group_id, 
-            accepts_newsletter, 
-            createdAt, 
+            gender,
+            age,
+            is_first_activity,
+            id_admin,
+            id_course,
+            group_id,
+            accepts_newsletter,
+            createdAt,
             updatedAt
         },
-        { transaction });   
-        
-        if (minors && minors.length > 0) { 
+            { transaction });
+
+        if (minors && minors.length > 0) {
             const minorData = minors.map((minor) => ({
                 ...minor,
                 enrollment_id: enrollment.id,
@@ -92,20 +92,20 @@ export const createEnrollment = async (req, res) => {
                 {
                     model: Minor,
                     as: 'minors',
-                    attributes: ['id', 'name', 'age' ],
+                    attributes: ['id', 'name', 'age'],
                 },
             ],
-         });
-         res.status(201).json(createdEnrollment);
+        });
+        res.status(201).json(createdEnrollment);
     } catch (error) {
         await transaction.rollback();
         res.status(500).json({ message: error.message });
-    }   
+    }
 };
 
 // UPDATE ENROLLMENT BY ID
 
-export const updateEnrollmentById = async (req, res) => {
+export const updateEnrollmentByIda = async (req, res) => {
     try {
         const { id } = req.params;
         const { fullname, email, gender, age, is_first_activity, id_admin, id_course, group_id, accepts_newsletter, createdAt, updatedAt, minors } = req.body;
@@ -133,22 +133,74 @@ export const updateEnrollmentById = async (req, res) => {
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
-};  
+};
 
+// UPDATE ENROLLMENT BY ID INCLUDING MINORS
+export const updateEnrollmentById = async (req, res) => {
+    const transaction = await sequelize.transaction();
+    try {
+        const { id } = req.params;
+        const { minors } = req.body; // Datos de los menores
+
+        // Verificar si el enrollment existe
+        const enrollment = await Enrollment.findByPk(id, { transaction });
+        if (!enrollment) {
+            await transaction.rollback();
+            return res.status(404).json({ message: "Enrollment not found" });
+        }
+
+        // Actualizar menores asociados
+        if (minors && minors.length > 0) {
+            for (const minor of minors) {
+                if (minor.id) {
+                    // Actualizar cada menor individualmente
+                    const [updatedRows] = await Minor.update(minor, {
+                        where: {
+                            id: minor.id,
+                            enrollment_id: id // Verificar que el menor pertenece a este enrollment
+                        },
+                        transaction
+                    });
+
+                    // Si no se actualizó ningún registro, el menor no existe o no pertenece al enrollment
+                    if (updatedRows === 0) {
+                        await transaction.rollback();
+                        return res.status(404).json({
+                            message: `Minor with id ${minor.id} not found for this enrollment`
+                        });
+                    }
+                }
+            }
+        }
+
+        await transaction.commit();
+        res.status(200).json({ message: "Minors updated successfully" });
+    } catch (error) {
+        await transaction.rollback();
+        res.status(500).json({ message: error.message });
+    }
+};
 
 // DELETE ENROLLMENT BY ID
 export const deleteEnrollmentById = async (req, res) => {
+    const transaction = await sequelize.transaction();
     try {
         const { id } = req.params;
-        const enrollment = await Enrollment.destroy(
-            { 
-                where: { id } 
-            });
+        const enrollment = await Enrollment.findByPk(id, { transaction });
         if (!enrollment) {
+            await transaction.rollback();
             return res.status(404).json({ message: "Enrollment not found" });
         }
-        res.status(200).json(enrollment);
+        await Minor.destroy({
+            where: { enrollment_id: id },
+            transaction
+        });
+
+        await enrollment.destroy({ transaction });
+        await transaction.commit();
+        res.status(200).json({ message: "Enrollment deleted successfully" });
     } catch (error) {
+        await transaction.rollback();
         res.status(500).json({ message: error.message });
     }
-};              
+};
