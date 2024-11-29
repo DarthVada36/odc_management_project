@@ -1,17 +1,20 @@
 import React from "react";
 import UserTable from './UserTable';
+//import UserForm from './UserForm';
 
 const AdminPanel = () => {
     
     return (
-        <div>
-            {/*Encabezado */}
+        <div className="grid grid-cols-3 gap-4 p-6">
+            {/*Panel dividido en dos partes */}
+            <div className="col-span-2">
+            {/* Tabla para los usuarios */}
+            <UserTable/>
+            </div>      
             <div>
-                <h1> Gestión de usuarios</h1>
-                <p> Total de usuarios: </p>
-            </div>
-            {/* Tabla */}
-            <UserTable/> 
+            {/*Formulario para añadir o editar usuarios */}
+            <UserForm/>
+            </div>      
         </div>
 
     );
