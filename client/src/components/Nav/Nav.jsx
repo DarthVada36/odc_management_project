@@ -188,7 +188,7 @@ const Nav = () => {
 
                 {/* Right section */}
                 <motion.div
-                    className="flex items-center gap-1 pr-2 desktop:pr-[10.5rem] laptop:pr-5 tablet:pr-12 tablet:-mb-[0.5rem] mobile:pr-4 mobile:mb-[1.5rem]"
+                    className="flex items-center desktop:-mr-[0.3rem] desktop:gap-[1.7rem] mobile:gap-[0.5rem] pr-2 desktop:pr-[10.5rem] laptop:pr-5 tablet:pr-5 tablet:-mb-[0.5rem] mobile:pr-4 mobile:mb-[1.5rem]"
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
@@ -219,13 +219,13 @@ const Nav = () => {
 
                     {/* Menu button - mobile only */}
                     <button
-                        className="p-2 mt-[1.9rem] text-white laptop:hidden animate-[spin_0.5s_ease-out]"
+                        className="p-2 mt-[1.9rem] mobile:-mr-[0.8rem] text-white laptop:hidden animate-[spin_0.5s_ease-out]"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
                     >
                         <img
                             src={isMenuOpen ? closeMenuIcon : burguerIcon}
                             alt={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-                            className={`w-8 h-8 transition-transform duration-300 ${
+                            className={`w-8 h-8 wmobile:w-7 mobile:h-7 transition-transform duration-300 ${
                                 isMenuOpen ? 'rotate-180' : ''
                             }`}
                         />
