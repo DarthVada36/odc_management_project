@@ -1,24 +1,24 @@
-import express from 'express'
-import cors from 'cors'
-import dotenv from 'dotenv'
-import { initializeDb } from './database/connectionDb.js'
-import { syncModels } from './models/indexModels.js'
-import adminRoutes from './routes/adminRoutes.js';
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { initializeDb } from './database/connectionDb.js';
+import { syncModels } from './models/indexModels.js';
+import { adminRouter } from './routes/adminRoutes.js';  // Importación nombrada
 
-dotenv.config()
+dotenv.config();
 
-const app = express()
+const app = express();
 
 // Middlewares
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cors())
-// Rutas
-app.use('/api', adminRoutes)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
+// Rutas
+app.use('/api', adminRouter);  // Usa el `adminRouter` aquí
 
 // Puerto
-const PORT = process.env.PORT || 3000
+const PORT = process.env.PORT || 3000;
 
 // Inicializar servidor y base de datos
 const startServer = async () => {
@@ -38,6 +38,6 @@ const startServer = async () => {
   }
 };
 
-startServer()
+startServer();
 
-export default app
+export default app;

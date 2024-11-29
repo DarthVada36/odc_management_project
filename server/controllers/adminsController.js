@@ -1,18 +1,29 @@
-import { Router } from 'express';
 import Admin from '../models/adminModel.js';
-import { getAllAdmins, createAdmin, updateAdmin, deleteAdmin, loginAdmin} from '../controllers/adminsController.js';
 
-// Login Function
-export const loginAdmin = {
-  login: (req, res) => {
+
+//LOGIN ADMIN
+
+export const loginAdmin = async (req, res) => {
+  try {
     const { email, password } = req.body;
-    if (email === 'admin@example.com' && password === 'password') {
-      res.status(200).json({ message: 'Login successful' });
-    } else {
-      res.status(401).json({ message: 'Invalid credentials' });
+    const admin = await Admin.findOne({ where: { email } });
+ 
+    if (!admin) {
+      return res.status(401).json({ error: 'Credenciales inválidas' });
     }
-  },
-};
+ 
+    if (admin.password !== password) {
+      return res.status(401).json({ error: 'Credenciales inválidas' });
+    }
+
+    res.json({ 
+      message: 'Inicio de sesión exitoso', 
+      adminId: admin.id 
+    });
+  } catch (error) {
+    res.status(500).json({ error: 'Error en el inicio de sesión' });
+  }
+ };
 
 // GET ALL ADMINS
 export const getAllAdmins = async (req, res) => {
