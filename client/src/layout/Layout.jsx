@@ -1,19 +1,25 @@
 import { Outlet } from 'react-router-dom'
-<<<<<<< HEAD
-import Nav from '../components/Nav'
-=======
 import Nav from '../components/Nav/Nav'
->>>>>>> 41813f909287e3925a427554d4fc3bb5f5db2fe9
 import Footer from '../components/Footer'
+import AdminManagement from '../pages/AdminManagement';
+import Sidebar from '../components/Sidebar';     
+import AdminPanel from './components/AdminPanel';         
 
 const Layout = () => {
     return (
         <div>
             <Nav />
             <Outlet />
+            <AdminManagement /> 
+            {/* Barra lateral */}
+            <Sidebar />
+            {/* Panel administrativo */}
+        <div className="flex-grow bg-gray-100 p-6">
+        </div>
+          <AdminPanel />    
             <Footer />
         </div>
     )
 }
 
-export default Layout
+export default Layout;
