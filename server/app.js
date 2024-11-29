@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { initializeDb } from './database/connectionDb.js'
 import { syncModels } from './models/indexModels.js'
+import enrollmentRoutes from './routes/enrollmentRoutes.js'
 
 dotenv.config()
 
@@ -15,6 +16,11 @@ app.use(cors())
 
 // Puerto
 const PORT = process.env.PORT || 3000
+
+// Rutas
+app.use('/api/enrollments', enrollmentRoutes);
+
+
 
 // Inicializar servidor y base de datos
 const startServer = async () => {
