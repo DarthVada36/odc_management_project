@@ -26,7 +26,7 @@ export const getEnrollmentById = async (req, res) => {
         const { id } = req.params;
         const enrollment = await Enrollment.findByPk(id);
         if (!enrollment) {
-            return res.status(404).json({ message: "Enrollment not found" });
+            return res.status(404).json({ message: "Inscripción no encontrada" });
         }
         res.status(200).json(enrollment);
     } catch (error) {
@@ -48,7 +48,7 @@ export const getEnrollmentByIdWithMinors = async (req, res) => {
             ],
         });
         if (!enrollment) {
-            return res.status(404).json({ message: "Enrollment not found" });
+            return res.status(404).json({ message: "Inscripción no encontrada" });
         }
         res.status(200).json(enrollment);
     } catch (error) {
@@ -127,7 +127,7 @@ export const updateEnrollmentByIda = async (req, res) => {
                 where: { id }
             });
         if (!enrollment) {
-            return res.status(404).json({ message: "Enrollment not found" });
+            return res.status(404).json({ message: "Inscripción no encontrada" });
         }
         res.status(200).json(enrollment);
     } catch (error) {
@@ -140,24 +140,21 @@ export const updateEnrollmentById = async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
         const { id } = req.params;
-        const { minors } = req.body; // Datos de los menores
+        const { minors } = req.body;
 
-        // Verificar si el enrollment existe
         const enrollment = await Enrollment.findByPk(id, { transaction });
         if (!enrollment) {
             await transaction.rollback();
-            return res.status(404).json({ message: "Enrollment not found" });
+            return res.status(404).json({ message: "Inscripción no encontrada" });
         }
 
-        // Actualizar menores asociados
         if (minors && minors.length > 0) {
             for (const minor of minors) {
                 if (minor.id) {
-                    // Actualizar cada menor individualmente
                     const [updatedRows] = await Minor.update(minor, {
                         where: {
                             id: minor.id,
-                            enrollment_id: id // Verificar que el menor pertenece a este enrollment
+                            enrollment_id: id // Verifica que el menor pertenece a este enrollment
                         },
                         transaction
                     });
@@ -174,7 +171,7 @@ export const updateEnrollmentById = async (req, res) => {
         }
 
         await transaction.commit();
-        res.status(200).json({ message: "Minors updated successfully" });
+        res.status(200).json({ message: "Información menores actualizada correctamente" });
     } catch (error) {
         await transaction.rollback();
         res.status(500).json({ message: error.message });
@@ -189,7 +186,7 @@ export const deleteEnrollmentById = async (req, res) => {
         const enrollment = await Enrollment.findByPk(id, { transaction });
         if (!enrollment) {
             await transaction.rollback();
-            return res.status(404).json({ message: "Enrollment not found" });
+            return res.status(404).json({ message: "Inscripción no encontrada" });
         }
         await Minor.destroy({
             where: { enrollment_id: id },
@@ -198,7 +195,7 @@ export const deleteEnrollmentById = async (req, res) => {
 
         await enrollment.destroy({ transaction });
         await transaction.commit();
-        res.status(200).json({ message: "Enrollment deleted successfully" });
+        res.status(200).json({ message: "Inscripción eliminada correctamente" });
     } catch (error) {
         await transaction.rollback();
         res.status(500).json({ message: error.message });
