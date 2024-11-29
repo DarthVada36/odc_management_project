@@ -26,18 +26,31 @@ const Nav = () => {
         <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 283.46 283.46"
-            className="w-full h-full"
+            className="w-full h-full desktop:ml-[2.3rem] laptop:-ml-[4.2rem] mobile:-ml-[0.3rem] tablet:-ml-[1.9rem]"
         >
             <defs>
                 <style>
                     {`
-                    #logo-square { fill: #ff6600; }
+                    #logo-square { fill: #ff7b00; }
                     #logo-text, #logo-line { fill: #fff; }
                     @media (max-width: 767px) {
                         #logo-text { display: none; }
                     }
                     @media (min-width: 768px) {
                         #logo-line { display: none; }
+                    }
+                    @keyframes slideFromTop {
+                        0% {
+                            opacity: 0;
+                            transform: translateY(-20px);
+                        }
+                        100% {
+                            opacity: 1;
+                            transform: translateY(0);
+                        }
+                    }
+                    .language-selector {
+                        animation: slideFromTop 0.3s ease-out;
                     }
                     `}
                 </style>
@@ -85,41 +98,35 @@ const Nav = () => {
     return (
         <header className="relative">
             {/* Language selector - desktop only */}
-            <motion.div
-                className="items-center justify-end hidden h-10 pb-1 text-[1rem] bg-black border-b border-neutral-600 laptop:flex"
-                variants={containerVariants}
-                initial="hidden"
-                animate="visible"
-            >
-                <div className="flex gap-2 mr-[0.8rem] font-bold text-white desktop:px-36 laptop:px-24 tablet:px-12">
-                    <motion.button
-                        variants={itemVariants}
+            <div className="items-center justify-end hidden h-10 pb-1 text-[0.9rem] bg-black border-b border-neutral-600 laptop:flex">
+                <div className="flex items-center gap-2 mt-[0.9rem] desktop:mr-[2.2rem] laptop:-mr-[4rem] font-bold text-white desktop:px-36 laptop:px-24 tablet:px-12">
+                    <button
                         onClick={() => handleLanguageChange('ES')}
-                        className={`${
-                            activeLang === 'ES'
-                                ? 'text-primary'
-                                : 'text-white hover:text-primary'
-                        }`}
+                        className={`relative pb-[0.45rem] transition-colors duration-300 ease-in-out animate-[slideFromTop_0.5s_ease-out]
+        after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[0.3rem] after:transition-colors after:duration-300
+        ${
+            activeLang === 'ES'
+                ? 'text-primary after:bg-primary'
+                : 'text-white hover:text-primary after:bg-transparent'
+        }`}
                     >
                         ES
-                    </motion.button>
-                    <motion.span
-                        variants={itemVariants}
-                        className="text-neutral-600"
-                    ></motion.span>
-                    <motion.button
-                        variants={itemVariants}
+                    </button>
+                    <span className="text-neutral-600"></span>
+                    <button
                         onClick={() => handleLanguageChange('EN')}
-                        className={`${
-                            activeLang === 'EN'
-                                ? 'text-primary'
-                                : 'text-white hover:text-primary'
-                        }`}
+                        className={`relative pb-[0.45rem] transition-colors duration-300 ease-in-out animate-[slideFromTop_0.5s_ease-out]
+        after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[0.3rem] after:transition-colors after:duration-300
+        ${
+            activeLang === 'EN'
+                ? 'text-primary after:bg-primary'
+                : 'text-white hover:text-primary after:bg-transparent'
+        }`}
                     >
                         EN
-                    </motion.button>
+                    </button>
                 </div>
-            </motion.div>
+            </div>
 
             {/* Main navbar */}
             <nav className="flex items-center justify-between w-full h-[6.3rem] tablet:h-[6.31rem] mobile:h-[3.13rem] bg-black">
@@ -133,22 +140,22 @@ const Nav = () => {
                     {/* Logo */}
                     <motion.div
                         variants={itemVariants}
-                        className="desktop:h-[51px] desktop:w-[51px] laptop:h-[45px] laptop:w-[45px] tablet:h-[40px] tablet:w-[40px] mobile:h-[35px] mobile:w-[35px]"
+                        className="desktop:h-[80px] desktop:w-[51px] laptop:h-[51px] laptop:w-[51px] tablet:h-[51px] tablet:w-[51px] mobile:h-[31px] mobile:w-[31px]"
                     >
                         <Logo />
                     </motion.div>
 
                     {/* Brand text */}
-                    <div className="flex flex-col pl-3">
+                    <div className="flex flex-col pl-3 desktop:ml-[2.1rem] laptop:-ml-[4.4rem] mobile:mb-1 tablet:-ml-[2.1rem] mobile:-ml-[1.3rem]">
                         <motion.span
                             variants={itemVariants}
-                            className="font-bold text-primary pb-2 desktop:text-[1.65rem] laptop:text-[1.4rem] tablet:text-[1.2rem] mobile:text-[1rem]"
+                            className="font-bold text-primary pb-2 desktop:text-[1.7rem] laptop:text-[1.7rem] tablet:text-[1.69rem] mobile:text-[1.05rem] mobile:-mb-[0.5rem] tablet:-mb-[0.75rem] laptop:-mb-[0.65rem]"
                         >
                             Orange
                         </motion.span>
                         <motion.span
                             variants={itemVariants}
-                            className="font-bold text-white -mt-2 desktop:text-[1.65rem] laptop:text-[1.4rem] tablet:text-[1.2rem] mobile:text-[1rem]"
+                            className="font-bold text-white -mt-2 desktop:text-[1.7rem] laptop:text-[1.7rem] tablet:text-[1.69rem] mobile:text-[1.05rem]  mobile:-mb-1 "
                         >
                             Digital Center
                         </motion.span>
@@ -156,7 +163,7 @@ const Nav = () => {
 
                     {/* Desktop menu */}
                     <motion.div
-                        className="items-center hidden gap-8 ml-12 laptop:flex"
+                        className="items-center hidden gap-8 ml-[1.2rem] laptop:flex"
                         variants={containerVariants}
                     >
                         {menuItems.map((item) => (
@@ -165,11 +172,12 @@ const Nav = () => {
                                 variants={itemVariants}
                                 href="#"
                                 onClick={() => handleLabelClick(item)}
-                                className={`relative text-base font-bold text-white transition-colors font-inter hover:text-primary mt-[3.65rem] pb-[0.9rem]
+                                className={`relative text-base font-bold transition-colors duration-300 ease-in-out font-inter hover:text-primary mt-[3.65rem] pb-[1.15rem] 
+                                    after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[0.3rem] after:transition-colors after:duration-300
                                     ${
                                         activeLabel === item
-                                            ? 'text-primary border-b-[0.3rem] border-primary'
-                                            : ''
+                                            ? 'text-primary after:bg-primary'
+                                            : 'text-white after:bg-transparent'
                                     }`}
                             >
                                 {item}
@@ -180,7 +188,7 @@ const Nav = () => {
 
                 {/* Right section */}
                 <motion.div
-                    className="flex items-center gap-2 desktop:pr-32 laptop:pr-24 tablet:pr-12 mobile:pr-4 mobile:mb-3"
+                    className="flex items-center gap-1 pr-2 desktop:pr-[10.5rem] laptop:pr-5 tablet:pr-12 tablet:-mb-[0.5rem] mobile:pr-4 mobile:mb-[1.5rem]"
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
@@ -188,114 +196,93 @@ const Nav = () => {
                     {/* Login icon */}
                     <motion.button
                         variants={itemVariants}
-                        className="p-2 mt-[1.8rem] text-white hover:text-primary"
+                        className="p-2 mt-[1.8rem] text-white hover:text-primary transition-colors duration-300 ease-in-out"
                     >
                         <img
                             src={loginAdministratoIcon}
                             alt="Iniciar sesión"
-                            className="desktop:w-8 desktop:h-8 laptop:w-7 laptop:h-7 tablet:w-6 tablet:h-6 mobile:w-6 mobile:h-6"
+                            className="desktop:w-8 desktop:h-8 laptop:w-7 laptop:h-7 tablet:w-7 tablet:h-7 mobile:w-7 mobile:h-7"
                         />
                     </motion.button>
 
                     {/* Logout icon */}
                     <motion.button
                         variants={itemVariants}
-                        className="p-2 text-white hover:text-primary"
+                        className="p-2 text-white transition-colors duration-300 ease-in-out hover:text-primary"
                     >
                         <img
                             src={sessionLeaveIcon}
                             alt="Cerrar sesión"
-                            className="desktop:w-8 mt-[1.8rem] desktop:h-8 laptop:w-7 laptop:h-7 tablet:w-6 tablet:h-6 mobile:w-6 mobile:h-6"
+                            className="desktop:w-8 mt-[1.8rem] desktop:h-8 laptop:w-7 laptop:h-7 tablet:w-7 tablet:h-7 mobile:w-7 mobile:h-7"
                         />
                     </motion.button>
 
                     {/* Menu button - mobile only */}
-                    <motion.button
-                        className="p-2 text-white laptop:hidden"
+                    <button
+                        className="p-2 mt-[1.9rem] text-white laptop:hidden animate-[spin_0.5s_ease-out]"
                         onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        whileTap={{ scale: 0.95 }}
-                        animate={{ rotate: isMenuOpen ? 180 : 0 }}
-                        transition={{ duration: 0.3 }}
                     >
                         <img
                             src={isMenuOpen ? closeMenuIcon : burguerIcon}
                             alt={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-                            className="w-6 h-6 mt-[1.8rem]"
+                            className={`w-8 h-8 transition-transform duration-300 ${
+                                isMenuOpen ? 'rotate-180' : ''
+                            }`}
                         />
-                    </motion.button>
+                    </button>
                 </motion.div>
             </nav>
 
             {/* Mobile menu */}
             {isMenuOpen && (
-                <motion.div
-                    className="border-t border-neutral-600 laptop:hidden"
-                    initial={{ opacity: 0, y: -20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -20 }}
-                    transition={{ duration: 0.3 }}
-                >
+                <div className="border-t border-neutral-600 laptop:hidden">
                     <div className="bg-black">
-                        <motion.div
-                            className="flex flex-col px-2 font-bold text-m"
-                            variants={containerVariants}
-                            initial="hidden"
-                            animate="visible"
-                        >
+                        <div className="flex flex-col  px-2 font-bold text-[14px]">
                             {menuItems.map((item) => (
-                                <motion.a
+                                <a
                                     key={item}
-                                    variants={itemVariants}
                                     href="#"
                                     onClick={() => handleLabelClick(item)}
-                                    className={`py-[0.7rem] text-white border-b border-neutral-600 
+                                    className={`border-b py-[0.825rem]  border-neutral-600 transition-colors duration-300 ease-in-out
                                         ${
                                             activeLabel === item
                                                 ? 'text-primary'
-                                                : 'hover:text-primary'
+                                                : 'text-white hover:text-primary'
                                         }`}
                                 >
                                     {item}
-                                </motion.a>
+                                </a>
                             ))}
-                        </motion.div>
+                        </div>
 
                         {/* Language selector in mobile menu */}
-                        <motion.div
-                            className="flex justify-end gap-2 p-6 py-[0.7rem] font-bold text-white"
-                            variants={containerVariants}
-                            initial="hidden"
-                            animate="visible"
-                        >
-                            <motion.button
-                                variants={itemVariants}
+                        <div className="flex justify-end gap-2 p-6 py-[0.9rem] font-bold text-white tablet:text-[14px] text-[13px]">
+                            <button
                                 onClick={() => handleLanguageChange('ES')}
-                                className={`${
-                                    activeLang === 'ES'
-                                        ? 'text-primary'
-                                        : 'text-white hover:text-primary'
-                                }`}
+                                className={`transition-colors duration-300 ease-in-out
+                                    ${
+                                        activeLang === 'ES'
+                                            ? 'text-primary'
+                                            : 'text-white hover:text-primary'
+                                    }`}
                             >
                                 ES
-                            </motion.button>
-                            <motion.span
-                                variants={itemVariants}
-                                className="text-neutral-600"
-                            ></motion.span>
-                            <motion.button
-                                variants={itemVariants}
+                            </button>
+                            <span className="text-neutral-600"></span>
+                            <button
                                 onClick={() => handleLanguageChange('EN')}
-                                className={`${
-                                    activeLang === 'EN'
-                                        ? 'text-primary'
-                                        : 'text-white hover:text-primary'
-                                }`}
+                                className={`transition-colors duration-300 ease-in-out
+                                    ${
+                                        activeLang === 'EN'
+                                            ? 'text-primary'
+                                            : 'text-white hover:text-primary'
+                                    }`}
                             >
                                 EN
-                            </motion.button>
-                        </motion.div>
+                            </button>
+                        </div>
                     </div>
-                </motion.div>
+                </div>
             )}
         </header>
     )
