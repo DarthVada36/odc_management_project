@@ -1,13 +1,20 @@
-import React, { useState } from "react";
+// src/components/Nav/Nav.jsx
+import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Nav = () => {
-  
-
-  return (
-    <div className="bg-dark text-white p-4">
-  ¡Tailwind está funcionando!
-    </div>
-  );
+    return (
+        <nav className='bg-black text-orange'>
+            <ul>
+                <li>
+                    <Link to="/">Inicio</Link>
+                </li>
+                <li>
+                    <Link to="/access-admin">Acceder como Administrador</Link> {/* Agregar este enlace */}
+                </li>
+            </ul>
+        </nav>
+    );
 };
 
 export default Nav;
