@@ -3,6 +3,7 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { initializeDb } from './database/connectionDb.js'
 import { syncModels } from './models/indexModels.js'
+import minorsRoutes from './routes/minorsRoutes.js';
 
 dotenv.config()
 
@@ -13,13 +14,13 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 
-// Puerto
+app.use('/minors', minorsRoutes);
+
 const PORT = process.env.PORT || 3000
 
-// Inicializar servidor y base de datos
 const startServer = async () => {
   try {
-    // Inicializar la conexión a la base de datos
+   
     await initializeDb();
 
     await syncModels();
@@ -30,7 +31,7 @@ const startServer = async () => {
     });
   } catch (error) {
     console.error(` Error al iniciar el servidor 😱`, error.message);
-    process.exit(1); // Detener el proceso si algo falla
+    process.exit(1); 
   }
 };
 
