@@ -6,11 +6,11 @@ export const adminRouter = Router();
 //RUTAS CRUD
 adminRouter.get('/', getAllAdmins);
 adminRouter.get('/:id', getAdminById);
+adminRouter.post('/', createAdmin);
+adminRouter.put('/:id', updateAdmin);
+adminRouter.delete('/:id', deleteAdmin);
+adminRouter.post('/login', loginAdmin);
 
-// router.get('/admins', adminsController.getAllAdmins);
-// router.post('/admins', adminsController.createAdmin);
-// router.put('/admins/:id', adminsController.updateAdmin);
-// router.delete('/admins/:id', adminsController.deleteAdmin);
-// router.post('/login', adminsController.login);
+
 
 
