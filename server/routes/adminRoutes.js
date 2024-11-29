@@ -1,13 +1,16 @@
 import { Router } from 'express';
-import adminsController from '../controllers/adminsController.js'; 
+import { getAllAdmins } from '../controllers/adminsController.js';
 
-const router = Router();
+export const adminRouter = Router();
 
-router.get('/admins', adminsController.getAllAdmins);
-router.post('/admins', adminsController.createAdmin);
-router.put('/admins/:id', adminsController.updateAdmin);
-router.delete('/admins/:id', adminsController.deleteAdmin);
-router.post('/login', adminsController.login);
+//RUTAS CRUD
+adminRouter.get('/', getAllAdmins);
+adminRouter.get('/:id', getAdminById);
 
-export default router;
+// router.get('/admins', adminsController.getAllAdmins);
+// router.post('/admins', adminsController.createAdmin);
+// router.put('/admins/:id', adminsController.updateAdmin);
+// router.delete('/admins/:id', adminsController.deleteAdmin);
+// router.post('/login', adminsController.login);
+
 
