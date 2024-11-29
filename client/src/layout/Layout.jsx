@@ -8,8 +8,9 @@ const Layout = () => {
     return (
         <div>
       <Nav />
-      <div className="flex">
-        <Sidebar />
+      <div className="flex flex-col md:flex-row">
+        {/*Barra lateral */}
+        <Sidebar className="bg-black text-white p-4 md:w-1/4" />
         <div className="flex-1 bg-gray-100 p-6">
           <Outlet />
           <AdminPanel />
