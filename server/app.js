@@ -2,8 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { initializeDb } from './database/connectionDb.js';
+import connectionDb from './database/connectionDb.js'; 
 import { syncModels } from './models/indexModels.js';
-import { adminRouter } from './routes/adminRoutes.js';  // Importación nombrada
+import { adminRouter } from './routes/adminRoutes.js';  
 
 dotenv.config();
 
@@ -15,7 +16,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // Rutas
-app.use('/api', adminRouter);  // Usa el `adminRouter` aquí
+app.use('/api', adminRouter); 
+
 
 // Puerto
 const PORT = process.env.PORT || 3000;
@@ -26,6 +28,11 @@ const startServer = async () => {
     // Inicializar la conexión a la base de datos
     await initializeDb();
 
+    // **Forzar la recreación de tablas (solo en desarrollo)**
+    await connectionDb.sync({ force: true }); 
+    console.log('🚀 Tablas recreadas exitosamente.');
+
+    // Sincronizar modelos
     await syncModels();
 
     // Iniciar el servidor solo si la base de datos está conectada

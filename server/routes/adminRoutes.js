@@ -4,9 +4,9 @@ import { getAdminById, getAllAdmins, createAdmin, updateAdmin, deleteAdmin, logi
 export const adminRouter = Router(); 
 
 // RUTAS CRUD
-adminRouter.get('/', getAllAdmins);
-adminRouter.get('/:id', getAdminById);
-adminRouter.post('/', createAdmin);
-adminRouter.put('/:id', updateAdmin);
-adminRouter.delete('/:id', deleteAdmin);
-adminRouter.post('/login', loginAdmin);
+adminRouter.get('/admin', getAllAdmins);  
+adminRouter.get('/admin/:id', getAdminById);
+adminRouter.post('/admins', createAdmin);  
+adminRouter.put('/admin/:id', updateAdmin);  
+adminRouter.delete('/admin/:id', deleteAdmin);  
+adminRouter.post('/login', loginAdmin);  
