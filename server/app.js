@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { initializeDb } from './database/connectionDb.js';
 import { syncModels } from './models/indexModels.js';
-import { adminRouter } from './routes/adminRoutes.js';  // Importación nombrada
+import { adminRouter } from './routes/adminRoutes.js'; 
 
 dotenv.config();
 
@@ -15,7 +15,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
 // Rutas
-app.use('/api', adminRouter);  // Usa el `adminRouter` aquí
+app.use('/api', adminRouter); 
+app.post('/api/login', adminRouter);    
+app.post('api/new-admin', adminRouter);
 
 // Puerto
 const PORT = process.env.PORT || 3000;

@@ -23,7 +23,7 @@ const CreateAdminForm = () => {
 
     //Solicitud al back//
     try {
-      const response = await fetch('http://localhost:3000/api/admins', {
+      const response = await fetch('http://localhost:3000/api/new-admin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

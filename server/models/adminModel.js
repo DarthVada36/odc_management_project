@@ -3,27 +3,26 @@ import connectionDb from '../database/connectionDb.js';
 
 const Admin = connectionDb.define('Admin', {
     id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
+      type: DataTypes.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
     },
-    username: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique: true,
+    email: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,  // Un índice único aquí
     },
     password: {
-        type: DataTypes.STRING,
-        allowNull: false,
+      type: DataTypes.STRING,
+      allowNull: false,
     },
-    role_id: {
-        type: DataTypes.INTEGER,
-        references: {
-            model: 'roles',
-            key: 'id',
-        },
-        allowNull: false,
+    roleId: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: 'Roles',
+        key: 'id',
+      },
     },
-});
+  });
 
 export default Admin;
