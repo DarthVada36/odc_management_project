@@ -1,7 +1,5 @@
 const FormPage = () => {
-    return <div>
-        
-    </div>
+    return <div></div>
 }
 
 export default FormPage
