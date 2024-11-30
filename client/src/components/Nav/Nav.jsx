@@ -155,7 +155,7 @@ const Nav = () => {
         return (
             <>
                 {/* Language selector - desktop only */}
-                <div className="items-center justify-end hidden h-10 pb-1 text-[0.9rem] bg-black border-b border-neutral-600 laptop:flex">
+                <div className="items-center justify-end hidden h-10 pb-1 text-[0.9rem] bg-black border-b border-neutral-600 laptop:flex desktop:w-full">
                     <motion.div
                         className="flex items-center gap-2 mt-[0.9rem] desktop:mr-[2.2rem] laptop:-mr-[4rem] font-bold text-white desktop:px-36 laptop:px-24 tablet:px-12"
                         initial={!hasAnimated ? { y: -20, opacity: 0 } : false}
