@@ -283,7 +283,7 @@ const Nav = () => {
 
                         {/* Menu button - mobile only */}
                         <button
-                            className="p-2 mt-[1.9rem] mobile:-mr-[0.8rem] text-white laptop:hidden"
+                            className="p-2 mt-[1.9rem] mobile:-mr-[0.8rem] text-white laptop:hidden animate-[spin_0.5s_ease-out]"
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                         >
                             <img
