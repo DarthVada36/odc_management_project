@@ -5,7 +5,7 @@ import { initializeDb } from './database/connectionDb.js'
 import { syncModels } from './models/indexModels.js'
 import enrollmentRoutes from './routes/enrollmentRoutes.js'
 import courseRoutes from './routes/courseRoutes.js'
-import minorsRoutes from './routes/minorsRoutes.js';
+import minorRoutes from './routes/minorRoutes.js';
 
 dotenv.config()
 
@@ -16,14 +16,13 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 
-app.use('/minors', minorsRoutes);
 
 const PORT = process.env.PORT || 3000
 
 // Rutas
 app.use('/api/enrollments', enrollmentRoutes);
 app.use('/api/courses', courseRoutes);
-app.use('/api/minors', minorsRoutes);
+app.use('/api/minors', minorRoutes);
 
 
 

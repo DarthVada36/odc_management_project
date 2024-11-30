@@ -1,7 +1,7 @@
 import Minor from '../models/minorModel.js';
 import Enrollment from '../models/enrollmentModel.js';
 
-export const getMinorsByCourseId = async (req, res) => {
+export const getMinorByCourseId = async (req, res) => {
     try {
         const { course_id } = req.params;
 
