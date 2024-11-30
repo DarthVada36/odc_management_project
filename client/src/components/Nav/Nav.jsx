@@ -132,10 +132,16 @@ const Nav = () => {
     // Event handlers for menu interactions
     const handleLabelClick = (item) => {
         setActiveLabel(item)
+        setIsFloatingMenuOpen(false)
+        setIsInitialMenuOpen(false)
+        setIsMenuOpen(false)
     }
 
     const handleLanguageChange = (lang) => {
         setActiveLang(lang)
+        setIsFloatingMenuOpen(false)
+        setIsInitialMenuOpen(false)
+        setIsMenuOpen(false)
     }
 
     // Reusable navbar content component
@@ -283,18 +289,16 @@ const Nav = () => {
 
                         {/* Menu button - mobile only */}
                         <button
-                            className="p-2 mt-[1.9rem] mobile:-mr-[0.8rem] text-white laptop:hidden animate-[spin_0.5s_ease-out]"
+                            className="p-2 mt-[1.9rem] mobile:-mr-[0.8rem] text-white laptop:hidden"
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                         >
                             <img
                                 src={isMenuOpen ? closeMenuIcon : burguerIcon}
                                 alt={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-                                className={`${
+                                className={`w-8 h-8 mobile:w-7 mobile:h-7 transition-transform duration-300 ${
                                     isMenuOpen
-                                        ? 'w-8 h-8 mobile:w-7 mobile:h-7'
-                                        : 'w-8 h-8 mobile:w-7 mobile:h-7'
-                                } transition-transform duration-300 ${
-                                    isMenuOpen ? 'rotate-180' : ''
+                                        ? 'animate-[spin_0.5s_ease-out]'
+                                        : 'animate-[spin_0.5s_ease-out_reverse]'
                                 }`}
                             />
                         </button>
