@@ -6,4 +6,4 @@ const minorRoutes = express.Router();
 // Obtener menores por curso
 minorRoutes.get('/course/:course_id', getMinorByCourseId);
 
-export default router;
+export default minorRoutes;

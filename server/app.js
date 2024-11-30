@@ -5,7 +5,7 @@ import { initializeDb } from './database/connectionDb.js'
 import { syncModels } from './models/indexModels.js'
 import enrollmentRoutes from './routes/enrollmentRoutes.js'
 import courseRoutes from './routes/courseRoutes.js'
-import minorRoutes from './routes/minorRoutes.js';
+import minorRoutes from './routes/minorRoutes.js'
 
 dotenv.config()
 
