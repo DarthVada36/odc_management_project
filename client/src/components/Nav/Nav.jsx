@@ -5,25 +5,54 @@ import closeMenuIcon from '../../assets/icons/close-menu.svg'
 import sessionLeaveIcon from '../../assets/icons/session-leave.svg'
 import loginAdministratoIcon from '../../assets/icons/login-administrator.svg'
 
+// Main navigation component with floating navbar functionality
 const Nav = () => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false)
+    const [isInitialMenuOpen, setIsInitialMenuOpen] = useState(false)
+    const [isFloatingMenuOpen, setIsFloatingMenuOpen] = useState(false)
     const [activeLabel, setActiveLabel] = useState(null)
     const [activeLang, setActiveLang] = useState('ES')
     const [showFloating, setShowFloating] = useState(false)
-    const menuItems = ['Cursos', 'Dashboard', 'Contacto']
+    const [hasAnimated, setHasAnimated] = useState(false)
+    const menuItems = ['Inscripción', 'Cursos', 'Dashboard', 'Contacto']
 
+    // Controls initial animation state
     useEffect(() => {
+        const timer = setTimeout(() => {
+            setHasAnimated(true)
+        }, 2000)
+
+        return () => clearTimeout(timer)
+    }, [])
+
+    // Handles navbar visibility and mobile menu state
+    useEffect(() => {
+        const initialNavbar = document.getElementById('initial-navbar')
+        const mobileMenu = document.querySelector('.mobile-menu')
+
+        const calculateNavbarHeight = () => {
+            const initialNavbarHeight = initialNavbar
+                ? initialNavbar.offsetHeight
+                : 0
+            const mobileMenuHeight =
+                mobileMenu && isInitialMenuOpen ? mobileMenu.offsetHeight : 0
+            return initialNavbarHeight + mobileMenuHeight
+        }
+
         const handleScroll = () => {
-            if (window.scrollY > 0) {
+            const navbarHeight = calculateNavbarHeight()
+            if (window.scrollY > navbarHeight) {
                 setShowFloating(true)
+                setIsInitialMenuOpen(false)
             } else {
                 setShowFloating(false)
+                setIsFloatingMenuOpen(false)
             }
         }
 
         const handleResize = () => {
             if (window.innerWidth >= 1024) {
-                setIsMenuOpen(false)
+                setIsInitialMenuOpen(false)
+                setIsFloatingMenuOpen(false)
             }
         }
 
@@ -33,7 +62,30 @@ const Nav = () => {
             window.removeEventListener('scroll', handleScroll)
             window.removeEventListener('resize', handleResize)
         }
-    }, [])
+    }, [isInitialMenuOpen])
+
+    // Animation variants for staggered animations
+    const containerVariants = {
+        hidden: { opacity: 0 },
+        visible: {
+            opacity: 1,
+            transition: {
+                staggerChildren: 0.09,
+            },
+        },
+    }
+
+    const blockVariants = {
+        hidden: { opacity: 0, y: -100 },
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                duration: 0.8,
+                ease: 'easeOut',
+            },
+        },
+    }
 
     const Logo = () => (
         <svg
@@ -77,6 +129,7 @@ const Nav = () => {
         </svg>
     )
 
+    // Event handlers for menu interactions
     const handleLabelClick = (item) => {
         setActiveLabel(item)
     }
@@ -85,38 +138,27 @@ const Nav = () => {
         setActiveLang(lang)
     }
 
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: {
-                staggerChildren: 0.09,
-            },
-        },
-    }
+    // Reusable navbar content component
+    const NavContent = ({ isFloating = false }) => {
+        const isMenuOpen = isFloating ? isFloatingMenuOpen : isInitialMenuOpen
+        const setIsMenuOpen = isFloating
+            ? setIsFloatingMenuOpen
+            : setIsInitialMenuOpen
+        const shouldAnimate = !hasAnimated && !isFloating
 
-    const blockVariants = {
-        hidden: { opacity: 0, y: -100 },
-        visible: (customDelay) => ({
-            opacity: 1,
-            y: 0,
-            transition: {
-                duration: 0.4,
-                delay: customDelay,
-                ease: 'easeOut',
-            },
-        }),
-    }
-
-    const NavContent = () => {
         return (
             <>
                 {/* Language selector - desktop only */}
                 <div className="items-center justify-end hidden h-10 pb-1 text-[0.9rem] bg-black border-b border-neutral-600 laptop:flex">
-                    <div className="flex items-center gap-2 mt-[0.9rem] desktop:mr-[2.2rem] laptop:-mr-[4rem] font-bold text-white desktop:px-36 laptop:px-24 tablet:px-12">
+                    <motion.div
+                        className="flex items-center gap-2 mt-[0.9rem] desktop:mr-[2.2rem] laptop:-mr-[4rem] font-bold text-white desktop:px-36 laptop:px-24 tablet:px-12"
+                        initial={!hasAnimated ? { y: -20, opacity: 0 } : false}
+                        animate={!hasAnimated ? { y: 0, opacity: 1 } : false}
+                        transition={{ duration: 0.8 }}
+                    >
                         <button
                             onClick={() => handleLanguageChange('ES')}
-                            className={`relative pb-[0.45rem] transition-colors duration-300 ease-in-out animate-[slideFromTop_0.5s_ease-out]
+                            className={`relative pb-[0.45rem] transition-colors duration-300 ease-in-out
                             after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[0.3rem] after:transition-colors after:duration-500
                             ${
                                 activeLang === 'ES'
@@ -129,7 +171,7 @@ const Nav = () => {
                         <span className="text-neutral-600"></span>
                         <button
                             onClick={() => handleLanguageChange('EN')}
-                            className={`relative pb-[0.45rem] transition-colors duration-300 ease-in-out animate-[slideFromTop_0.5s_ease-out]
+                            className={`relative pb-[0.45rem] transition-colors duration-300 ease-in-out
                             after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[0.3rem] after:transition-colors after:duration-500
                             ${
                                 activeLang === 'EN'
@@ -139,7 +181,7 @@ const Nav = () => {
                         >
                             EN
                         </button>
-                    </div>
+                    </motion.div>
                 </div>
 
                 {/* Main navbar */}
@@ -148,14 +190,14 @@ const Nav = () => {
                     <motion.div
                         className="flex items-center gap-4 desktop:pl-36 laptop:pl-24 tablet:pl-12 mobile:pl-4"
                         variants={blockVariants}
-                        initial="hidden"
+                        initial={shouldAnimate ? 'hidden' : 'visible'}
                         animate="visible"
                         key="navbar-content"
                         transition={{ duration: 0 }}
                     >
                         {/* Logo */}
                         <motion.div
-                            variants={containerVariants}
+                            variants={shouldAnimate ? containerVariants : {}}
                             className="desktop:h-[80px] desktop:w-[51px] laptop:h-[51px] laptop:w-[51px] tablet:h-[51px] tablet:w-[51px] mobile:h-[31px] mobile:w-[31px]"
                         >
                             <Logo />
@@ -164,13 +206,17 @@ const Nav = () => {
                         {/* Brand text */}
                         <div className="flex flex-col pl-3 desktop:ml-[2.1rem] laptop:-ml-[4.4rem] mobile:mb-1 tablet:-ml-[2.1rem] mobile:-ml-[1.3rem]">
                             <motion.span
-                                variants={containerVariants}
+                                variants={
+                                    shouldAnimate ? containerVariants : {}
+                                }
                                 className="font-bold text-primary pb-2 desktop:text-[1.7rem] laptop:text-[1.7rem] tablet:text-[1.69rem] mobile:text-[1.05rem] mobile:-mb-[0.5rem] tablet:-mb-[0.75rem] laptop:-mb-[0.65rem]"
                             >
                                 Orange
                             </motion.span>
                             <motion.span
-                                variants={containerVariants}
+                                variants={
+                                    shouldAnimate ? containerVariants : {}
+                                }
                                 className="font-bold text-white -mt-2 desktop:text-[1.7rem] laptop:text-[1.7rem] tablet:text-[1.69rem] mobile:text-[1.05rem] mobile:-mb-1"
                             >
                                 Digital Center
@@ -180,12 +226,14 @@ const Nav = () => {
                         {/* Desktop menu */}
                         <motion.div
                             className="items-center hidden gap-8 ml-[1.2rem] laptop:flex"
-                            variants={blockVariants}
+                            variants={shouldAnimate ? blockVariants : {}}
                         >
                             {menuItems.map((item) => (
                                 <motion.a
                                     key={item}
-                                    variants={containerVariants}
+                                    variants={
+                                        shouldAnimate ? containerVariants : {}
+                                    }
                                     href="#"
                                     onClick={() => handleLabelClick(item)}
                                     className={`relative text-base font-bold transition-colors duration-300 ease-in-out font-inter hover:text-primary mt-[3.65rem] pb-[1.15rem] 
@@ -204,14 +252,14 @@ const Nav = () => {
 
                     {/* Right section */}
                     <motion.div
-                        className="flex items-center desktop:-mr-[0.3rem] desktop:gap-[1.7rem] mobile:gap-[0.5rem] pr-2 desktop:pr-[10.5rem] laptop:pr-5 tablet:pr-5 tablet:-mb-[0.5rem] mobile:pr-4 mobile:mb-[1.5rem]"
+                        className="flex items-center desktop:-mr-[0.3rem] desktop:gap-[1.7rem] mobile:gap-[0.5rem] pr-2 desktop:pr-[10.5rem] laptop:pr-5 tablet:pr-5 tablet:-mb-[0.5rem] mobile:pr-[1rem] mobile:mb-[1.5rem]"
                         variants={blockVariants}
-                        initial="hidden"
+                        initial={shouldAnimate ? 'hidden' : 'visible'}
                         animate="visible"
                     >
                         {/* Login icon */}
                         <motion.button
-                            variants={containerVariants}
+                            variants={shouldAnimate ? containerVariants : {}}
                             className="p-2 mt-[1.8rem] text-white hover:text-primary transition-colors duration-300 ease-in-out"
                         >
                             <img
@@ -223,7 +271,7 @@ const Nav = () => {
 
                         {/* Logout icon */}
                         <motion.button
-                            variants={containerVariants}
+                            variants={shouldAnimate ? containerVariants : {}}
                             className="p-2 text-white transition-colors duration-300 ease-in-out hover:text-primary"
                         >
                             <img
@@ -235,7 +283,7 @@ const Nav = () => {
 
                         {/* Menu button - mobile only */}
                         <button
-                            className="p-2 mt-[1.9rem] mobile:-mr-[0.8rem] text-white laptop:hidden animate-[spin_0.5s_ease-out]"
+                            className="p-2 mt-[1.9rem] mobile:-mr-[0.8rem] text-white laptop:hidden"
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                         >
                             <img
@@ -243,7 +291,7 @@ const Nav = () => {
                                 alt={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
                                 className={`${
                                     isMenuOpen
-                                        ? 'w-11 h-11 '
+                                        ? 'w-11 h-11'
                                         : 'w-8 h-8 mobile:w-7 mobile:h-7'
                                 } transition-transform duration-300 ${
                                     isMenuOpen ? 'rotate-180' : ''
@@ -254,75 +302,83 @@ const Nav = () => {
                 </nav>
 
                 {/* Mobile menu */}
-                {isMenuOpen && (
-                    <motion.div
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: -20 }}
-                        transition={{ duration: 0.3 }}
-                        className="bg-black border-t border-neutral-600 laptop:hidden"
-                    >
-                        <div className="flex flex-col px-2 font-bold text-[14px]">
-                            {menuItems.map((item) => (
-                                <a
-                                    key={item}
-                                    href="#"
-                                    onClick={() => handleLabelClick(item)}
-                                    className={`border-b py-[0.825rem] border-neutral-600 transition-colors duration-300 ease-in-out
-                                        ${
-                                            activeLabel === item
-                                                ? 'text-primary'
-                                                : 'text-white hover:text-primary'
-                                        }`}
-                                >
-                                    {item}
-                                </a>
-                            ))}
-                        </div>
+                <motion.div
+                    initial={false}
+                    animate={
+                        isMenuOpen
+                            ? { height: 'auto', opacity: 1, display: 'block' }
+                            : {
+                                  height: 0,
+                                  opacity: 0,
+                                  transitionEnd: {
+                                      display: 'none',
+                                  },
+                              }
+                    }
+                    transition={{ duration: 0.3 }}
+                    className="absolute left-0 right-0 bg-black border-t border-neutral-600 laptop:hidden mobile-menu"
+                >
+                    <div className="flex flex-col px-2 font-bold text-[14px]">
+                        {menuItems.map((item) => (
+                            <a
+                                key={item}
+                                href="#"
+                                onClick={() => handleLabelClick(item)}
+                                className={`border-b py-[0.825rem] border-neutral-600 transition-colors duration-300 ease-in-out
+                                    ${
+                                        activeLabel === item
+                                            ? 'text-primary'
+                                            : 'text-white hover:text-primary'
+                                    }`}
+                            >
+                                {item}
+                            </a>
+                        ))}
+                    </div>
 
-                        {/* Language selector in mobile menu */}
-                        <div className="flex justify-end gap-2 p-6 py-[0.9rem] font-bold text-white tablet:text-[14px] text-[13px]">
-                            <button
-                                onClick={() => handleLanguageChange('ES')}
-                                className={`transition-colors duration-300 ease-in-out
-                                    ${
-                                        activeLang === 'ES'
-                                            ? 'text-primary'
-                                            : 'text-white hover:text-primary'
-                                    }`}
-                            >
-                                ES
-                            </button>
-                            <span className="text-neutral-600"></span>
-                            <button
-                                onClick={() => handleLanguageChange('EN')}
-                                className={`transition-colors duration-300 ease-in-out
-                                    ${
-                                        activeLang === 'EN'
-                                            ? 'text-primary'
-                                            : 'text-white hover:text-primary'
-                                    }`}
-                            >
-                                EN
-                            </button>
-                        </div>
-                    </motion.div>
-                )}
+                    {/* Language selector in mobile menu */}
+                    <div className="flex justify-end gap-2 p-6 py-[0.9rem] font-bold text-white tablet:text-[14px] text-[13px]">
+                        <button
+                            onClick={() => handleLanguageChange('ES')}
+                            className={`transition-colors duration-300 ease-in-out
+                                ${
+                                    activeLang === 'ES'
+                                        ? 'text-primary'
+                                        : 'text-white hover:text-primary'
+                                }`}
+                        >
+                            ES
+                        </button>
+                        <span className="text-neutral-600"></span>
+                        <button
+                            onClick={() => handleLanguageChange('EN')}
+                            className={`transition-colors duration-300 ease-in-out
+                                ${
+                                    activeLang === 'EN'
+                                        ? 'text-primary'
+                                        : 'text-white hover:text-primary'
+                                }`}
+                        >
+                            EN
+                        </button>
+                    </div>
+                </motion.div>
             </>
         )
     }
 
+    // Main component render
     return (
         <>
             {/* Initial navbar */}
-            <header id="initial-navbar" className="relative w-full bg-black h-">
-                <NavContent />
+            <header id="initial-navbar" className="relative w-full bg-black">
+                <NavContent isFloating={false} />
             </header>
 
-            {/* Navbar flotante */}
+            {/* Floating navbar */}
             {showFloating && (
                 <header className="fixed top-0 w-full z-50 bg-black shadow-lg transform transition-transform duration-500 animate-[slideFromTop_0.5s_ease-out]">
-                    <NavContent />
+                    <NavContent isFloating={true} />
                 </header>
             )}
         </>
