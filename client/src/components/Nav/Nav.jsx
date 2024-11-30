@@ -291,7 +291,7 @@ const Nav = () => {
                                 alt={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
                                 className={`${
                                     isMenuOpen
-                                        ? 'w-11 h-11'
+                                        ? 'w-8 h-8 mobile:w-7 mobile:h-7'
                                         : 'w-8 h-8 mobile:w-7 mobile:h-7'
                                 } transition-transform duration-300 ${
                                     isMenuOpen ? 'rotate-180' : ''
