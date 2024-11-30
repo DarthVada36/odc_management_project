@@ -12,6 +12,9 @@ const Nav = () => {
                 <li>
                     <Link to="/access-admin">Acceder como Administrador</Link> {/* Agregar este enlace */}
                 </li>
+                <li>
+                    <Link to="/new-admin">Crear Administrador</Link> {/* Agregar este enlace */}
+                </li>
             </ul>
         </nav>
     );

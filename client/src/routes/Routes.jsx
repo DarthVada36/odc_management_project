@@ -4,6 +4,8 @@ import Layout from '../layout/Layout';
 import FormPage from '../pages/FormPage';
 import AccessAdminPage from '../pages/AccessAdminPage';  // Asegúrate de importar la nueva página
 import { createBrowserRouter } from 'react-router-dom';
+import CreateAdminPage from '../pages/CreateAdminPage';
+
 
 export const router = createBrowserRouter([
   {
@@ -15,8 +17,12 @@ export const router = createBrowserRouter([
         element: <FormPage />,
       },
       {
-        path: '/access-admin',  // Ruta para la página de acceso de administradores
-        element: <AccessAdminPage />,  // El componente de la página de acceso
+        path: '/access-admin', 
+        element: <AccessAdminPage />, 
+      },
+      {
+        path: '/new-admin',  
+        element: <CreateAdminPage />,  
       },
     ],
   },
