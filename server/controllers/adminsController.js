@@ -1,6 +1,5 @@
 import Admin from '../models/adminModel.js';
 
-
 //LOGIN ADMIN
 
 export const loginAdmin = async (req, res) => {

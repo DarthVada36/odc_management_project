@@ -3,7 +3,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { initializeDb } from './database/connectionDb.js';
 import { syncModels } from './models/indexModels.js';
-import { adminRouter } from './routes/adminRoutes.js'; 
+import { adminRouter } from './routes/adminRoutes.js'
+
+
 
 dotenv.config();
 
@@ -16,7 +18,7 @@ app.use(cors());
 
 // Rutas
 app.use('/api', adminRouter); 
-app.post('/api/login', adminRouter);    
+app.post('/api/access-admin', adminRouter);    
 app.post('api/new-admin', adminRouter);
 
 // Puerto

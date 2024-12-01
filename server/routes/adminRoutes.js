@@ -9,4 +9,4 @@ adminRouter.get('/:id', getAdminById);
 adminRouter.post('/new-admin', createAdmin);
 adminRouter.put('/:id', updateAdmin);
 adminRouter.delete('/:id', deleteAdmin);
-adminRouter.post('/login', loginAdmin);
+adminRouter.post('/access-admin', loginAdmin);
