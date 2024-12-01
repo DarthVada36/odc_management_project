@@ -2,6 +2,7 @@ import { DataTypes } from 'sequelize';
 import bcrypt from 'bcryptjs';
 import connectionDb from '../database/connectionDb.js';
 
+
 const Admin = connectionDb.define('Admin', {
   id: {
     type: DataTypes.INTEGER,

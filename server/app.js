@@ -5,8 +5,6 @@ import { initializeDb } from './database/connectionDb.js';
 import { syncModels } from './models/indexModels.js';
 import { adminRouter } from './routes/adminRoutes.js'
 
-
-
 dotenv.config();
 
 const app = express();
