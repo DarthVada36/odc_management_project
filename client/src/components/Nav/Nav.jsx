@@ -215,7 +215,7 @@ const Nav = () => {
                                 variants={
                                     shouldAnimate ? containerVariants : {}
                                 }
-                                className="font-bold text-primary pb-2 desktop:text-[1.7rem] laptop:text-[1.7rem] tablet:text-[1.69rem] mobile:text-[1.05rem] mobile:-mb-[0.5rem] tablet:-mb-[0.75rem] laptop:-mb-[0.65rem]"
+                                className="font-bold  text-primary pb-2 desktop:text-[1.7rem] laptop:text-[1.7rem] tablet:text-[1.69rem] mobile:text-[1.05rem] mobile:-mb-[0.5rem] tablet:-mb-[0.75rem] laptop:-mb-[0.65rem]"
                             >
                                 Orange
                             </motion.span>
