@@ -1,12 +1,15 @@
-import { Router } from 'express';
-import { getAdminById, getAllAdmins, createAdmin, updateAdmin, deleteAdmin, loginAdmin } from '../controllers/adminsController.js';
+import express from 'express';
+// import { getAdminById, getAllAdmins, createAdmin, updateAdmin, deleteAdmin, loginAdmin } from '../controllers/adminsController.js';
+import { getAllAdmins, getAdminById, createAdmin, updateAdmin, deleteAdmin } from '../controllers/adminsController.js';
 
-export const adminRouter = Router(); 
+const adminRoutes = express.Router(); 
 
 // RUTAS CRUD
-adminRouter.get('/', getAllAdmins);
-adminRouter.get('/:id', getAdminById);
-adminRouter.post('/new-admin', createAdmin);
-adminRouter.put('/:id', updateAdmin);
-adminRouter.delete('/:id', deleteAdmin);
-adminRouter.post('/access-admin', loginAdmin);
+adminRoutes.get('/', getAllAdmins);
+adminRoutes.get('/:id', getAdminById);
+adminRoutes.post('/', createAdmin);
+adminRoutes.put('/:id', updateAdmin);
+adminRoutes.delete('/:id', deleteAdmin);
+// adminRoutes.post('/access-admin', loginAdmin);
+
+export default adminRoutes;

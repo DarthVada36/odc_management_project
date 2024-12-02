@@ -1,6 +1,6 @@
 import { DataTypes } from 'sequelize';
-import bcrypt from 'bcryptjs';
 import connectionDb from '../database/connectionDb.js';
+// import bcrypt from 'bcryptjs';
 
 
 const Admin = connectionDb.define('Admin', {
@@ -9,7 +9,7 @@ const Admin = connectionDb.define('Admin', {
     primaryKey: true,
     autoIncrement: true,
   },
-  email: {
+  username: {
     type: DataTypes.STRING,
     allowNull: false,
     unique: true,
@@ -18,19 +18,20 @@ const Admin = connectionDb.define('Admin', {
     type: DataTypes.STRING,
     allowNull: false,
   },
-  roleId: {
+  role_id: {
     type: DataTypes.INTEGER,
     references: {
       model: 'Roles',
       key: 'id',
     },
+    allowNull: false,
   },
 });
 
 // Hook para encriptar contraseña antes de guardar
-Admin.beforeCreate(async (admin) => {
-  const saltRounds = 10;
-  admin.password = await bcrypt.hash(admin.password, saltRounds);
-});
+// Admin.beforeCreate(async (admin) => {
+//   const saltRounds = 10;
+//   admin.password = await bcrypt.hash(admin.password, saltRounds);
+// });
 
 export default Admin;

@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { initializeDb } from './database/connectionDb.js';
 import { syncModels } from './models/indexModels.js';
-import { adminRouter } from './routes/adminRoutes.js'
+import adminRoutes from './routes/adminRoutes.js'
 
 dotenv.config();
 
@@ -14,13 +14,16 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 
-// Rutas
-app.use('/api', adminRouter); 
-app.post('/api/access-admin', adminRouter);    
-app.post('api/new-admin', adminRouter);
 
 // Puerto
 const PORT = process.env.PORT || 3000;
+
+// Rutas
+app.use('/api/admins', adminRoutes); 
+// app.post('/api/access-admin', adminRouter);    
+// app.post('api/new-admin', adminRouter);
+
+
 
 // Inicializar servidor y base de datos
 const startServer = async () => {
