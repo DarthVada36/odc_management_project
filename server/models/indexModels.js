@@ -5,7 +5,6 @@ import Enrollment from './enrollmentModel.js';
 import Minor from './minorModel.js';
 import connectionDb from '../database/connectionDb.js';
 
-
 // Roles y Admins
 Role.hasMany(Admin, { foreignKey: 'role_id', as: 'admins' });
 Admin.belongsTo(Role, { foreignKey: 'role_id', as: 'role' });
@@ -25,7 +24,7 @@ Minor.belongsTo(Enrollment, { foreignKey: 'enrollment_id', as: 'enrollment' });
 // Exportar modelos y función de sincronización
 const syncModels = async () => {
   try {
-    await connectionDb.sync({ alter: true }); // Actualiza la base de datos según los modelos
+    await connectionDb.sync({ alter: false }); // Actualiza la base de datos según los modelos
     console.log('Modelos sincronizados con la base de datos (^_-)db(-_^) 🚀');
   } catch (error) {
     console.error('Error al sincronizar modelos:', error.message);
