@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import burguerIcon from '../../assets/icons/burguer-menu.svg'
-import closeMenuIcon from '../../assets/icons/close-menu.svg'
+import { IoMenuOutline } from 'react-icons/io5'
+import { HiX } from 'react-icons/hi'
 import sessionLeaveIcon from '../../assets/icons/session-leave.svg'
 import loginAdministratoIcon from '../../assets/icons/login-administrator.svg'
 
@@ -292,15 +292,17 @@ const Nav = () => {
                             className="p-2 mt-[1.9rem] mobile:-mr-[0.8rem] text-white laptop:hidden"
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                         >
-                            <img
-                                src={isMenuOpen ? closeMenuIcon : burguerIcon}
-                                alt={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-                                className={`w-8 h-8 mobile:w-7 mobile:h-7 transition-transform duration-300 ${
-                                    isMenuOpen
-                                        ? 'animate-[spin_0.5s_ease-out]'
-                                        : 'animate-[spin_0.5s_ease-out_reverse]'
-                                }`}
-                            />
+                            {isMenuOpen ? (
+                                <HiX
+                                    className={`tablet:w-8 tablet:h-8 mobile:w-8 mobile:h-8 transition-transform duration-300 animate-[spin_0.5s_ease-out]`}
+                                    color="white"
+                                />
+                            ) : (
+                                <IoMenuOutline
+                                    className={`tablet:w-9 tablet:h-9 mobile:w-8 mobile:h-8 transition-transform duration-300 animate-[spin_0.5s_ease-out_reverse]`}
+                                    color="white"
+                                />
+                            )}
                         </button>
                     </motion.div>
                 </nav>
