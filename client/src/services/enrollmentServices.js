@@ -56,4 +56,3 @@ export const updateEnrollmentById = async (id, enrollmentData) => {
         throw error;
     }
 };
-

@@ -3,7 +3,9 @@ import cors from 'cors'
 import dotenv from 'dotenv'
 import { initializeDb } from './database/connectionDb.js'
 import { syncModels } from './models/indexModels.js'
-import adminRoutes from './routes/adminRoutes.js';
+import enrollmentRoutes from './routes/enrollmentRoutes.js'
+import courseRoutes from './routes/courseRoutes.js'
+import minorRoutes from './routes/minorRoutes.js'
 
 dotenv.config()
 
@@ -17,13 +19,19 @@ app.use(cors())
 app.use('/api', adminRoutes)
 
 
-// Puerto
+
 const PORT = process.env.PORT || 3000
 
-// Inicializar servidor y base de datos
+// Rutas
+app.use('/api/enrollments', enrollmentRoutes);
+app.use('/api/courses', courseRoutes);
+app.use('/api/minors', minorRoutes);
+
+
+
 const startServer = async () => {
   try {
-    // Inicializar la conexión a la base de datos
+   
     await initializeDb();
 
     await syncModels();
@@ -34,7 +42,7 @@ const startServer = async () => {
     });
   } catch (error) {
     console.error(` Error al iniciar el servidor 😱`, error.message);
-    process.exit(1); // Detener el proceso si algo falla
+    process.exit(1); 
   }
 };
 
