@@ -1,20 +1,8 @@
 import React from "react";
 
-const UserTable = () => {
+const UserTable = ({users}) => {
         //Datos simulados
-        const users = [
-            {id: 1, name: 'Alice', email: 'alice@example.com'},
-            {id: 2, name: 'Jhon', email: 'jkhon@example.com'},
-            {id: 3, name: 'Alice', email: 'alice@example.com'},
-            {id: 4, name: 'Jhon', email: 'jkhon@example.com'},
-            {id: 5, name: 'Alice', email: 'alice@example.com'},
-            {id: 6, name: 'Jhon', email: 'jkhon@example.com'},
-            {id: 7, name: 'Alice', email: 'alice@example.com'},
-            {id: 8, name: 'Jhon', email: 'jkhon@example.com'},
-            {id: 9, name: 'Alice', email: 'alice@example.com'},
-            {id: 10, name: 'Alice', email: 'alice@example.com'},
-        ];
-   
+      
     return (
         <div className="bg-white shadow-md p-4 sm:p-6 md:p-8">
             <button className="bg-orange text-black button-auto w-full px-4 py-2 rounded mb-4 sm:mb-6 md:mb-8">
