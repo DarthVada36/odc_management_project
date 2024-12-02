@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import burguerIcon from '../../assets/icons/burguer-menu.svg'
-import closeMenuIcon from '../../assets/icons/close-menu.svg'
+import { IoMenuOutline } from 'react-icons/io5'
+import { HiX } from 'react-icons/hi'
 import sessionLeaveIcon from '../../assets/icons/session-leave.svg'
 import loginAdministratoIcon from '../../assets/icons/login-administrator.svg'
 
@@ -155,7 +155,7 @@ const Nav = () => {
         return (
             <>
                 {/* Language selector - desktop only */}
-                <div className="items-center justify-end hidden h-10 pb-1 text-[0.9rem] bg-black border-b border-neutral-600 laptop:flex">
+                <div className="items-center justify-end hidden h-10 pb-1 text-[0.9rem] bg-black border-b border-neutral-600 laptop:flex desktop:w-full">
                     <motion.div
                         className="flex items-center gap-2 mt-[0.9rem] desktop:mr-[2.2rem] laptop:-mr-[4rem] font-bold text-white desktop:px-36 laptop:px-24 tablet:px-12"
                         initial={!hasAnimated ? { y: -20, opacity: 0 } : false}
@@ -292,15 +292,17 @@ const Nav = () => {
                             className="p-2 mt-[1.9rem] mobile:-mr-[0.8rem] text-white laptop:hidden"
                             onClick={() => setIsMenuOpen(!isMenuOpen)}
                         >
-                            <img
-                                src={isMenuOpen ? closeMenuIcon : burguerIcon}
-                                alt={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
-                                className={`w-8 h-8 mobile:w-7 mobile:h-7 transition-transform duration-300 ${
-                                    isMenuOpen
-                                        ? 'animate-[spin_0.5s_ease-out]'
-                                        : 'animate-[spin_0.5s_ease-out_reverse]'
-                                }`}
-                            />
+                            {isMenuOpen ? (
+                                <HiX
+                                    className={`tablet:w-8 tablet:h-8 mobile:w-8 mobile:h-8 transition-transform duration-300 animate-[spin_0.5s_ease-out]`}
+                                    color="white"
+                                />
+                            ) : (
+                                <IoMenuOutline
+                                    className={`tablet:w-9 tablet:h-9 mobile:w-8 mobile:h-8 transition-transform duration-300 animate-[spin_0.5s_ease-out_reverse]`}
+                                    color="white"
+                                />
+                            )}
                         </button>
                     </motion.div>
                 </nav>
