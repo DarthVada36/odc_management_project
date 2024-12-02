@@ -5,6 +5,15 @@ export default {
         extend: {
             fontFamily: {
                 sans: ['Inter'],
+                'helvetica-bd': ['HelveticaNeueLTStd-Bd', 'sans-serif'],
+                'helvetica-lt': ['HelveticaNeueLTStd-Lt', 'sans-serif'],
+                'helvetica-roman': ['HelveticaNeueLTStd-Roman', 'sans-serif'],
+                'helvetica-ultlt': ['HelveticaNeueLTStd-UltLt', 'sans-serif'],
+                'helvetica-w20-roman': [
+                    'HelveticaNeueW20-55Roman',
+                    'sans-serif',
+                ],
+                'helvetica-w20-bold': ['HelveticaNeueW20-75Bold', 'sans-serif'],
             },
             colors: {
                 // Colores principales
