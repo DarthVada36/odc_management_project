@@ -10,17 +10,19 @@ const MinorForm = () => {
   };
 
   return (
+    <div className='p-4 m-2 border-2 border-orange flex justify-center text-dark bg-light h-[11rem] font-inter'>
     <form onSubmit={handleSubmit(onSubmit)}>
-      <h2>Formulario de Menores</h2>
+      <h2 className='font-bold text-lg'>Datos de menores</h2>
 
       <label>Nombre:</label>
-      <input {...register('name', { required: true })} />
+      <input className='border border-dark' {...register('name', { required: true })} />
 
       <label>Edad:</label>
-      <input {...register('age', { required: true })} type="number" />
+      <input className='border border-dark' {...register('age', { required: true })} type="number" />
 
       <button type="submit">Guardar Menor</button>
     </form>
+    </div>
   );
 };
 

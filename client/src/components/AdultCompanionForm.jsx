@@ -10,30 +10,32 @@ const AdultCompanionForm = () => {
   };
 
   return (
+    <div className=' m-2 p-4 border-2 border-orange flex justify-center text-dark bg-light h-[11rem] font-inter'>
     <form onSubmit={handleSubmit(onSubmit)}>
-      <h2>Formulario de Acompañante Adulto</h2>
+      <h2 className='font-bold text-dark text-lg'>Acompañante adicional (mayor de edad) </h2>
 
-      <label>Nombre Completo:</label>
-      <input {...register('fullname', { required: true })} />
+      <label className='font-semibold'>Nombre Completo:</label>
+      <input className='border border-dark'{...register('fullname', { required: true })} />
 
       <label>Email:</label>
-      <input {...register('email', { required: true })} type="email" />
+      <input className='border border-dark'{...register('email', { required: true })} type="email" />
 
       <label>Género:</label>
-      <select {...register('gender')}>
+      <select  className='border border-dark'{...register('gender')}>
         <option value="male">Masculino</option>
         <option value="female">Femenino</option>
         <option value="other">Otro</option>
       </select>
 
       <label>Edad:</label>
-      <input {...register('age', { required: true })} type="number" />
+      <input className='border border-dark'{...register('age', { required: true })} type="number" />
 
       <label>¿Primera actividad?</label>
-      <input {...register('isFirstActivity')} type="checkbox" />
+      <input className='border border-dark'{...register('isFirstActivity')} type="checkbox" />
 
       <button type="submit">Guardar Acompañante</button>
     </form>
+    </div>
   );
 };
 

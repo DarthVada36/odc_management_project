@@ -1,33 +1,12 @@
-<<<<<<< HEAD
-// src/components/Nav/Nav.jsx
-import React from 'react';
-import { Link } from 'react-router-dom';
-=======
 import React, { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { IoMenuOutline } from 'react-icons/io5'
 import { HiX } from 'react-icons/hi'
 import sessionLeaveIcon from '../../assets/icons/session-leave.svg'
 import loginAdministratoIcon from '../../assets/icons/login-administrator.svg'
->>>>>>> 4f2ba0cf7b1292e6e33155b74d8dd020a583cbc4
 
 // Main navigation component with floating navbar functionality
 const Nav = () => {
-<<<<<<< HEAD
-    return (
-        <nav className='bg-black text-orange'>
-            <ul>
-                <li>
-                    <Link to="/">Inicio</Link>
-                </li>
-                <li>
-                    <Link to="/access-admin">Acceder como Administrador</Link> {/* Agregar este enlace */}
-                </li>
-            </ul>
-        </nav>
-    );
-};
-=======
     const [isInitialMenuOpen, setIsInitialMenuOpen] = useState(false)
     const [isFloatingMenuOpen, setIsFloatingMenuOpen] = useState(false)
     const [activeLabel, setActiveLabel] = useState(null)
@@ -41,7 +20,6 @@ const Nav = () => {
         const timer = setTimeout(() => {
             setHasAnimated(true)
         }, 2000)
->>>>>>> 4f2ba0cf7b1292e6e33155b74d8dd020a583cbc4
 
         return () => clearTimeout(timer)
     }, [])
