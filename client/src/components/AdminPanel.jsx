@@ -40,7 +40,7 @@ const AdminPanel = () => {
          <h1 className="text-orange text-2xl font-bold p-3">Gestión de usuarios</h1>
          {/* Línea naranja */}
          <div className="border-t-2 border-orange"></div>
-         <p className="text-black text-center p-4">
+         <p className="text-black text-center p-4 ml-4">
            Total de usuarios: {filteredUsers.length}
          </p>
          {/* Añadir barra de búsqueda */}
