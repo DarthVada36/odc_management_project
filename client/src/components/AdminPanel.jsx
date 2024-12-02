@@ -12,6 +12,8 @@ const AdminPanel = () => {
         {/* Linea naranja */}
         <div className="border-t-2 border-orange "></div>
         <p className="text-black text-center p-4">Total de usuarios Añadir buscador: 10</p>
+        {/*Añadir buscador*/}
+         
       </div>
       {/* Tabla */}
       <UserTable />

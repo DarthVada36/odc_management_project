@@ -6,7 +6,13 @@ const UserTable = () => {
             {id: 1, name: 'Alice', email: 'alice@example.com'},
             {id: 2, name: 'Jhon', email: 'jkhon@example.com'},
             {id: 3, name: 'Alice', email: 'alice@example.com'},
-            {id: 4, name: 'Jhon', email: 'jkhon@example.com'}
+            {id: 4, name: 'Jhon', email: 'jkhon@example.com'},
+            {id: 5, name: 'Alice', email: 'alice@example.com'},
+            {id: 6, name: 'Jhon', email: 'jkhon@example.com'},
+            {id: 7, name: 'Alice', email: 'alice@example.com'},
+            {id: 8, name: 'Jhon', email: 'jkhon@example.com'},
+            {id: 9, name: 'Alice', email: 'alice@example.com'},
+            {id: 10, name: 'Alice', email: 'alice@example.com'},
         ];
    
     return (
