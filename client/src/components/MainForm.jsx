@@ -2,56 +2,111 @@ import React from 'react';
 import { useForm } from 'react-hook-form';
 
 const MainForm = ({ setIncludeMinor, setIncludeAdult }) => {
-  const { register, handleSubmit } = useForm();
+    const { register, handleSubmit } = useForm();
 
-  const onSubmit = (data) => {
-    console.log('Formulario principal:', data);
+    const onSubmit = (data) => {
+        console.log('Formulario principal:', data);
+        setIncludeMinor(data.includeMinor);
+        setIncludeAdult(data.includeAdult);
+    };
 
-    // Mostrar formularios secundarios según la selección
-    setIncludeMinor(data.includeMinor);
-    setIncludeAdult(data.includeAdult);
-  };
+    return (
+        <div className="p-6 border border-orange bg-light  shadow-md w-full max-w-screen">
+            <h2 className="font-semibold text-lg mb-4 text-orange">Datos Personales</h2>
+            <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+                {/* Nombre Completo */}
+                <div>
+                    <label className="block font-medium mb-1">Nombre Completo:</label>
+                    <input 
+                        className="w-full border border-dark px-3 py-2 rounded-md" 
+                        {...register('fullname', { required: true })} 
+                    />
+                </div>
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <h2>Formulario Base</h2>
+                {/* Email */}
+                <div>
+                    <label className="block font-medium mb-1">Email:</label>
+                    <input 
+                        className="w-full border border-dark px-3 py-2 rounded-md" 
+                        type="email" 
+                        {...register('email', { required: true })} 
+                    />
+                </div>
 
-      <label>Nombre Completo:</label>
-      <input {...register('fullname', { required: true })} />
+                {/* Género */}
+                <div>
+                    <label className="block font-medium mb-1">Género:</label>
+                    <select 
+                        className="w-full border border-dark px-3 py-2 rounded-md" 
+                        {...register('gender')}>
+                        <option value="male">Masculino</option>
+                        <option value="female">Femenino</option>
+                        <option value="other">Otro</option>
+                    </select>
+                </div>
 
-      <label>Email:</label>
-      <input {...register('email', { required: true })} type="email" />
+                {/* Edad */}
+                <div>
+                    <label className="block font-medium mb-1">Edad:</label>
+                    <input 
+                        className="w-full border border-dark px-3 py-2 rounded-md" 
+                        type="number" 
+                        {...register('age', { required: true })} 
+                    />
+                </div>
 
-      <label>Género:</label>
-      <select {...register('gender')}>
-        <option value="male">Masculino</option>
-        <option value="female">Femenino</option>
-        <option value="other">Otro</option>
-      </select>
+                {/* Checkboxes */}
+                <div>
+                    <label className="flex items-center gap-2">
+                        <input 
+                            className="peer hidden" 
+                            type="checkbox" 
+                            {...register('isFirstActivity')} 
+                        />
+                        <span className="w-5 h-5 border-2 border-orange rounded-md flex items-center justify-center text-sm font-bold text-transparent peer-checked:bg-orange peer-checked:text-white">
+                            X
+                        </span>
+                        ¿Primera actividad?
+                    </label>
+                </div>
+                <div>
+                    <label className="flex items-center gap-2">
+                        <input 
+                            className="peer hidden" 
+                            type="checkbox" 
+                            {...register('includeMinor')} 
+                            onChange={(e) => setIncludeMinor(e.target.checked)} 
+                        />
+                        <span className="w-5 h-5 border-2 border-orange rounded-md flex items-center justify-center text-sm font-bold text-transparent peer-checked:bg-orange peer-checked:text-white">
+                            X
+                        </span>
+                        ¿Incluir menores de 14 años?
+                    </label>
+                </div>
+                <div>
+                    <label className="flex items-center gap-2">
+                        <input 
+                            className="peer hidden" 
+                            type="checkbox" 
+                            {...register('includeAdult')} 
+                            onChange={(e) => setIncludeAdult(e.target.checked)} 
+                        />
+                        <span className="w-5 h-5 border-2 border-orange rounded-md flex items-center justify-center text-sm font-bold text-transparent peer-checked:bg-orange peer-checked:text-white">
+                            X
+                        </span>
+                        ¿Incluir acompañante mayor de 14 años?
+                    </label>
+                </div>
 
-      <label>Edad:</label>
-      <input {...register('age', { required: true })} type="number" />
-
-      <label>¿Primera actividad?</label>
-      <input {...register('isFirstActivity')} type="checkbox" />
-
-      <label>¿Incluir menores de 14 años?</label>
-      <input 
-        {...register('includeMinor')} 
-        type="checkbox" 
-        onChange={(e) => setIncludeMinor(e.target.checked)} 
-      />
-
-      <label>¿Incluir acompañante mayor de 14 años?</label>
-      <input 
-        {...register('includeAdult')} 
-        type="checkbox" 
-        onChange={(e) => setIncludeAdult(e.target.checked)} 
-      />
-
-      <button type="submit">Siguiente</button>
-    </form>
-  );
+                {/* Botón */}
+                <button 
+                    type="submit" 
+                    className="bg-orange text-white px-4 py-2 rounded-md font-semibold">
+                    Siguiente
+                </button>
+            </form>
+        </div>
+    );
 };
 
 export default MainForm;
