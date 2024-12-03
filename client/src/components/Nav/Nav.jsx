@@ -155,16 +155,16 @@ const Nav = () => {
         return (
             <>
                 {/* Language selector - desktop only */}
-                <div className="items-center justify-end hidden h-10 pb-1 text-[0.9rem] bg-black border-b border-neutral-600 laptop:flex desktop:w-full">
+                <div className="items-center justify-end hidden h-10 pb-1  font-bold font-helvetica-w20-bold text-[0.9rem] bg-black border-b border-neutral-600 laptop:flex desktop:w-full">
                     <motion.div
-                        className="flex items-center gap-2 mt-[0.9rem] desktop:mr-[2.2rem] laptop:-mr-[4rem] font-bold text-white desktop:px-36 laptop:px-24 tablet:px-12"
+                        className="flex items-center gap-2 mt-[0.8rem] desktop:mr-[2.2rem] laptop:-mr-[4rem] font-bold text-white desktop:px-36 laptop:px-24 tablet:px-12"
                         initial={!hasAnimated ? { y: -20, opacity: 0 } : false}
                         animate={!hasAnimated ? { y: 0, opacity: 1 } : false}
                         transition={{ duration: 0.8 }}
                     >
                         <button
                             onClick={() => handleLanguageChange('ES')}
-                            className={`relative pb-[0.45rem] transition-colors duration-300 ease-in-out
+                            className={`relative pb-[0.55rem] transition-colors duration-300 ease-in-out
                             after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[0.3rem] after:transition-colors after:duration-500
                             ${
                                 activeLang === 'ES'
@@ -177,7 +177,7 @@ const Nav = () => {
                         <span className="text-neutral-600"></span>
                         <button
                             onClick={() => handleLanguageChange('EN')}
-                            className={`relative pb-[0.45rem] transition-colors duration-300 ease-in-out
+                            className={`relative pb-[0.55rem] transition-colors duration-300 ease-in-out
                             after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[0.3rem] after:transition-colors after:duration-500
                             ${
                                 activeLang === 'EN'
@@ -210,12 +210,12 @@ const Nav = () => {
                         </motion.div>
 
                         {/* Brand text */}
-                        <div className="flex flex-col pl-3 desktop:ml-[2.1rem] laptop:-ml-[4.4rem] mobile:mb-1 tablet:-ml-[2.1rem] mobile:-ml-[1.3rem]">
+                        <div className="flex flex-col pl-3 desktop:ml-[2.1rem] laptop:-ml-[4.4rem] tablet:-ml-[2.1rem] mobile:-ml-[1.3rem] tablet:mb-[0.4rem] mobile:mb-[0.15rem]">
                             <motion.span
                                 variants={
                                     shouldAnimate ? containerVariants : {}
                                 }
-                                className="font-bold  text-primary pb-2 desktop:text-[1.7rem] laptop:text-[1.7rem] tablet:text-[1.69rem] mobile:text-[1.05rem] mobile:-mb-[0.5rem] tablet:-mb-[0.75rem] laptop:-mb-[0.65rem]"
+                                className="font-bold font-helvetica-w20-bold text-primary pb-2 desktop:text-[1.8rem] laptop:text-[1.75rem] tablet:text-[1.69rem] mobile:text-[1.05rem] mobile:-mb-[0.5rem] tablet:-mb-[0.75rem] laptop:-mb-[0.85rem]"
                             >
                                 Orange
                             </motion.span>
@@ -223,7 +223,7 @@ const Nav = () => {
                                 variants={
                                     shouldAnimate ? containerVariants : {}
                                 }
-                                className="font-bold text-white -mt-2 desktop:text-[1.7rem] laptop:text-[1.7rem] tablet:text-[1.69rem] mobile:text-[1.05rem] mobile:-mb-1"
+                                className="font-bold font-helvetica-w20-bold text-white -mt-2 desktop:text-[1.8rem] laptop:text-[1.75rem] tablet:text-[1.69rem] mobile:text-[1.05rem]"
                             >
                                 Digital Center
                             </motion.span>
@@ -242,7 +242,7 @@ const Nav = () => {
                                     }
                                     href="#"
                                     onClick={() => handleLabelClick(item)}
-                                    className={`relative text-base font-bold transition-colors duration-300 ease-in-out font-inter hover:text-primary mt-[3.65rem] pb-[1.15rem] 
+                                    className={`relative text-base font-bold font-helvetica-w20-bold transition-colors duration-300 ease-in-out  hover:text-primary mt-[3.4rem] pb-[1.4rem] 
                                     after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[0.3rem] after:transition-colors after:duration-300
                                     ${
                                         activeLabel === item
@@ -324,7 +324,7 @@ const Nav = () => {
                     transition={{ duration: 0.3 }}
                     className="absolute left-0 right-0 bg-black border-t border-neutral-600 laptop:hidden mobile-menu"
                 >
-                    <div className="flex flex-col px-2 font-bold text-[14px]">
+                    <div className="flex flex-col px-2 font-bold font-helvetica-w20-bold text-[14px]">
                         {menuItems.map((item) => (
                             <a
                                 key={item}
@@ -343,7 +343,7 @@ const Nav = () => {
                     </div>
 
                     {/* Language selector in mobile menu */}
-                    <div className="flex justify-end gap-2 p-6 py-[0.9rem] font-bold text-white tablet:text-[14px] text-[13px]">
+                    <div className="flex justify-end gap-2 p-6 py-[0.9rem]  font-bold font-helvetica-w20-bold text-white tablet:text-[14px] text-[13px]">
                         <button
                             onClick={() => handleLanguageChange('ES')}
                             className={`transition-colors duration-300 ease-in-out
