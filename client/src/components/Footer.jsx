@@ -40,7 +40,7 @@ const Footer = () => {
     ]
 
     return (
-        <footer className="flex justify-center text-white bg-black h-[11rem] font-inter">
+        <footer className="flex justify-center text-white bg-black h-[11rem]  ">
             <div className="flex flex-col w-full h-full">
                 {/* First container */}
                 <div
@@ -49,7 +49,7 @@ const Footer = () => {
                     <div
                         className={`${commonInnerContainerStyles} ${commonPaddingY}`}
                     >
-                        <span className="mr-6 font-bold desktop:text-[17px] laptop:text-[16px] tablet:text-[15px] mobile:text-[14px]">
+                        <span className="mr-6 font-helvetica-w20-bold desktop:text-[17px] laptop:text-[16px] tablet:text-[15px] mobile:text-[14px]">
                             Síguenos
                         </span>
                         {socialIcons.map((social) => {
@@ -74,7 +74,7 @@ const Footer = () => {
                     <div
                         className={`${commonInnerContainerStyles} ${commonPaddingY}`}
                     >
-                        <p className="font-bold text-white desktop:text-[15px] laptop:text-[14px] tablet:text-[13px] mobile:text-[12px]">
+                        <p className="font-helvetica-w20-bold text-white desktop:text-[15px] laptop:text-[14px] tablet:text-[13px] mobile:text-[12px]">
                             © Orange 2024
                         </p>
                     </div>
