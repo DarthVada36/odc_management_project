@@ -14,14 +14,19 @@ const CreateAdminForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validaciones básicas
     if (password !== confirmPassword) {
       setPasswordError('Las contraseñas no coinciden');
       return;
     }
 
+    if (password.length < 8) {
+      setPasswordError('La contraseña debe tener al menos 8 caracteres');
+      return;
+    }
+
     setPasswordError(''); 
 
-    //Solicitud al back//
     try {
       const response = await fetch('http://localhost:3000/api/new-admin', {
         method: 'POST',
@@ -31,7 +36,7 @@ const CreateAdminForm = () => {
         body: JSON.stringify({
           email,
           password,
-          role_id: 1,  
+          roleId: 2  // 2 será el ID para el rol ADMIN normal
         }),
       });
 
@@ -39,9 +44,13 @@ const CreateAdminForm = () => {
 
       if (response.ok) {
         setSuccessMessage('Administrador creado con éxito');
-        setErrorMessage(''); 
+        setErrorMessage('');
+        // Limpiar formulario
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
       } else {
-        setErrorMessage(data.message || 'Hubo un error al crear el administrador');
+        setErrorMessage(data.error || 'Hubo un error al crear el administrador');
         setSuccessMessage('');
       }
     } catch (error) {
@@ -50,14 +59,14 @@ const CreateAdminForm = () => {
     }
   };
 
+  // ... resto del JSX permanece igual
+
   return (
     <div className="flex min-h-screen justify-center items-center border-2 border-orange">
       <div className="w-full max-w-md bg-white p-8">
         <h2 className="text-2xl font-bold text-orange-500 mb-6 text-center">Crear nuevo Administrador</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-
-          {/* Email */}
           <div className="flex flex-col">
             <label htmlFor="email" className="block text-sm font-semibold text-gray-600">Email</label>
             <input
@@ -71,7 +80,6 @@ const CreateAdminForm = () => {
             />
           </div>
 
-          {/* Contraseña */}
           <div className="flex flex-col">
             <label htmlFor="password" className="block text-sm font-semibold text-gray-600">Contraseña</label>
             <div className="relative">
@@ -90,7 +98,7 @@ const CreateAdminForm = () => {
                 onClick={() => setShowPassword(!showPassword)}
               >
                 <img
-                  src={showPassword ? "/src/assets/password-open-eye.png" : "/src/assets/password-eye.png"} // Ruta desde 'public'
+                  src={showPassword ? "/src/assets/password-open-eye.png" : "/src/assets/password-eye.png"}
                   alt={showPassword ? 'Ocultar' : 'Mostrar'}
                   className="w-6 h-6"
                 />
@@ -98,7 +106,6 @@ const CreateAdminForm = () => {
             </div>
           </div>
 
-          {/* Confirmar Contraseña */}
           <div className="flex flex-col">
             <label htmlFor="confirmPassword" className="block text-sm font-semibold text-gray-600">Confirmar contraseña</label>
             <div className="relative">
@@ -117,7 +124,7 @@ const CreateAdminForm = () => {
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 <img
-                  src={showConfirmPassword ? "/src/assets/password-open-eye.png" : "/src/assets/password-eye.png"} // Ruta desde 'public'
+                  src={showConfirmPassword ? "/src/assets/password-open-eye.png" : "/src/assets/password-eye.png"}
                   alt={showConfirmPassword ? 'Ocultar' : 'Mostrar'}
                   className="w-6 h-6"
                 />
@@ -125,10 +132,7 @@ const CreateAdminForm = () => {
             </div>
           </div>
 
-          {/* Error contraseñas */}
           {passwordError && <p className="text-red-500 text-sm">{passwordError}</p>}
-
-          {/* Éxito o error */}
           {successMessage && <p className="text-green-500 text-sm">{successMessage}</p>}
           {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
 

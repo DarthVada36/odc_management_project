@@ -2,10 +2,11 @@
 import React from 'react';
 import Layout from '../layout/Layout';
 import FormPage from '../pages/FormPage';
-import AccessAdminPage from '../pages/AccessAdminPage';  // Asegúrate de importar la nueva página
-import { createBrowserRouter } from 'react-router-dom';
+import AccessAdminPage from '../pages/AccessAdminPage';
 import CreateAdminPage from '../pages/CreateAdminPage';
-
+import AdminDashboardPage from '../pages/AdminDashboardPage';
+import SuperAdminDashboardPage from '../pages/SuperAdminDashboardPage';
+import { createBrowserRouter } from 'react-router-dom';
 
 export const router = createBrowserRouter([
   {
@@ -23,6 +24,14 @@ export const router = createBrowserRouter([
       {
         path: '/new-admin',  
         element: <CreateAdminPage />,  
+      },
+      {
+        path: '/admin-dashboard',
+        element: <AdminDashboardPage />,
+      },
+      {
+        path: '/super-admin-dashboard',
+        element: <SuperAdminDashboardPage />,
       },
     ],
   },

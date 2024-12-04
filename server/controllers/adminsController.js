@@ -7,39 +7,49 @@ export const loginAdmin = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Buscar el administrador por su email
-    const admin = await Admin.findOne({ where: { email } });
+    const admin = await Admin.findOne({ 
+      where: { email },
+      attributes: ['id', 'email', 'password', 'roleId']
+    });
 
     if (!admin) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
-    // Comparar la contraseña ingresada con la almacenada encriptada
-    const isMatch = await bcrypt.compare(password, admin.password);
-
-    if (!isMatch) {
+    const isValidPassword = await bcrypt.compare(password, admin.password);
+    if (!isValidPassword) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
-    // Crear un token JWT para el administrador
-    const token = jwt.sign({ id: admin.id, email: admin.email }, process.env.JWT_SECRET, { expiresIn: '1h' });
+    const token = jwt.sign(
+      { id: admin.id, email: admin.email, roleId: admin.roleId },
+      process.env.JWT_SECRET,
+      { expiresIn: '8h' }
+    );
 
     res.json({
       message: 'Inicio de sesión exitoso',
-      token: token,
-      adminId: admin.id,
+      token,
+      admin: {
+        id: admin.id,
+        email: admin.email,
+        roleId: admin.roleId
+      }
     });
   } catch (error) {
+    console.error('Login error:', error);
     res.status(500).json({ error: 'Error en el inicio de sesión' });
   }
 };
-
 // GET ALL ADMINS
 export const getAllAdmins = async (req, res) => {
   try {
-    const admins = await Admin.findAll();
+    const admins = await Admin.findAll({
+      attributes: ['id', 'email', 'roleId', 'createdAt', 'updatedAt']
+    });
     res.json(admins);
   } catch (error) {
+    console.error('Get all admins error:', error);
     res.status(500).json({ error: 'Error al obtener los administradores' });
   }
 };
@@ -47,65 +57,115 @@ export const getAllAdmins = async (req, res) => {
 // GET ADMIN BY ID
 export const getAdminById = async (req, res) => {
   try {
-    const adminId = req.params.id;
-    const admin = await Admin.findByPk(adminId);
-    if (admin) {
-      res.json(admin);
-    } else {
-      res.status(404).json({ error: 'Administrador no encontrado' });
+    const { id } = req.params;
+    
+    const admin = await Admin.findOne({
+      where: { id },
+      attributes: ['id', 'email', 'roleId', 'createdAt', 'updatedAt']
+    });
+
+    if (!admin) {
+      return res.status(404).json({ error: 'Administrador no encontrado' });
     }
+
+    res.json(admin);
   } catch (error) {
+    console.error('Get admin by id error:', error);
     res.status(500).json({ error: 'Error al obtener el administrador' });
   }
 };
 
-// CREATE ADMIN (POST)
+// CREATE ADMIN
 export const createAdmin = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { email, password } = req.body;
 
-    // Encriptar la contraseña antes de guardarla
-    const hashedPassword = await bcrypt.hash(password, 10);
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres' });
+    }
 
-    // Crear el nuevo administrador con la contraseña encriptada
-    const newAdmin = await Admin.create({ name, email, password: hashedPassword });
+    const existingAdmin = await Admin.findOne({ where: { email } });
+    if (existingAdmin) {
+      return res.status(400).json({ error: 'Ya existe un administrador con este email' });
+    }
 
-    res.status(201).json(newAdmin);
+    const newAdmin = await Admin.create({
+      email,
+      password,
+      roleId: 2 // ADMIN normal
+    });
+
+    res.status(201).json({
+      message: 'Administrador creado exitosamente',
+      admin: {
+        id: newAdmin.id,
+        email: newAdmin.email,
+        roleId: newAdmin.roleId
+      }
+    });
   } catch (error) {
+    console.error('Create admin error:', error);
     res.status(500).json({ error: 'Error al crear el administrador' });
   }
 };
 
-// UPDATE ADMIN BY ID (PUT)
+// UPDATE ADMIN
 export const updateAdmin = async (req, res) => {
   try {
-    const adminId = req.params.id;
-    const { name, email, password } = req.body;
+    const { id } = req.params;
+    const { email, password, role_id } = req.body;
 
-    // Si se proporciona una nueva contraseña, encriptarla
-    let hashedPassword;
-    if (password) {
-      hashedPassword = await bcrypt.hash(password, 10);
+    // Verificar si el admin existe
+    const admin = await Admin.findByPk(id);
+    if (!admin) {
+      return res.status(404).json({ error: 'Administrador no encontrado' });
     }
 
-    // Actualizar los datos del administrador, incluyendo la contraseña si se proporcionó
-    const updatedAdmin = await Admin.update(
-      { name, email, password: hashedPassword || password },
-      { where: { id: adminId } }
-    );
-    res.json(updatedAdmin);
+    // Preparar datos a actualizar
+    const updateData = {};
+    if (email) updateData.email = email;
+    if (role_id) updateData.roleId = role_id;
+    if (password) {
+      if (password.length < 8) {
+        return res.status(400).json({ error: 'La contraseña debe tener al menos 8 caracteres' });
+      }
+      updateData.password = await bcrypt.hash(password, 10);
+    }
+
+    // Actualizar admin
+    await admin.update(updateData);
+
+    res.json({ 
+      message: 'Administrador actualizado exitosamente',
+      admin: {
+        id: admin.id,
+        email: admin.email,
+        roleId: admin.roleId
+      }
+    });
   } catch (error) {
+    console.error('Update admin error:', error);
     res.status(500).json({ error: 'Error al actualizar el administrador' });
   }
 };
 
-// DELETE ADMIN BY ID (DELETE)
+// DELETE ADMIN
 export const deleteAdmin = async (req, res) => {
   try {
-    const adminId = req.params.id;
-    await Admin.destroy({ where: { id: adminId } });
-    res.json({ message: 'Administrador eliminado' });
+    const { id } = req.params;
+
+    const admin = await Admin.findByPk(id);
+    if (!admin) {
+      return res.status(404).json({ error: 'Administrador no encontrado' });
+    }
+
+    await admin.destroy();
+    res.json({ 
+      message: 'Administrador eliminado exitosamente',
+      deletedId: id
+    });
   } catch (error) {
+    console.error('Delete admin error:', error);
     res.status(500).json({ error: 'Error al eliminar el administrador' });
   }
 };

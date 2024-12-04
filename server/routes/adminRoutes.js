@@ -1,12 +1,22 @@
 import { Router } from 'express';
-import { getAdminById, getAllAdmins, createAdmin, updateAdmin, deleteAdmin, loginAdmin } from '../controllers/adminsController.js';
+import { 
+    loginAdmin,
+    createAdmin, 
+    getAllAdmins, 
+    getAdminById, 
+    updateAdmin, 
+    deleteAdmin 
+} from '../controllers/adminsController.js';
+import { authMiddleware } from '../middleware/authMiddleware.js';
 
-export const adminRouter = Router(); 
+export const adminRouter = Router();
 
-// RUTAS CRUD
-adminRouter.get('/', getAllAdmins);
-adminRouter.get('/:id', getAdminById);
-adminRouter.post('/new-admin', createAdmin);
-adminRouter.put('/:id', updateAdmin);
-adminRouter.delete('/:id', deleteAdmin);
+// Rutas públicas
 adminRouter.post('/access-admin', loginAdmin);
+adminRouter.post('/new-admin', createAdmin);
+
+// Rutas protegidas
+adminRouter.get('/admins', authMiddleware, getAllAdmins);
+adminRouter.get('/admins/:id', authMiddleware, getAdminById);
+adminRouter.put('/admins/:id', authMiddleware, updateAdmin);
+adminRouter.delete('/admins/:id', authMiddleware, deleteAdmin);

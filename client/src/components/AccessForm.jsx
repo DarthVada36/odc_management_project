@@ -1,25 +1,25 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import SubmitButton from './SubmitButton'; 
+import { Link, useNavigate } from 'react-router-dom';
+import SubmitButton from './SubmitButton';
 
 const AccessForm = () => {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [successMessage, setSuccessMessage] = useState(''); 
+  const [successMessage, setSuccessMessage] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Solicitud al backend
     try {
       const response = await fetch('http://localhost:3000/api/access-admin', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ email, password })
       });
 
       const data = await response.json();
@@ -27,10 +27,15 @@ const AccessForm = () => {
       if (response.ok) {
         setSuccessMessage('Inicio de sesión exitoso');
         setErrorMessage('');
-        console.log('Token:', data.token); 
         localStorage.setItem('authToken', data.token);
+
+        if (data.admin?.roleId === 1) {
+          navigate('/super-admin-dashboard');
+        } else {
+          navigate('/admin-dashboard');
+        }
       } else {
-        setErrorMessage(data.message || 'Hubo un error al iniciar sesión');
+        setErrorMessage(data.error || 'Credenciales inválidas');
         setSuccessMessage('');
       }
     } catch (error) {
@@ -38,6 +43,8 @@ const AccessForm = () => {
       setSuccessMessage('');
     }
   };
+
+  // ... resto del JSX permanece igual
 
   return (
     <div className="flex min-h-screen justify-center items-center border-2 border-orange">
@@ -86,11 +93,9 @@ const AccessForm = () => {
             </div>
           </div>
 
-          {/* Mensajes de éxito o error */}
           {successMessage && <p className="text-green-500 text-sm">{successMessage}</p>}
           {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
 
-          {/* Recordar info */}
           <div className="flex items-center justify-between">
             <label className="inline-flex items-center text-sm">
               <input type="checkbox" className="form-checkbox text-orange-500" />
@@ -101,9 +106,7 @@ const AccessForm = () => {
             </Link>
           </div>
 
-          {/* Botón de acceso */}
           <SubmitButton text="Acceder" />
-
         </form>
       </div>
     </div>
