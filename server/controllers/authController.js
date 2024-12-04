@@ -19,7 +19,10 @@ export const registerAdmin = async (req, res) => {
       role_id,
     });
 
-    const token = tokenSign({ id: newAdmin.id, role_id: newAdmin.role_id });
+    const token = await tokenSign({
+       id: newAdmin.id,
+       username: newAdmin.username, 
+       role_id: newAdmin.role_id });
 
     res.status(201).json({
       message: 'Administrador registrado con éxito',
@@ -49,7 +52,11 @@ export const loginAdmin = async (req, res) => {
       return res.status(400).json({ message: 'Credenciales incorrectas' });
     }
 
-    const token = tokenSign({ id: admin.id, role_id: admin.role_id });
+    const token = await tokenSign({
+      id: admin.id,
+      username:admin.username,
+      role_id: admin.role_id,
+    });
 
     res.json({
       message: 'Inicio de sesión exitoso',

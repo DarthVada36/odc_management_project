@@ -4,7 +4,7 @@ const JWT_SECRET = process.env.JWT_SECRET;
 export const tokenSign = async (user) => {
     const sign = jwt.sign(
         {
-            id: user._id,
+            id: user.id,
             username: user.username,
             role_id: user.role_id,
         },
