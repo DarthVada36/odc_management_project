@@ -3,7 +3,7 @@ import Admin from '../models/adminModel.js'
 import Role from '../models/roleModel.js'
 import bcrypt from 'bcryptjs'
 
-// Crear un admin
+// Create a new admin
 const createAdmin = async (req, res) => {
     try {
         const { username, password, role_id } = req.body
@@ -23,7 +23,7 @@ const createAdmin = async (req, res) => {
             role_id,
         })
 
-        // Excluir el password del response
+        // Delete the password from the response
         const adminResponse = admin.toJSON()
         delete adminResponse.password
 
@@ -36,13 +36,14 @@ const createAdmin = async (req, res) => {
     }
 }
 
-// Obtener todos los admins
+// Geet all admins
 const getAdmins = async (req, res) => {
     try {
         const admins = await Admin.findAll({
             include: [
                 {
                     model: Role,
+                    as: 'role',
                     attributes: ['name'],
                 },
             ],
@@ -54,7 +55,7 @@ const getAdmins = async (req, res) => {
     }
 }
 
-// Obtener un admin por ID
+// Get a single admin by ID
 const getAdminById = async (req, res) => {
     try {
         const admin = await Admin.findByPk(req.params.id, {
@@ -75,7 +76,7 @@ const getAdminById = async (req, res) => {
     }
 }
 
-// Actualizar un admin
+// Update an admin
 const updateAdmin = async (req, res) => {
     try {
         const { username, role_id } = req.body
@@ -113,7 +114,7 @@ const updateAdmin = async (req, res) => {
     }
 }
 
-// Eliminar un admin
+// Delete an admin
 const deleteAdmin = async (req, res) => {
     try {
         const admin = await Admin.findByPk(req.params.id)
