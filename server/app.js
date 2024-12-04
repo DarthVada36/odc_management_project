@@ -3,7 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import { initializeDb } from './database/connectionDb.js';
 import { syncModels } from './models/indexModels.js';
-import adminRoutes from './routes/adminRoutes.js'
+
 import authRoutes from './routes/authRoutes.js'
 
 dotenv.config();
@@ -20,7 +20,7 @@ app.use(cors());
 const PORT = process.env.PORT || 3000;
 
 // Rutas
-app.use('/api/admins', adminRoutes); 
+
 app.use('/api/auth', authRoutes);
 // app.post('/api/access-admin', adminRouter);    
 // app.post('api/new-admin', adminRouter);
