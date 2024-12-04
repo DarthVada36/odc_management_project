@@ -6,16 +6,16 @@ import SearchBar from "./SearchBar";
 const AdminPanel = () => {
   //Lista de usuarios o cursos
   const [users] = useState([
-            {id: 1, name: 'Alice', email: 'alice@example.com'},
-            {id: 2, name: 'Jhon', email: 'jkhon@example.com'},
-            {id: 3, name: 'Alice', email: 'alice@example.com'},
-            {id: 4, name: 'Jhon', email: 'jkhon@example.com'},
-            {id: 5, name: 'Alice', email: 'alice@example.com'},
-            {id: 6, name: 'Jhon', email: 'jkhon@example.com'},
-            {id: 7, name: 'Alice', email: 'alice@example.com'},
-            {id: 8, name: 'Jhon', email: 'jkhon@example.com'},
-            {id: 9, name: 'Alice', email: 'alice@example.com'},
-            {id: 10, name: 'Alice', email: 'alice@example.com'},
+            {id: 1, name: 'Alice', email: 'alice@example.com', role: 'Super Admin'},
+            {id: 2, name: 'Jhon', email: 'jkhon@example.com', role: 'Admin'},
+            {id: 3, name: 'Alice', email: 'alice@example.com', role: 'Admin'},
+            {id: 4, name: 'Jhon', email: 'jkhon@example.com', role: 'Admin'},
+            {id: 5, name: 'Alice', email: 'alice@example.com', role: 'Admin'},
+            {id: 6, name: 'Jhon', email: 'jkhon@example.com', role: 'Admin'},
+            {id: 7, name: 'Alice', email: 'alice@example.com' , role: 'Admin'},
+            {id: 8, name: 'Jhon', email: 'jkhon@example.com' , role: 'Admin'},
+            {id: 9, name: 'Alice', email: 'alice@example.com' , role: 'Admin'},
+            {id: 10, name: 'Alice', email: 'alice@example.com' , role: 'Admin'},
   ]);
     
    // Estado para los usuarios filtrados
@@ -36,15 +36,20 @@ const AdminPanel = () => {
    return (
      <div className="flex-1 bg-white p-3">
        {/* Encabezado */}
-       <div className="mb-6">
-         <h1 className="text-orange text-2xl font-bold p-3">Gestión de usuarios</h1>
-         {/* Línea naranja */}
-         <div className="border-t-2 border-orange"></div>
-         <p className="text-black text-center p-4 ml-4">
-           Total de usuarios: {filteredUsers.length}
+       <div className="mb-6 flex justify-between items-center">
+         <h1 className="text-orange text-2xl font-bold p-1">Gestión de Inscripciones</h1>
+        </div>
+        {/* Línea naranja   */}
+        <div className="border-t-2 border-orange"></div>
+         {/* Total Inscriptions and Search Bar */}
+         <div className="flex justify-between items-center mb-4 ">
+         <p className="text-black text-left p-8">
+           Total de inscripciones: {filteredUsers.length}
          </p>
          {/* Añadir barra de búsqueda */}
+         <div className="flex items-right">
          <SearchBar onSearch={handleSearch} />
+         </div>
        </div>
        {/* Tabla */}
        <UserTable users={filteredUsers} />
