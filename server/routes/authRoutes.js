@@ -12,6 +12,6 @@ const router = Router();
 router.post('/register', authMiddleware, checkRol(['superadmin']),registerAdmin);
 
 //Ruta de login
-router.post('/login', authMiddleware, checkRol(['superadmin', 'admin', 'facilitator']), loginAdmin);
+router.post('/login', loginAdmin);
 
 export default router;
