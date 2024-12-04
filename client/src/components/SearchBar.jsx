@@ -6,12 +6,12 @@ const SearchBar = ({ onSearch }) => {
   };
 
   return (
-    <div className="flex items-center justify-right p-8">
+    <div className="flex items-center justify-right md:justify-end p-8">
     <input
       type="text"
       placeholder="Buscar inscripciones..."
-      className="border border-orange rounded-md p-1 text-sm w-28 sm:w-40 md:w-60"
-      //border border-gray-300 rounded-md p-1 text-sm w-28 sm:w-40 md:w-60
+      className="border border-orange rounded-md p-1 text-sm w-28 sm:w-40 md:w-60 max-w-xs sm:max-w-md md:max-w-lg"
+      //px-3 py-2 text-sm w-full max-w-xs sm:max-w-md md:max-w-lg focus:outline-none focus:ring focus:ring-orange-300"
       onChange={handleInputChange}
     />
     </div>

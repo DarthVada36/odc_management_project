@@ -40,11 +40,11 @@ const UserTable = ({users}) => {
               </td>
               {/* Acciones */}
               <td className="p-2 sm:p-3 md:p-4">
-              <div className="flex flex-col items-center space-y-2">
-                <button className="bg-orange text-black px-4 py-1 rounded border border-black flex-grow w-full sm:w-auto">
+              <div className="flex flex-col sm:flex-row sm:justify-center sm:space-x-2 items-center space-y-2 sm:space-y-0">
+                <button className="bg-orange text-black px-4 py-1 rounded border border-black flex-grow w-full sm:flex-grow-0">
                   Editar
                 </button>
-                <button className="bg-white text-black px-2 py-1 rounded border border-black flex-grow w-full sm:w-auto">
+                <button className="bg-white text-black px-2 py-1 rounded border border-black flex-grow w-full sm:flex-grow-0">
                   Eliminar
                 </button>
                 </div>

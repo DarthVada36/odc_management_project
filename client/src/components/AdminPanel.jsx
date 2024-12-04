@@ -34,20 +34,20 @@ const AdminPanel = () => {
  
    // Retorno del componente principal
    return (
-     <div className="flex-1 bg-white p-3">
+     <div className="flex flex-col min-h-screen bg-white p-3">
        {/* Encabezado */}
-       <div className="mb-6 flex justify-between items-center">
+       <div className="mb-6 flex flex-col md:flex-row md:justify-between md:items-center">
          <h1 className="text-orange text-2xl font-bold p-1">Gestión de Inscripciones</h1>
         </div>
         {/* Línea naranja   */}
-        <div className="border-t-2 border-orange"></div>
+        <div className="border-t-2 border-orange mb-4"></div>
          {/* Total Inscriptions and Search Bar */}
-         <div className="flex justify-between items-center mb-4 ">
-         <p className="text-black text-left p-8">
+         <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 ">
+         <p className="text-black text-left mb-4 md:mb-0 p-8">
            Total de inscripciones: {filteredUsers.length}
          </p>
          {/* Añadir barra de búsqueda */}
-         <div className="flex items-right">
+         <div className="flex items-right md:1/3">
          <SearchBar onSearch={handleSearch} />
          </div>
        </div>
