@@ -1,6 +1,15 @@
-import React from "react";
+import Pagination from "./Pagination";
+import React, { useState } from 'react';
 
 const UserTable = ({users}) => {
+  //Función paginación
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 8;  // Número de elementos por página
+  const totalPages = Math.ceil(users.length / itemsPerPage);
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentUsers = users.slice(indexOfFirstItem, indexOfLastItem);
       
       
     return (
@@ -60,6 +69,12 @@ const UserTable = ({users}) => {
         </tbody>
             </table>
             </div>
+            {/* Paginación */}  
+            <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={setCurrentPage}
+            />
         </div>
     )
 }
