@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@font-face {
+    font-family: 'HelveticaNeueLTStd-Bd';
+    src: url('./assets/fonts/HelveticaNeueLTStd-Bd.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'HelveticaNeueLTStd-Lt';
+    src: url('./assets/fonts/HelveticaNeueLTStd-Lt.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'HelveticaNeueLTStd-Roman';
+    src: url('./assets/fonts/HelveticaNeueLTStd-Roman.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'HelveticaNeueLTStd-UltLt';
+    src: url('./assets/fonts/HelveticaNeueLTStd-UltLt.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'HelveticaNeueW20-55Roman';
+    src: url('./assets/fonts/HelveticaNeueW20-55Roman.woff2') format('woff2');
+}
+
+@font-face {
+    font-family: 'HelveticaNeueW20-75Bold';
+    src: url('./assets/fonts/HelveticaNeueW20-75Bold.woff2') format('woff2');
+}
