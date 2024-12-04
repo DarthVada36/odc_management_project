@@ -20,7 +20,7 @@ const AccessForm = () => {
             const result = await login(username, password)
 
             if (result.success) {
-                navigate('/')
+                navigate('/dashboard')
             } else {
                 setErrorMessage(result.error || 'Error al iniciar sesión')
             }
@@ -56,7 +56,7 @@ const AccessForm = () => {
                         />
                     </div>
 
-                    {/* Contraseña */}
+                    {/* Password */}
                     <div className="flex flex-col">
                         <label
                             htmlFor="password"
@@ -97,7 +97,7 @@ const AccessForm = () => {
                         <p className="text-sm text-red-500">{errorMessage}</p>
                     )}
 
-                    {/* Recordar info */}
+                    {/* Remember me checkbox */}
                     <div className="flex items-center justify-between">
                         <label className="inline-flex items-center text-sm">
                             <input
@@ -116,7 +116,7 @@ const AccessForm = () => {
                         </Link>
                     </div>
 
-                    {/* Botón de acceso */}
+                    {/* Access button */}
                     <SubmitButton text="Acceder" />
                 </form>
             </div>
