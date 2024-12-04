@@ -11,9 +11,9 @@ const MinorForm = ({ setFormData }) => {
 
   const onSubmit = (data) => {
     console.log("Formulario de menores:", data);
-    setFormData(prevData => ({
+    setFormData((prevData) => ({
       ...prevData,
-      minors: data.minors // Agregar los menores al formData
+      minors: data.minors,
     }));
   };
 

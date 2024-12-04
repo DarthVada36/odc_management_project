@@ -8,9 +8,9 @@ import { getCourseById } from '../services/coursesServices';
 import formImage from '../assets/img/imageform.svg';
 
 const RegisterPage = () => {
-    const [includeMinor, setIncludeMinor] = useState(false); // Para incluir menores
-    const [includeAdult, setIncludeAdult] = useState(false); // Para incluir acompañantes adultos
-    const [formData, setFormData] = useState(null); // Datos principales del tutor
+    const [includeMinor, setIncludeMinor] = React.useState(false);
+  const [includeAdult, setIncludeAdult] = React.useState(false);
+    const [formData, setFormData] = React.useState({});
     const [minors, setMinors] = useState([]); // Lista de menores
     const [companions, setCompanions] = useState([]); // Lista de acompañantes adultos
     const [isLoading, setIsLoading] = useState(false); // Estado de carga
@@ -47,33 +47,43 @@ const RegisterPage = () => {
 
     // Enviar todos los datos al backend
     const handleSendToBackend = async () => {
-        if (!formData) {
-            setResponseMessage('Por favor, completa el formulario principal antes de continuar.');
+        if (!formData.fullname || !formData.email || !formData.age || !formData.gender) {
+            setResponseMessage('Por favor, completa todos los campos obligatorios del formulario principal.');
             return;
         }
-
+    
+        if (includeMinor && minors.length === 0) {
+            setResponseMessage('Por favor, agrega al menos un menor si seleccionaste la opción de acompañante menor.');
+            return;
+        }
+    
+        if (includeAdult && companions.length === 0) {
+            setResponseMessage('Por favor, agrega al menos un acompañante adulto si seleccionaste la opción de acompañante adulto.');
+            return;
+        }
+    
         setIsLoading(true);
         setResponseMessage('');
-
+    
         try {
             // Crear la inscripción principal y obtener el group_id
             const mainEnrollment = await createEnrollment(formData);
             const groupId = mainEnrollment.group_id; // Suponemos que el backend retorna el group_id
-
+    
             // Crear inscripciones para menores
             if (includeMinor && minors.length > 0) {
                 for (const minor of minors) {
                     await createMinor({ ...minor, group_id: groupId });
                 }
             }
-
+    
             // Crear inscripciones para acompañantes adultos
             if (includeAdult && companions.length > 0) {
                 for (const companion of companions) {
                     await createEnrollment({ ...companion, group_id: groupId });
                 }
             }
-
+    
             setResponseMessage('Formulario enviado con éxito.');
         } catch (error) {
             console.error('Error al enviar los datos:', error.message);
@@ -97,7 +107,8 @@ const RegisterPage = () => {
                             setIncludeAdult={setIncludeAdult}
                             includeMinor={includeMinor}
                             includeAdult={includeAdult}
-                            onSubmit={handleFormSubmit}
+                            formData={formData}
+                            setFormData={setFormData}
                         />
                     </div>
                     <div className="flex-1">
