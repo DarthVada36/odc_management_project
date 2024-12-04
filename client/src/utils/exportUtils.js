@@ -1,52 +1,37 @@
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import { svgToPngBase64 } from './svgUtils'; // Importar la función de conversión
 
-// Función para exportar a PDF con encabezado
-export const exportToPDF = (
-  title,
-  headers,
-  data,
-  fileName = 'export.pdf'
-) => {
+export const exportToPDF = async (title, headers, data, fileName = 'export.pdf', svgLogo) => {
   const doc = new jsPDF();
-  const logo = 'data:image/png;base64,...'; // Sustituye con tu logo en formato Base64
 
-  // Configuración de colores
-  const primaryColor = [255, 102, 0]; // Naranja principal
-  const textColor = [0, 0, 0]; // Negro
+  // Convertir el logo SVG a Base64 PNG
+  const logoBase64 = await svgToPngBase64(svgLogo);
 
-  // Agregar el logo
-  doc.addImage(logo, 'PNG', 10, 10, 30, 15); // Posición (x, y) y tamaño (ancho, alto)
+  // Agregar el logo al encabezado
+  doc.addImage(logoBase64, 'PNG', 10, 10, 30, 15);
 
-  // Agregar título del encabezado
+  // Título del encabezado
   doc.setFontSize(16);
-  doc.setTextColor(...textColor);
-  doc.text(title, 50, 20); // Título centrado en el encabezado
+  doc.text(title, 50, 20);
 
   // Línea decorativa
-  doc.setDrawColor(...primaryColor);
+  doc.setDrawColor(255, 102, 0);
   doc.setLineWidth(1.5);
-  doc.line(10, 28, 200, 28); // Línea horizontal
+  doc.line(10, 28, 200, 28);
 
-  // Generar la tabla con los datos
+  // Generar la tabla
   doc.autoTable({
     head: [headers],
     body: data,
-    startY: 35, // La tabla comienza después del encabezado
-    headStyles: {
-      fillColor: primaryColor, // Fondo del encabezado de la tabla
-      textColor: [255, 255, 255], // Texto blanco
-      fontSize: 12,
-    },
-    bodyStyles: {
-      textColor: textColor,
-      fontSize: 10,
-    },
-    alternateRowStyles: { fillColor: [245, 245, 245] }, // Filas alternas en gris claro
+    startY: 35, // Tabla comienza después del encabezado
+    headStyles: { fillColor: [255, 102, 0] }, // Fondo del encabezado
+    bodyStyles: { textColor: [0, 0, 0] },
+    alternateRowStyles: { fillColor: [245, 245, 245] }, // Filas alternas
   });
 
-  // Guardar el archivo
+  // Guardar el PDF
   doc.save(fileName);
 };
 

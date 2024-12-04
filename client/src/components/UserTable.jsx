@@ -2,11 +2,18 @@ import React from 'react';
 import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 
 const UserTable = ({ users }) => {
-  const headers = ['Nombre', 'Email', 'Rol']; // Encabezados de la tabla
-  const data = users.map((user) => [user.name, user.email, user.role]); // Filas de datos
+  const headers = ['Nombre', 'Email', 'Rol'];
+  const data = users.map((user) => [user.name, user.email, user.role]);
+
+  // Contenido SVG del logo
+  const svgLogo = `
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="40" stroke="black" stroke-width="3" fill="orange" />
+    </svg>
+  `;
 
   const handleExportPDF = () => {
-    exportToPDF('Listado de Usuarios', headers, data, 'usuarios.pdf');
+    exportToPDF('Listado de Usuarios', headers, data, 'usuarios.pdf', svgLogo);
   };
 
   const handleExportExcel = () => {
@@ -15,7 +22,6 @@ const UserTable = ({ users }) => {
 
   return (
     <div className="bg-white shadow-md p-4 sm:p-6 md:p-8">
-      {/* Botones de exportación */}
       <div className="flex justify-end space-x-4 mb-4">
         <button
           onClick={handleExportPDF}
@@ -31,7 +37,6 @@ const UserTable = ({ users }) => {
         </button>
       </div>
 
-      {/* Contenedor de la tabla */}
       <div className="overflow-x-auto">
         <table className="table-auto w-full border border-orange">
           <thead className="bg-orange text-white">
