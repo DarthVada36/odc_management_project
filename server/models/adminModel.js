@@ -1,5 +1,5 @@
-import { DataTypes } from 'sequelize';
-import connectionDb from '../database/connectionDb.js';
+import { DataTypes } from 'sequelize'
+import connectionDb from '../database/connectionDb.js'
 
 const Admin = connectionDb.define('Admin', {
     id: {
@@ -24,6 +24,6 @@ const Admin = connectionDb.define('Admin', {
         },
         allowNull: false,
     },
-});
+})
 
-export default Admin;
+export default Admin
