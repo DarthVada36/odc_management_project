@@ -1,54 +1,140 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import MainForm from '../components/MainForm';
 import MinorForm from '../components/MinorForm';
 import AdultCompanionForm from '../components/AdultCompanionForm';
+import { createEnrollment } from '../services/enrollmentServices';
+import { createMinor } from '../services/minorServices';
+import { getCourseById } from '../services/coursesServices';
 import formImage from '../assets/img/imageform.svg';
 
 const RegisterPage = () => {
-    const [includeMinor, setIncludeMinor] = useState(false);
-    const [includeAdult, setIncludeAdult] = useState(false);
-    const [formData, setFormData] = useState(null);
+    const [includeMinor, setIncludeMinor] = useState(false); // Para incluir menores
+    const [includeAdult, setIncludeAdult] = useState(false); // Para incluir acompañantes adultos
+    const [formData, setFormData] = useState(null); // Datos principales del tutor
+    const [minors, setMinors] = useState([]); // Lista de menores
+    const [companions, setCompanions] = useState([]); // Lista de acompañantes adultos
+    const [isLoading, setIsLoading] = useState(false); // Estado de carga
+    const [responseMessage, setResponseMessage] = useState('');
+    const [courseTitle, setCourseTitle] = useState('');
 
+    // Obtener el título del curso al cargar la página
+    useEffect(() => {
+        const fetchCourseTitle = async () => {
+            try {
+                const course = await getCourseById(101); // ID del curso
+                setCourseTitle(course.title);
+            } catch (error) {
+                console.error('Error al cargar el curso:', error.message);
+            }
+        };
+        fetchCourseTitle();
+    }, []);
+
+    // Manejar el envío del formulario principal
     const handleFormSubmit = (data) => {
-        setFormData(data); // Guardar datos del formulario principal
+        setFormData(data);
+    };
+
+    // Manejar la adición de menores
+    const handleAddMinor = (minorData) => {
+        setMinors((prev) => [...prev, minorData]);
+    };
+
+    // Manejar la adición de acompañantes adultos
+    const handleAddCompanion = (companionData) => {
+        setCompanions((prev) => [...prev, companionData]);
+    };
+
+    // Enviar todos los datos al backend
+    const handleSendToBackend = async () => {
+        if (!formData) {
+            setResponseMessage('Por favor, completa el formulario principal antes de continuar.');
+            return;
+        }
+
+        setIsLoading(true);
+        setResponseMessage('');
+
+        try {
+            // Crear la inscripción principal y obtener el group_id
+            const mainEnrollment = await createEnrollment(formData);
+            const groupId = mainEnrollment.group_id; // Suponemos que el backend retorna el group_id
+
+            // Crear inscripciones para menores
+            if (includeMinor && minors.length > 0) {
+                for (const minor of minors) {
+                    await createMinor({ ...minor, group_id: groupId });
+                }
+            }
+
+            // Crear inscripciones para acompañantes adultos
+            if (includeAdult && companions.length > 0) {
+                for (const companion of companions) {
+                    await createEnrollment({ ...companion, group_id: groupId });
+                }
+            }
+
+            setResponseMessage('Formulario enviado con éxito.');
+        } catch (error) {
+            console.error('Error al enviar los datos:', error.message);
+            setResponseMessage(`Error: ${error.message}`);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
-        <div className="flex flex-col items-center justify-center px-4">
-            <h1 className='text-orange text-center text-3xl font-bold'>
-                Solicitud de inscripción a “Iníciate en mundo de la IA”
+        <div className="flex font flex-col items-center justify-center px-4">
+            <h1 className="text-orange font-sans text-center text-3xl font-bold">
+                Solicitud de inscripción a "{courseTitle}"
             </h1>
             <div className="flex p-8 m-10 border border-orange flex-col gap-6 lg:flex-col lg:gap-4 px-4">
-                {/* Imagen y MainForm */}
                 <div className="flex flex-col-reverse lg:flex-row lg:justify-between items-center gap-6">
                     <div className="flex-1 lg:flex justify-center">
-                        <MainForm 
-                            setIncludeMinor={setIncludeMinor} 
-                            setIncludeAdult={setIncludeAdult} 
-                            onSubmit={handleFormSubmit} // Pasar la función de manejo al MainForm
+                        {/* Pasar el estado y las funciones como props */}
+                        <MainForm
+                            setIncludeMinor={setIncludeMinor}
+                            setIncludeAdult={setIncludeAdult}
+                            includeMinor={includeMinor}
+                            includeAdult={includeAdult}
+                            onSubmit={handleFormSubmit}
                         />
                     </div>
                     <div className="flex-1">
-                        <img 
-                            src={formImage} 
-                            alt="Formulario Imagen" 
+                        <img
+                            src={formImage}
+                            alt="Formulario Imagen"
                             className="w-[615px] h-[616px] lg:max-w-full object-contain"
                         />
                     </div>
                 </div>
 
-                {/* Botón "Siguiente" */}
+                {/* Botón para enviar */}
                 <button
-                    className="bg-orange text-white px-4 py-2 rounded-md font-semibold mt-4"
-                    onClick={() => console.log("Datos enviados:", formData)}
+                    className="bg-orange text-white px-4 py-2 rounded-md font-semibold mt-4 disabled:opacity-50"
+                    onClick={handleSendToBackend}
+                    disabled={isLoading}
                 >
-                    Siguiente
+                    {isLoading ? 'Enviando...' : 'Siguiente'}
                 </button>
 
-                {/* Formularios Secundarios */}
+                {/* Mensaje de respuesta */}
+                {responseMessage && (
+                    <p className="text-center text-red-500 mt-4">{responseMessage}</p>
+                )}
+
+                {/* Formularios adicionales */}
                 <div className="flex flex-col gap-6">
-                    {includeMinor && <MinorForm />}
-                    {includeAdult && <AdultCompanionForm />}
+                    {includeMinor && (
+                        <MinorForm
+                            onAddMinor={handleAddMinor}
+                        />
+                    )}
+                    {includeAdult && (
+                        <AdultCompanionForm
+                            onAddCompanion={handleAddCompanion}
+                        />
+                    )}
                 </div>
             </div>
         </div>

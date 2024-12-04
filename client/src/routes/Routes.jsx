@@ -13,7 +13,7 @@ export const router = createBrowserRouter([
     element: <Layout />,
     children: [
       {
-        path: '/',
+        path: '/inscription',
         element: <FormPage />,
       },
       {

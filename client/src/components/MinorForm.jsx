@@ -1,29 +1,76 @@
-import React from 'react';
-import { useForm } from 'react-hook-form';
+import React from "react";
+import PropTypes from 'prop-types';
+import { useForm, useFieldArray } from "react-hook-form";
 
-const MinorForm = () => {
-  const { register, handleSubmit } = useForm();
+const MinorForm = ({ setFormData }) => {
+  const { register, handleSubmit, control } = useForm();
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "minors",  // Nombre del array en los datos enviados
+  });
 
   const onSubmit = (data) => {
-    console.log('Formulario de menores:', data);
-    // Aquí puedes llamar al servicio para guardar los datos
+    console.log("Formulario de menores:", data);
+    setFormData(prevData => ({
+      ...prevData,
+      minors: data.minors // Agregar los menores al formData
+    }));
   };
 
   return (
-    <div className='p-4 m-2 border-2 border-orange flex justify-center text-dark bg-light h-[11rem] font-inter'>
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <h2 className='font-bold text-lg'>Datos de menores</h2>
-
-      <label>Nombre:</label>
-      <input className='border border-dark' {...register('name', { required: true })} />
-
-      <label>Edad:</label>
-      <input className='border border-dark' {...register('age', { required: true })} type="number" />
-
-      <button type="submit">Guardar Menor</button>
-    </form>
+    <div className="p-4 m-2 border border-orange flex flex-col gap-4 text-dark bg-light font-inter">
+      <h2 className="font-bold text-lg text-left">Datos de menores</h2>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        {fields.map((field, index) => (
+          <div key={field.id} className="flex flex-row items-center gap-6">
+            <div className="flex-1">
+              <label htmlFor={`minors[${index}].name`} className="block">
+                Nombre:
+              </label>
+              <input
+                id={`minors[${index}].name`}
+                {...register(`minors[${index}].name`, { required: true })}
+                className="border border-dark w-full px-2 py-1"
+              />
+            </div>
+            <div className="flex-1">
+              <label htmlFor={`minors[${index}].age`} className="block">
+                Edad:
+              </label>
+              <input
+                id={`minors[${index}].age`}
+                {...register(`minors[${index}].age`, { required: true })}
+                type="number"
+                className="border border-dark w-full px-2 py-1"
+              />
+            </div>
+            <button
+              type="button"
+              onClick={() => remove(index)}
+              className="bg-red-500 text-white px-3 py-1"
+            >
+              Eliminar
+            </button>
+          </div>
+        ))}
+        {fields.length < 3 && (
+          <button
+            type="button"
+            onClick={() => append({ name: "", age: "" })}
+            className="bg-orange text-white px-4 py-2 font-semibold"
+          >
+            Agregar Menor
+          </button>
+        )}
+        {/* Eliminar el botón de "Guardar" */}
+      </form>
     </div>
   );
+};
+
+// Validación de props con propTypes
+MinorForm.propTypes = {
+  setFormData: PropTypes.func.isRequired,
 };
 
 export default MinorForm;

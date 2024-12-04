@@ -1,42 +1,93 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 
-const AdultCompanionForm = () => {
-  const { register, handleSubmit } = useForm();
+const AdultCompanionForm = ({ groupId, idCourse, onAddCompanion }) => {
+  const { register, handleSubmit, reset } = useForm();
 
   const onSubmit = (data) => {
-    console.log('Formulario de acompañante adulto:', data);
-    // Aquí puedes llamar al servicio para guardar los datos
+    const companionData = {
+      fullname: data.fullname,
+      email: data.email,
+      gender: data.gender,
+      age: data.age,
+      is_first_activity: false,
+      id_course: idCourse,
+      group_id: groupId,
+      accepts_newsletter: data.accepts_newsletter || false,
+    };
+
+    onAddCompanion(companionData);
+    reset();
   };
 
   return (
-    <div className=' m-2 p-4 border-2 border-orange flex justify-center text-dark bg-light h-[11rem] font-inter'>
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <h2 className='font-bold text-dark text-lg'>Acompañante adicional (mayor de edad) </h2>
+    <div className="p-6 border border-orange bg-light shadow-md w-full max-w-screen">
+      <h2 className="font-semibold text-lg mb-4 text-orange">Acompañante Adicional</h2>
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        {/* Nombre Completo */}
+        <div>
+          <label className="block font-medium mb-1">Nombre Completo:</label>
+          <input
+            {...register('fullname', { required: true })}
+            className="w-full border border-dark px-3 py-2 rounded-md"
+            type="text"
+            placeholder="Nombre completo del acompañante"
+          />
+        </div>
 
-      <label className='font-semibold'>Nombre Completo:</label>
-      <input className='border border-dark'{...register('fullname', { required: true })} />
+        {/* Email */}
+        <div>
+          <label className="block font-medium mb-1">Email:</label>
+          <input
+            {...register('email', { required: true })}
+            className="w-full border border-dark px-3 py-2 rounded-md"
+            type="email"
+            placeholder="Correo electrónico"
+          />
+        </div>
 
-      <label>Email:</label>
-      <input className='border border-dark'{...register('email', { required: true })} type="email" />
+        {/* Género */}
+        <div>
+          <label className="block font-medium mb-1">Género:</label>
+          <select
+            {...register('gender', { required: true })}
+            className="w-full border border-dark px-3 py-2 rounded-md"
+          >
+            <option value="">Selecciona el género</option>
+            <option value="male">Masculino</option>
+            <option value="female">Femenino</option>
+            <option value="other">Otro</option>
+          </select>
+        </div>
 
-      <label>Género:</label>
-      <select  className='border border-dark'{...register('gender')}>
-        <option value="male">Masculino</option>
-        <option value="female">Femenino</option>
-        <option value="other">Otro</option>
-      </select>
+        {/* Edad */}
+        <div>
+          <label className="block font-medium mb-1">Edad:</label>
+          <input
+            {...register('age', { required: true, min: 14 })}
+            className="w-full border border-dark px-3 py-2 rounded-md"
+            type="number"
+            placeholder="Edad (mínimo 14 años)"
+          />
+        </div>
 
-      <label>Edad:</label>
-      <input className='border border-dark'{...register('age', { required: true })} type="number" />
+        
 
-      <label>¿Primera actividad?</label>
-      <input className='border border-dark'{...register('isFirstActivity')} type="checkbox" />
-
-      <button type="submit">Guardar Acompañante</button>
-    </form>
+        {/* Botón de Añadir acompañante */}
+        <button type="submit" className="bg-blue-500 text-white px-4 py-2 rounded-md">
+          Añadir Acompañante
+        </button>
+      </form>
     </div>
   );
+};
+
+// Validación de props con propTypes
+AdultCompanionForm.propTypes = {
+  groupId: PropTypes.number.isRequired,
+  idCourse: PropTypes.number.isRequired,
+  onAddCompanion: PropTypes.func.isRequired,
 };
 
 export default AdultCompanionForm;
