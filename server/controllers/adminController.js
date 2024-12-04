@@ -8,13 +8,12 @@ const createAdmin = async (req, res) => {
     try {
         const { username, password, role_id } = req.body
 
-        // Verificar que el rol existe
         const role = await Role.findByPk(role_id)
         if (!role) {
             return res.status(400).json({ message: 'Invalid role_id' })
         }
 
-        // Hash del password
+        // Hash the password
         const hashedPassword = await bcrypt.hash(password, 10)
 
         const admin = await Admin.create({
@@ -36,7 +35,7 @@ const createAdmin = async (req, res) => {
     }
 }
 
-// Geet all admins
+// Get all admins
 const getAdmins = async (req, res) => {
     try {
         const admins = await Admin.findAll({
