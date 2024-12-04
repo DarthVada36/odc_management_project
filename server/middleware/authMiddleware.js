@@ -23,18 +23,19 @@ import Admin from "../models/adminModel.js";
 
 export const authMiddleware = async (req, res, next) => {
   try {
-    if  (req.headers.authorization) {
-      handleHttpError(res, "NEED_SESSION", 401);
-      return;
+    if  (!req.headers.authorization) {
+      return handleHttpError(res, "NEED_SESSION", 401);
     }
     const token = req.headers.authorization.split(' ').pop();
     const dataToken = await tokenVerify(token);
+
     if (!dataToken.id){
-      handleHttpError(res, "ERROR_ID_TOKEN", 401);
+      return handleHttpError(res, "ERROR_ID_TOKEN", 401);
     }
 
     const user = await Admin.findByPk(dataToken.id);
     req.user = user;
+
     next();
   } catch (error) {
     handleHttpError(res, "NOT_SESSION", 401);
