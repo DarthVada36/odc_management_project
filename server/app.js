@@ -1,26 +1,32 @@
-import express from 'express'
-import cors from 'cors'
-import dotenv from 'dotenv'
-import { initializeDb } from './database/connectionDb.js'
-import { syncModels } from './models/indexModels.js'
+import express from 'express';
+import cors from 'cors';
+import dotenv from 'dotenv';
+import { initializeDb } from './database/connectionDb.js';
+import { syncModels } from './models/indexModels.js';
+
+import authRoutes from './routes/authRoutes.js'
 import enrollmentRoutes from './routes/enrollmentRoutes.js'
 import courseRoutes from './routes/courseRoutes.js'
 import minorRoutes from './routes/minorRoutes.js'
 import roleRoutes from './routes/roleRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 
-dotenv.config()
+dotenv.config();
 
-const app = express()
+const app = express();
 
 // Middlewares
-app.use(express.json())
-app.use(express.urlencoded({ extended: true }))
-app.use(cors())
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cors());
 
-const PORT = process.env.PORT || 3000
+
+// Puerto
+const PORT = process.env.PORT || 3000;
 
 // Rutas
+
+app.use('/api/auth', authRoutes);
 app.use('/api/enrollments', enrollmentRoutes)
 app.use('/api/courses', courseRoutes)
 app.use('/api/minors', minorRoutes)
@@ -43,6 +49,6 @@ const startServer = async () => {
     }
 }
 
-startServer()
+startServer();
 
-export default app
+export default app;
