@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import SubmitButton from './SubmitButton'; 
 
 const CreateAdminForm = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -28,13 +28,13 @@ const CreateAdminForm = () => {
     setPasswordError(''); 
 
     try {
-      const response = await fetch('http://localhost:3000/api/new-admin', {
+      const response = await fetch('http://localhost:3000/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          email,
+          username,
           password,
           roleId: 2  // 2 será el ID para el rol ADMIN normal
         }),
@@ -67,16 +67,18 @@ const CreateAdminForm = () => {
         <h2 className="text-2xl font-bold text-orange-500 mb-6 text-center">Crear nuevo Administrador</h2>
 
         <form onSubmit={handleSubmit} className="space-y-6">
+
+          {/* Usuario */}
           <div className="flex flex-col">
-            <label htmlFor="email" className="block text-sm font-semibold text-gray-600">Email</label>
+            <label htmlFor="username" className="block text-sm font-semibold text-gray-600">Usuario</label>
             <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              type="text"
+              id="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
               required
               className="w-full p-3 mt-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-orange-500"
-              placeholder="Correo electrónico"
+              placeholder="Nombre de usuario"
             />
           </div>
 

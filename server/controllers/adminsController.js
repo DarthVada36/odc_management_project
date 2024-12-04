@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import Admin from '../models/adminModel.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -169,3 +170,5 @@ export const deleteAdmin = async (req, res) => {
     res.status(500).json({ error: 'Error al eliminar el administrador' });
   }
 };
+=======
+>>>>>>> a38977c12d07adee7d9dca78224433f174ff4f79
