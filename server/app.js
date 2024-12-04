@@ -5,6 +5,9 @@ import { initializeDb } from './database/connectionDb.js'
 import { syncModels } from './models/indexModels.js'
 import enrollmentRoutes from './routes/enrollmentRoutes.js'
 import courseRoutes from './routes/courseRoutes.js'
+import minorRoutes from './routes/minorRoutes.js'
+import roleRoutes from './routes/roleRoutes.js'
+import adminRoutes from './routes/adminRoutes.js'
 
 dotenv.config()
 
@@ -15,32 +18,30 @@ app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors())
 
-// Puerto
 const PORT = process.env.PORT || 3000
 
 // Rutas
-app.use('/api/enrollments', enrollmentRoutes);
-app.use('/api/courses', courseRoutes);
+app.use('/api/enrollments', enrollmentRoutes)
+app.use('/api/courses', courseRoutes)
+app.use('/api/minors', minorRoutes)
+app.use('/api/roles', roleRoutes)
+app.use('/api/admins', adminRoutes)
 
-
-
-// Inicializar servidor y base de datos
 const startServer = async () => {
-  try {
-    // Inicializar la conexión a la base de datos
-    await initializeDb();
+    try {
+        await initializeDb()
 
-    await syncModels();
+        await syncModels()
 
-    // Iniciar el servidor solo si la base de datos está conectada
-    app.listen(PORT, () => {
-      console.log(`Servidor corriendo en el puerto ${PORT}🚀`);
-    });
-  } catch (error) {
-    console.error(` Error al iniciar el servidor 😱`, error.message);
-    process.exit(1); // Detener el proceso si algo falla
-  }
-};
+        // Iniciar el servidor solo si la base de datos está conectada
+        app.listen(PORT, () => {
+            console.log(`Servidor corriendo en el puerto ${PORT}🚀`)
+        })
+    } catch (error) {
+        console.error(` Error al iniciar el servidor 😱`, error.message)
+        process.exit(1)
+    }
+}
 
 startServer()
 
