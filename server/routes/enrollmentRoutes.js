@@ -7,13 +7,13 @@ import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const enrollmentRoutes = express.Router();
 
-enrollmentRoutes.get('/', authMiddleware, checkRol(['superadmin']), getAllEnrollments);
-enrollmentRoutes.get('/:id', getEnrollmentById);
-enrollmentRoutes.get('/:id/with-minors', getEnrollmentByIdWithMinors);
+enrollmentRoutes.get('/', authMiddleware, checkRol(['superadmin', 'admin', 'facilitator']), getAllEnrollments);
+enrollmentRoutes.get('/:id', authMiddleware, checkRol(['superadmin', 'admin', 'facilitator']), getEnrollmentById);
+enrollmentRoutes.get('/:id/with-minors', authMiddleware, checkRol(['superadmin', 'admin', 'facilitator']), getEnrollmentByIdWithMinors);
 enrollmentRoutes.post('/',
     // validateCreateEnrollment,
     createEnrollment);
-enrollmentRoutes.put('/:id', updateEnrollmentById);
-enrollmentRoutes.delete('/:id', deleteEnrollmentById);
+enrollmentRoutes.put('/:id', authMiddleware, checkRol(['superadmin', 'admin']), updateEnrollmentById);
+enrollmentRoutes.delete('/:id', authMiddleware, checkRol(['superadmin', 'admin', 'facilitator']), deleteEnrollmentById);
 
 export default enrollmentRoutes;
