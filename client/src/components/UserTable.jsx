@@ -22,12 +22,10 @@ const UserTable = ({users}) => {
   const handleExportExcel = () => {
     exportToExcel('Usuarios', headers, data, 'usuarios.xlsx');
   };
-      
-      
-    return (
-        <div className="bg-white shadow-md p-4 sm:p-6 md:p-8">
 
-          {/* Botones de exportación */}
+  return (
+    <div className="bg-white shadow-md p-4 sm:p-6 md:p-8">
+      {/* Botones de exportación */}
       <div className="flex justify-end space-x-4 mb-4">
         <button
           onClick={handleExportPDF}
