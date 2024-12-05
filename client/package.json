@@ -4,6 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "start": "node app.js",
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
@@ -11,22 +12,33 @@
   },
   "dependencies": {
     "axios": "^1.7.7",
-    "bootstrap": "^5.3.3",
+    "canvg": "^4.0.2",
+    "framer-motion": "^11.12.0",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4",
+    "lucide": "^0.462.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-hook-form": "^7.53.2",
-    "react-router-dom": "^6.28.0"
+    "react-icons": "^5.3.0",
+    "react-router-dom": "^6.28.0",
+    "react-sticky": "^6.0.3",
+    "sheetjs": "^2.0.0",
+    "xlsx": "^0.18.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
-    "@types/react": "^18.3.12",
     "@types/react-dom": "^18.3.1",
+    "@vitejs/plugin-react": "^4.3.4",
     "@vitejs/plugin-react-swc": "^3.5.0",
+    "autoprefixer": "^10.4.20",
     "eslint": "^9.13.0",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.14",
     "globals": "^15.11.0",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
     "vite": "^5.4.10"
   }
 }
