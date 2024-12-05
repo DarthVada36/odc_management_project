@@ -1,5 +1,4 @@
 import React from 'react';
-
 const Sidebar = () => {
     return (
         <div className='bg-black text-white p-4 border-orange w-full md:w-1/4 min-h-screen flex flex-col'>

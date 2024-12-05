@@ -1,6 +1,6 @@
 import React from 'react';
 import AdminPanel from '../components/AdminPanel.jsx';
-import Sidebar from '../components/Sidebar';
+import Sidebar from '../components/Sidebar.jsx';
 
 const DashboardPage = () => {
   return (
@@ -9,7 +9,7 @@ const DashboardPage = () => {
       <Sidebar className='w-1/4 bg-gray-200' />
 
       {/* Contenido principal */}
-      <div className='flex-1 flex flex-col bg-gray-100 p-4'>
+      <div className='flex-1 flex flex-col bg-gray-100'>
         {/* Panel de Administración */}
         <AdminPanel />
       </div>

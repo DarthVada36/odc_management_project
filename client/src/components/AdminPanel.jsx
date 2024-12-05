@@ -48,16 +48,16 @@ const AdminPanel = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white p-3">
+    <div className="flex flex-col min-h-screen bg-white p-4">
       {/* Encabezado */}
-      <div className="mb-6 flex flex-col md:flex-row md:justify-between md:items-center">
+      <div className="mb-2 flex flex-col md:flex-row md:justify-between md:items-center">
         <h1 className="text-orange text-2xl font-bold p-1">Gestión de Inscripciones</h1>
       </div>
       {/* Línea naranja   */}
       <div className="border-t-2 border-orange mb-4"></div>
       {/* Total Inscriptions and Search Bar */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 ">
-        <p className="text-black text-left mb-0 md:mb-0 p-8">
+        <p className="text-black text-center mb-0 md:mb-0 p-8">
           Total de inscripciones: {filteredEnrollments.length}
         </p>
         {/* Añadir barra de búsqueda */}
