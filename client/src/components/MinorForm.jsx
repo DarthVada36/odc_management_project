@@ -1,21 +1,14 @@
 import React from "react";
-import PropTypes from 'prop-types';
 import { useForm, useFieldArray } from "react-hook-form";
 
-const MinorForm = ({ setFormData }) => {
+const MinorForm = ({ onAddMinor }) => {
   const { register, handleSubmit, control } = useForm();
-  const { fields, append, remove } = useFieldArray({
-    control,
-    name: "minors",  // Nombre del array en los datos enviados
-  });
+  const { fields, append, remove } = useFieldArray({ control, name: 'minors' });
 
   const onSubmit = (data) => {
-    console.log("Formulario de menores:", data);
-    setFormData((prevData) => ({
-      ...prevData,
-      minors: data.minors,
-    }));
+    onAddMinor(data.minors);
   };
+
 
   return (
     <div className="p-4 m-2 border border-orange flex flex-col gap-4 text-dark bg-light font-inter">
@@ -66,11 +59,6 @@ const MinorForm = ({ setFormData }) => {
       </form>
     </div>
   );
-};
-
-// Validación de props con propTypes
-MinorForm.propTypes = {
-  setFormData: PropTypes.func.isRequired,
 };
 
 export default MinorForm;

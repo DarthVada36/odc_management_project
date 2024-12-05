@@ -1,23 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 
-const AdultCompanionForm = ({ groupId, idCourse, onAddCompanion }) => {
+const AdultCompanionForm = ({ onAddCompanion }) => {
   const { register, handleSubmit, reset } = useForm();
-
+ 
   const onSubmit = (data) => {
-    const companionData = {
-      fullname: data.fullname,
-      email: data.email,
-      gender: data.gender,
-      age: data.age,
-      is_first_activity: false,
-      id_course: idCourse,
-      group_id: groupId,
-      accepts_newsletter: data.accepts_newsletter || false,
-    };
-
-    onAddCompanion(companionData);
+    onAddCompanion(data);
     reset();
   };
 
@@ -83,11 +71,5 @@ const AdultCompanionForm = ({ groupId, idCourse, onAddCompanion }) => {
   );
 };
 
-// Validación de props con propTypes
-AdultCompanionForm.propTypes = {
-  groupId: PropTypes.number.isRequired,
-  idCourse: PropTypes.number.isRequired,
-  onAddCompanion: PropTypes.func.isRequired,
-};
 
 export default AdultCompanionForm;

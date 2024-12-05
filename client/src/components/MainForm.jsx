@@ -1,19 +1,13 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { useForm } from 'react-hook-form';
 
 const MainForm = ({ setIncludeMinor, setIncludeAdult, includeMinor, includeAdult, formData, setFormData }) => {
-    const { register, formState: { errors } } = useForm({
-        defaultValues: formData || {},
-    });
+    const { register, formState: { errors } } = useForm({ defaultValues: formData });
 
     const handleChange = (e) => {
         const { name, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [name]: value,
-        }));
-    };
+        setFormData({ ...formData, [name]: value });
+      };
 
     return (
         <div className="p-6 border border-orange bg-light shadow-md w-full max-w-screen">
@@ -124,16 +118,6 @@ const MainForm = ({ setIncludeMinor, setIncludeAdult, includeMinor, includeAdult
             </form>
         </div>
     );
-};
-
-// Validación de props con propTypes
-MainForm.propTypes = {
-    setIncludeMinor: PropTypes.func.isRequired,
-    setIncludeAdult: PropTypes.func.isRequired,
-    includeMinor: PropTypes.bool.isRequired,
-    includeAdult: PropTypes.bool.isRequired,
-    formData: PropTypes.object,
-    setFormData: PropTypes.func.isRequired,
 };
 
 export default MainForm;

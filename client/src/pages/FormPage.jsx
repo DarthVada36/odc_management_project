@@ -7,25 +7,24 @@ import { createMinor } from "../services/minorServices";
 import { getCourseById } from "../services/coursesServices";
 import formImage from "../assets/img/imageform.svg";
 
-const RegisterPage = () => {
+const FormPage = () => {
   const [includeMinor, setIncludeMinor] = useState(false);
   const [includeAdult, setIncludeAdult] = useState(false);
   const [formData, setFormData] = useState({});
   const [minors, setMinors] = useState([]);
   const [companions, setCompanions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [responseMessage, setResponseMessage] = useState("");
-  const [courseTitle, setCourseTitle] = useState("");
+  const [responseMessage, setResponseMessage] = useState('');
+  const [courseTitle, setCourseTitle] = useState('');
 
   // Obtener el título del curso al cargar la página
   useEffect(() => {
     const fetchCourseTitle = async () => {
       try {
-        const course = await getCourseById(101); // Cambia el ID según sea necesario
-        setCourseTitle(course.title || "Curso no encontrado");
+        const course = await getCourseById(101);
+        setCourseTitle(course.title || 'Curso no encontrado');
       } catch (error) {
-        console.error("Error al cargar el curso:", error.message);
-        setResponseMessage("Error al cargar la información del curso.");
+        setResponseMessage('Error al cargar la información del curso.');
       }
     };
     fetchCourseTitle();
@@ -102,10 +101,11 @@ const RegisterPage = () => {
       setMinors([]);
       setCompanions([]);
     } catch (error) {
-      console.error("Error al enviar los datos:", error.message);
-      setResponseMessage(
-        `Error al enviar los datos: ${error.response?.data?.message || error.message}`
-      );
+      console.error("Error details:", error);
+      const errorMessage = error.response?.data?.message 
+        || error.message 
+        || "Un error desconocido ha ocurrido";
+      setResponseMessage(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -118,16 +118,19 @@ const RegisterPage = () => {
       </h1>
       <div className="flex p-8 m-10 border border-orange flex-col gap-6 lg:flex-col lg:gap-4 px-4">
         <div className="flex flex-col-reverse lg:flex-row lg:justify-between items-center gap-6">
-          <div className="flex-1 lg:flex justify-center">
-            <MainForm
-              setIncludeMinor={setIncludeMinor}
-              setIncludeAdult={setIncludeAdult}
-              includeMinor={includeMinor}
-              includeAdult={includeAdult}
-              formData={formData}
-              setFormData={setFormData}
-            />
-          </div>
+        <div>
+        <MainForm
+       setIncludeMinor={setIncludeMinor}
+       setIncludeAdult={setIncludeAdult}
+       includeMinor={includeMinor}
+       includeAdult={includeAdult}
+       formData={formData}
+       setFormData={setFormData}
+     />
+
+     {includeMinor && <MinorForm onAddMinor={setMinors} />}
+     {includeAdult && <AdultCompanionForm onAddCompanion={setCompanions} />}
+</div>
           <div className="flex-1">
             <img
               src={formImage}
@@ -139,23 +142,16 @@ const RegisterPage = () => {
 
         <button
           className="bg-orange text-white px-4 py-2 rounded-md font-semibold mt-4 disabled:opacity-50"
-          onClick={handleSendToBackend}
-          disabled={isLoading}
-        >
+          onClick={handleSendToBackend} disabled={isLoading}>
           {isLoading ? "Enviando..." : "Siguiente"}
         </button>
 
         {responseMessage && (
           <p className="text-center text-red-500 mt-4">{responseMessage}</p>
         )}
-
-        <div className="flex flex-col gap-6">
-          {includeMinor && <MinorForm onAddMinor={handleAddMinor} />}
-          {includeAdult && <AdultCompanionForm onAddCompanion={handleAddCompanion} />}
-        </div>
       </div>
     </div>
   );
 };
 
-export default RegisterPage;
+export default FormPage;
