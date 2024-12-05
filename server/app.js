@@ -18,13 +18,19 @@ const app = express();
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors());
+app.use(cors({
+  origin: 'http://localhost:5173',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
 
 
 // Puerto
 const PORT = process.env.PORT || 3000;
 
 // Rutas
+
 
 app.use('/api/auth', authRoutes);
 app.use('/api/enrollments', enrollmentRoutes)
@@ -48,6 +54,11 @@ const startServer = async () => {
         process.exit(1)
     }
 }
+
+process.on('unhandledRejection', (err) => {
+  console.error('Error no manejado:', err);
+  process.exit(1);
+});
 
 startServer();
 
