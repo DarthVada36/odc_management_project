@@ -14,13 +14,13 @@ const AccessAdminPage = () => {
      
                 <AccessForm />
       </div>
-      <div className="mt-8">
+      {/* <div className="mt-8">
         <EventCard
           imageUrl="https://1000marcas.net/wp-content/uploads/2019/12/Orange-S.A.-logotipo.jpg"
           title="Título"
           description="Ejemplo de texto secundario."
         />
-      </div>
+      </div> */}
     </div>
     
   );
