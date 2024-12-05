@@ -39,7 +39,7 @@ const Enrollment = connectionDb.define('Enrollment', {
             model: 'admins',
             key: 'id',
         },
-        allowNull: false,
+        allowNull: true,
     },
     id_course: {
         type: DataTypes.INTEGER,
@@ -47,7 +47,6 @@ const Enrollment = connectionDb.define('Enrollment', {
             model: 'courses',
             key: 'id',
         },
-        allowNull: false,
     },
     group_id: {
         type: DataTypes.INTEGER,

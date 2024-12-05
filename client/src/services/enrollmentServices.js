@@ -38,12 +38,18 @@ export const deleteEnrollmentById = async (id) => {
 //Create enrollment -- POST
 export const createEnrollment = async (enrollmentData) => {
     try {
+        console.log(enrollmentData.data)
         const res = await axios.post(API_URL, enrollmentData);
+        
         return res.data;
+        
     } catch (error) {
         console.error("No se pudo crear la inscripción", error.message);
         throw error;
+        
     }
+    
+    
 };
 
 //Update enrollment by ID -- PUT
