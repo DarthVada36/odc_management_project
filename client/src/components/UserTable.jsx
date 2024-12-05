@@ -8,7 +8,7 @@ const UserTable = ({users}) => {
   const data = users.map((user) => [user.name, user.email, user.role]); // Filas de datos
   //Función paginación
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;  // Número de elementos por página
+  const itemsPerPage = 5;  // Número de elementos por página
   const totalPages = Math.ceil(users.length / itemsPerPage);
 
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -24,7 +24,7 @@ const UserTable = ({users}) => {
   };
 
   return (
-    <div className="bg-white shadow-md p-4 sm:p-6 md:p-8">
+    <div className="bg-white shadow-md p-2 sm:p-6 md:p-8">
       {/* Botones de exportación */}
       <div className="flex justify-end space-x-4 mb-4">
         <button
@@ -43,7 +43,7 @@ const UserTable = ({users}) => {
       
            {/* Botón para crear un nuevo administrador */}
             <button className="bg-orange text-black button-auto w-full px-4 py-2 rounded mb-4 sm:mb-6 md:mb-8">
-                Crear nuevo administrador
+                Crear nueva inscripción
             </button>
             {/* Contenedor de la tabla */}
             <div className="overflow-x-auto">
@@ -52,7 +52,7 @@ const UserTable = ({users}) => {
                     <tr>
                         <th className="text-black p-2 sm:p-3 md:p-4">Nombre</th>
                         <th className="text-black p-2 sm:p-3 md:p-4">Email</th>
-                        <th className="text-black p-2 sm:p-3 md:p-4">Rol</th>
+                        
                         <th className="text-black p-2 sm:p-3 md:p-4">Acciones</th>
                         <th className="text-black p-2 sm:p-3 md:p-4">Contacto</th>
                     </tr>                                           
@@ -70,10 +70,6 @@ const UserTable = ({users}) => {
               <td className="p-2 sm:p-3 md:p-4">
               <span className="block text-center">{user.email}</span>
                 </td>
-              {/* Rol */}
-              <td className="px-4 py-2  text-center sm:p-3 md:p-4">
-              <span className="block text-center">{user.role}</span>
-              </td>
               {/* Acciones */}
               <td className="p-2 sm:p-3 md:p-4">
               <div className="flex flex-col sm:flex-row sm:justify-center sm:space-x-2 items-center space-y-2 sm:space-y-0">

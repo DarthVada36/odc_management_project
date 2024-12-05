@@ -14,8 +14,8 @@ const AdminPanel = () => {
             {id: 6, name: 'Jhon', email: 'jkhon@example.com', role: 'Admin'},
             {id: 7, name: 'Alice', email: 'alice@example.com' , role: 'Admin'},
             {id: 8, name: 'Jhon', email: 'jkhon@example.com' , role: 'Admin'},
-            {id: 9, name: 'Alice', email: 'alice@example.com' , role: 'Admin'},
-            {id: 10, name: 'Alice', email: 'alice@example.com' , role: 'Admin'},
+            // {id: 9, name: 'Alice', email: 'alice@example.com' , role: 'Admin'},
+            // {id: 10, name: 'Alice', email: 'alice@example.com' , role: 'Admin'},
   ]);
     
    // Estado para los usuarios filtrados
@@ -43,7 +43,7 @@ const AdminPanel = () => {
         <div className="border-t-2 border-orange mb-4"></div>
          {/* Total Inscriptions and Search Bar */}
          <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-4 ">
-         <p className="text-black text-left mb-4 md:mb-0 p-8">
+         <p className="text-black text-left mb-0 md:mb-0 p-8">
            Total de inscripciones: {filteredUsers.length}
          </p>
          {/* Añadir barra de búsqueda */}
@@ -52,7 +52,9 @@ const AdminPanel = () => {
          </div>
        </div>
        {/* Tabla */}
+       <div className="max-h-1/2 mt-2 overflow-y-auto max-w-full">
        <UserTable users={filteredUsers} />
+       </div>
      </div>
    );
  };
