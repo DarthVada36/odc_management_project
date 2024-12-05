@@ -53,6 +53,9 @@ const UserTable = () => {
   ]);
 
   const handleExportPDF = () => {
+    const headers = ['Nombre', 'Email', 'Rol'];
+    const data = users.map((user) => [user.name, user.email, user.role]);
+
     exportToPDF('Listado de Usuarios', headers, data, 'usuarios.pdf');
   };
 
@@ -73,13 +76,13 @@ const UserTable = () => {
       <div className="flex justify-end space-x-4 mb-4">
         <button
           onClick={handleExportPDF}
-          className="bg-orange text-black px-4 py-2 rounded border border-black"
+          className='bg-orange text-black px-4 py-2 rounded border border-black'
         >
           Descargar PDF
         </button>
         <button
           onClick={handleExportExcel}
-          className="bg-orange text-black px-4 py-2 rounded border border-black"
+          className='bg-orange text-black px-4 py-2 rounded border border-black'
         >
           Descargar Excel
         </button>
