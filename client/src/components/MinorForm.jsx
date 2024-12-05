@@ -1,63 +1,57 @@
-import React from "react";
-import { useForm, useFieldArray } from "react-hook-form";
+import React, { useState } from 'react';
 
 const MinorForm = ({ onAddMinor }) => {
-  const { register, handleSubmit, control } = useForm();
-  const { fields, append, remove } = useFieldArray({ control, name: 'minors' });
+    const [minor, setMinor] = useState({ name: '', age: ''});
+    const [error, setError] = useState('');
 
-  const onSubmit = (data) => {
-    onAddMinor(data.minors);
-  };
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setMinor((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const validate = () => {
+        if (!minor.name || !minor.age ) {
+            setError('Todos los campos son obligatorios.');
+            return false;
+        }
+        setError('');
+        return true;
+    };
+
+    const handleAdd = () => {
+        if (validate()) {
+            onAddMinor(minor);
+            setMinor({ name: '', age: '', relation: '' });
+        }
+    };
 
 
-  return (
-    <div className="p-4 m-2 border border-orange flex flex-col gap-4 text-dark bg-light font-inter">
-      <h2 className="font-bold text-lg text-left">Datos de menores</h2>
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-        {fields.map((field, index) => (
-          <div key={field.id} className="flex flex-row items-center gap-6">
-            <div className="flex-1">
-              <label htmlFor={`minors[${index}].name`} className="block">
-                Nombre:
-              </label>
-              <input
-                id={`minors[${index}].name`}
-                {...register(`minors[${index}].name`, { required: true })}
-                className="border border-dark w-full px-2 py-1"
-              />
-            </div>
-            <div className="flex-1">
-              <label htmlFor={`minors[${index}].age`} className="block">
-                Edad:
-              </label>
-              <input
-                id={`minors[${index}].age`}
-                {...register(`minors[${index}].age`, { required: true })}
-                type="number"
-                className="border border-dark w-full px-2 py-1"
-              />
-            </div>
-            <button
-              type="button"
-              onClick={() => remove(index)}
-              className="bg-red-500 text-white px-3 py-1"
-            >
-              Eliminar
-            </button>
-          </div>
-        ))}
-        {fields.length < 3 && (
-          <button
-            type="button"
-            onClick={() => append({ name: "", age: "" })}
-            className="bg-orange text-white px-4 py-2 font-semibold"
-          >
-            Agregar Menor
+    return (
+      <div className="flex flex-col gap-2">
+          <input
+              type="text"
+              name="name"
+              placeholder="Nombre del menor"
+              value={minor.name}
+              onChange={handleChange}
+              required
+              className="border p-2 rounded-md"
+          />
+          <input
+              type="number"
+              name="age"
+              placeholder="Edad"
+              value={minor.age}
+              onChange={handleChange}
+              required
+              className="border p-2 rounded-md"
+          />
+        
+          {error && <p className="text-red-500">{error}</p>}
+          <button onClick={handleAdd} className="bg-green-500 text-white px-4 py-2 rounded-md">
+              Agregar menor
           </button>
-        )}
-        {/* Eliminar el botón de "Guardar" */}
-      </form>
-    </div>
+      </div>
   );
 };
 

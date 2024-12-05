@@ -15,15 +15,41 @@ export const getAllCourses = async () => {
 
 //Get course by ID -- GET
 
+
+// Función mock para obtener cursos
 export const getCourseById = async (id) => {
-    try {
-        const res = await axios.get(`${API_URL}/${id}`);
-        return res.data;
-    } catch (error) {
-        console.error("No se pudo obtener el curso indicado", error.message);
-        throw error;
+    const mockCourses = [
+      {
+        id: 101,
+        external_id: "EXT-001",
+        title: "Curso de React",
+        description: "Aprende los fundamentos de React.",
+        date: "2024-01-15",
+        schedule: "10:00 - 14:00",
+        link: "https://example.com/course/101",
+        tickets: 20,
+        created_at: "2023-12-01",
+        updated_at: "2023-12-05",
+      },
+      // Agrega más cursos según sea necesario
+    ];
+  
+    const course = mockCourses.find((course) => course.id === id);
+    if (!course) {
+      throw new Error("Curso no encontrado.");
     }
-};
+    return course;
+  };
+
+// export const getCourseById = async (id) => {
+//     try {
+//         const res = await axios.get(`${API_URL}/${id}`);
+//         return res.data;
+//     } catch (error) {
+//         console.error("No se pudo obtener el curso indicado", error.message);
+//         throw error;
+//     }
+// };
 
 //Delete course by ID -- DELETE
 

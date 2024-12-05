@@ -14,66 +14,70 @@ const FormPage = () => {
   const [minors, setMinors] = useState([]);
   const [companions, setCompanions] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [responseMessage, setResponseMessage] = useState('');
-  const [courseTitle, setCourseTitle] = useState('');
+  const [responseMessage, setResponseMessage] = useState(null);
+  const [courseTitle, setCourseTitle] = useState("");
 
   // Obtener el título del curso al cargar la página
   useEffect(() => {
     const fetchCourseTitle = async () => {
       try {
-        const course = await getCourseById(101);
-        setCourseTitle(course.title || 'Curso no encontrado');
+        const course = await getCourseById(101); // Cambiar ID según tu lógica
+        setCourseTitle(course.title || "Curso no encontrado");
       } catch (error) {
-        setResponseMessage('Error al cargar la información del curso.');
+        setResponseMessage({ type: "error", text: "Error al cargar el curso." });
       }
     };
     fetchCourseTitle();
   }, []);
 
-  // Manejo de formulario principal
-  const handleFormSubmit = (data) => {
-    setFormData(data);
-  };
-
-  // Añadir menor
-  const handleAddMinor = (minorData) => {
-    setMinors((prev) => [...prev, minorData]);
-  };
-
-  // Añadir acompañante adulto
-  const handleAddCompanion = (companionData) => {
-    setCompanions((prev) => [...prev, companionData]);
-  };
-
-  // Enviar datos al backend
-  const handleSendToBackend = async () => {
-    // Validaciones previas
+  // Validaciones generales
+  const validateFormData = () => {
     const requiredFields = ["fullname", "email", "age", "gender"];
     for (const field of requiredFields) {
       if (!formData[field]) {
-        setResponseMessage(
-          `El campo "${field}" es obligatorio y no puede estar vacío.`
-        );
-        return;
+        setResponseMessage({
+          type: "error",
+          text: `El campo "${field}" es obligatorio.`,
+        });
+        return false;
       }
     }
 
     if (includeMinor && minors.length === 0) {
-      setResponseMessage(
-        "Por favor, agrega al menos un menor si seleccionaste la opción de acompañante menor."
-      );
-      return;
+      setResponseMessage({
+        type: "error",
+        text: "Por favor, agrega al menos un menor si seleccionaste la opción.",
+      });
+      return false;
     }
 
     if (includeAdult && companions.length === 0) {
-      setResponseMessage(
-        "Por favor, agrega al menos un acompañante adulto si seleccionaste la opción de acompañante adulto."
-      );
-      return;
+      setResponseMessage({
+        type: "error",
+        text: "Por favor, agrega al menos un acompañante adulto.",
+      });
+      return false;
     }
 
+    return true;
+  };
+
+  // Añadir menores
+  const handleAddMinor = (minorData) => {
+    setMinors((prevMinors) => [...prevMinors, minorData]);
+  };
+
+  // Añadir acompañantes adultos
+  const handleAddCompanion = (companionData) => {
+    setCompanions((prevCompanions) => [...prevCompanions, companionData]);
+  };
+
+  // Enviar datos al backend
+  const handleSendToBackend = async () => {
+    if (!validateFormData()) return;
+
     setIsLoading(true);
-    setResponseMessage("");
+    setResponseMessage(null);
 
     try {
       // Crear inscripción principal
@@ -81,31 +85,35 @@ const FormPage = () => {
       const groupId = mainEnrollment?.group_id;
 
       if (!groupId) {
-        throw new Error("No se pudo obtener el group_id desde el servidor.");
+        throw new Error("No se pudo obtener el group_id del servidor.");
       }
 
-      // Crear inscripciones para menores y acompañantes en paralelo
-      const minorRequests = includeMinor
-        ? minors.map((minor) => createMinor({ ...minor, group_id: groupId }))
-        : [];
-      const companionRequests = includeAdult
-        ? companions.map((companion) =>
-            createEnrollment({ ...companion, group_id: groupId })
-          )
-        : [];
+      // Crear inscripciones para menores y acompañantes
+      const requests = [
+        ...minors.map((minor) => createMinor({ ...minor, group_id: groupId })),
+        ...companions.map((companion) =>
+          createEnrollment({ ...companion, group_id: groupId })
+        ),
+      ];
 
-      await Promise.all([...minorRequests, ...companionRequests]);
+      await Promise.all(requests);
 
-      setResponseMessage("Formulario enviado con éxito.");
+      setResponseMessage({
+        type: "success",
+        text: "Inscripción realizada con éxito.",
+      });
+
+      // Reiniciar los formularios
       setFormData({});
       setMinors([]);
       setCompanions([]);
     } catch (error) {
       console.error("Error details:", error);
-      const errorMessage = error.response?.data?.message 
-        || error.message 
-        || "Un error desconocido ha ocurrido";
-      setResponseMessage(errorMessage);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Ha ocurrido un error inesperado.";
+      setResponseMessage({ type: "error", text: errorMessage });
     } finally {
       setIsLoading(false);
     }
@@ -118,19 +126,22 @@ const FormPage = () => {
       </h1>
       <div className="flex p-8 m-10 border border-orange flex-col gap-6 lg:flex-col lg:gap-4 px-4">
         <div className="flex flex-col-reverse lg:flex-row lg:justify-between items-center gap-6">
-        <div>
-        <MainForm
-       setIncludeMinor={setIncludeMinor}
-       setIncludeAdult={setIncludeAdult}
-       includeMinor={includeMinor}
-       includeAdult={includeAdult}
-       formData={formData}
-       setFormData={setFormData}
-     />
+          <div>
+            <MainForm
+              courseId={101}
+              setIncludeMinor={setIncludeMinor}
+              setIncludeAdult={setIncludeAdult}
+              includeMinor={includeMinor}
+              includeAdult={includeAdult}
+              formData={formData}
+              setFormData={setFormData}
+            />
 
-     {includeMinor && <MinorForm onAddMinor={setMinors} />}
-     {includeAdult && <AdultCompanionForm onAddCompanion={setCompanions} />}
-</div>
+            {includeMinor && <MinorForm onAddMinor={handleAddMinor} />}
+            {includeAdult && (
+              <AdultCompanionForm onAddCompanion={handleAddCompanion} />
+            )}
+          </div>
           <div className="flex-1">
             <img
               src={formImage}
@@ -142,12 +153,20 @@ const FormPage = () => {
 
         <button
           className="bg-orange text-white px-4 py-2 rounded-md font-semibold mt-4 disabled:opacity-50"
-          onClick={handleSendToBackend} disabled={isLoading}>
+          onClick={handleSendToBackend}
+          disabled={isLoading}
+        >
           {isLoading ? "Enviando..." : "Siguiente"}
         </button>
 
         {responseMessage && (
-          <p className="text-center text-red-500 mt-4">{responseMessage}</p>
+          <p
+            className={`text-center mt-4 ${
+              responseMessage.type === "error" ? "text-red-500" : "text-green-500"
+            }`}
+          >
+            {responseMessage.text}
+          </p>
         )}
       </div>
     </div>
