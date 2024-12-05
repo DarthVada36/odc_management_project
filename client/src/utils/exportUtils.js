@@ -1,53 +1,56 @@
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
+import { svgToPngBase64 } from './svgUtils'; // Importar la función de conversión
+import logoSvg from '@/assets/orange-logo.svg?raw';
 
-// Función para exportar a PDF con encabezado
-export const exportToPDF = (
-  title,
-  headers,
-  data,
-  fileName = 'export.pdf'
-) => {
-  const doc = new jsPDF();
-  const logo = 'data:image/png;base64,...'; // Sustituye con tu logo en formato Base64
+export const exportToPDF = async (title, headers, data, fileName = 'export.pdf') => {
+  try {
+    const doc = new jsPDF();
 
-  // Configuración de colores
-  const primaryColor = [255, 102, 0]; // Naranja principal
-  const textColor = [0, 0, 0]; // Negro
+    // Convertir el SVG a una imagen PNG Base64
+    const logoBase64 = await svgToPngBase64(logoSvg);
 
-  // Agregar el logo
-  doc.addImage(logo, 'PNG', 10, 10, 30, 15); // Posición (x, y) y tamaño (ancho, alto)
+    // Agregar el logo al PDF
+    doc.addImage(logoBase64, 'PNG', 10, 10, 30, 15);
 
-  // Agregar título del encabezado
-  doc.setFontSize(16);
-  doc.setTextColor(...textColor);
-  doc.text(title, 50, 20); // Título centrado en el encabezado
+    // Agregar título al encabezado
+    doc.setFontSize(18);
+    doc.setTextColor(40, 40, 40); // Color gris oscuro
+    doc.text(title, 50, 20);
 
-  // Línea decorativa
-  doc.setDrawColor(...primaryColor);
-  doc.setLineWidth(1.5);
-  doc.line(10, 28, 200, 28); // Línea horizontal
+    // Línea decorativa
+    doc.setDrawColor(255, 102, 0); // Color naranja
+    doc.setLineWidth(1.5);
+    doc.line(10, 40, 200, 40);
 
-  // Generar la tabla con los datos
-  doc.autoTable({
-    head: [headers],
-    body: data,
-    startY: 35, // La tabla comienza después del encabezado
-    headStyles: {
-      fillColor: primaryColor, // Fondo del encabezado de la tabla
-      textColor: [255, 255, 255], // Texto blanco
-      fontSize: 12,
-    },
-    bodyStyles: {
-      textColor: textColor,
-      fontSize: 10,
-    },
-    alternateRowStyles: { fillColor: [245, 245, 245] }, // Filas alternas en gris claro
-  });
+    // Agregar la tabla
+    doc.autoTable({
+      head: [headers],
+      body: data,
+      startY: 50, // La tabla comienza debajo del encabezado
+      headStyles: {
+        fillColor: [255, 102, 0], // Fondo del encabezado (naranja)
+        textColor: [255, 255, 255], // Texto blanco
+        fontStyle: 'bold',
+      },
+      bodyStyles: {
+        textColor: [0, 0, 0], // Texto negro
+      },
+      alternateRowStyles: {
+        fillColor: [240, 240, 240], // Color gris claro para filas alternas
+      },
+      styles: {
+        fontSize: 10, // Ajusta el tamaño de la fuente en la tabla
+        cellPadding: 4, // Espaciado dentro de las celdas
+      },
+    });
 
-  // Guardar el archivo
-  doc.save(fileName);
+    // Guardar el archivo PDF
+    doc.save(fileName);
+  } catch (error) {
+    console.error('Error al generar el PDF:', error);
+  }
 };
 
 // Función para exportar a Excel

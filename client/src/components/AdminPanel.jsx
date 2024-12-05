@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { getAllEnrollments, deleteEnrollmentById } from "../services/enrollmentServices.js";
 import UserTable from './UserTable';
-import SearchBar from "./SearchBar";
-
+import SearchBar from './SearchBar';
 
 const AdminPanel = () => {
   const [enrollments, setEnrollments] = useState([]);
