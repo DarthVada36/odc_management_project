@@ -5,7 +5,7 @@ const CreateAdminPage = () => {
   return (
     <div className="flex min-h-screen">
 
-    
+
 
       {/* Imagen izquierda */}
 
@@ -13,11 +13,11 @@ const CreateAdminPage = () => {
         <img src="/src/assets/orange-form.gif" alt="Formulario en movimiento" />
       </div>
 
-        {/* Formulario acceso derecha */}
-        <div className="w-1/2 bg-white p-8">
+      {/* Formulario acceso derecha */}
+      <div className="w-1/2 bg-white p-8">
 
-<CreateAdminForm />
-</div>
+        <CreateAdminForm />
+      </div>
 
 
 

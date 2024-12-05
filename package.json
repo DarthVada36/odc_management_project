@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "vite-plugin-svgr": "^4.3.0"
+  },
+  "dependencies": {
+    "canvg": "^4.0.2",
+    "jspdf": "^2.5.2",
+    "jspdf-autotable": "^3.8.4"
+  }
+}
