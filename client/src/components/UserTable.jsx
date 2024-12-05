@@ -1,7 +1,11 @@
 import Pagination from "./Pagination";
 import React, { useState } from 'react';
+import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 
 const UserTable = ({users}) => {
+
+  const headers = ['Nombre', 'Email', 'Rol']; // Encabezados de la tabla
+  const data = users.map((user) => [user.name, user.email, user.role]); // Filas de datos
   //Función paginación
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;  // Número de elementos por página
@@ -10,10 +14,35 @@ const UserTable = ({users}) => {
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentUsers = users.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handleExportPDF = () => {
+    exportToPDF('Listado de Usuarios', headers, data, 'usuarios.pdf');
+  };
+
+  const handleExportExcel = () => {
+    exportToExcel('Usuarios', headers, data, 'usuarios.xlsx');
+  };
       
       
     return (
         <div className="bg-white shadow-md p-4 sm:p-6 md:p-8">
+
+          {/* Botones de exportación */}
+      <div className="flex justify-end space-x-4 mb-4">
+        <button
+          onClick={handleExportPDF}
+          className="bg-orange text-black px-4 py-2 rounded border border-black"
+        >
+          Descargar PDF
+        </button>
+        <button
+          onClick={handleExportExcel}
+          className="bg-orange text-black px-4 py-2 rounded border border-black"
+        >
+          Descargar Excel
+        </button>
+      </div>
+      
            {/* Botón para crear un nuevo administrador */}
             <button className="bg-orange text-black button-auto w-full px-4 py-2 rounded mb-4 sm:mb-6 md:mb-8">
                 Crear nuevo administrador
