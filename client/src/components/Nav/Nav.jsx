@@ -13,7 +13,7 @@ const Nav = () => {
     const [activeLang, setActiveLang] = useState('ES')
     const [showFloating, setShowFloating] = useState(false)
     const [hasAnimated, setHasAnimated] = useState(false)
-    const menuItems = ['Inscripción', 'Cursos', 'Dashboard', 'Contacto']
+    const menuItems = ['Inscripción', 'Cursos', 'Contacto', 'Dashboard']
 
     // Controls initial animation state
     useEffect(() => {
