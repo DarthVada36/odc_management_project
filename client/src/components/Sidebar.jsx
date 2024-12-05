@@ -7,7 +7,7 @@ const Sidebar = () => {
             <div className="border-t-2 border-orange"></div>
             <ul className='flex flex-col gap-4 p-10'>
             
-                <li className='text-center font-bold hover:text-orange'>Dasboard</li>
+                <li className='text-center font-bold hover:text-orange'>Dashboard</li>
                 <div className="border-t-2 border-orange mt-4 w-full"></div>
                 <li className='text-center font-bold hover:text-orange'>Administradores</li>
                 <div className="border-t-2 border-orange mt-4"></div>

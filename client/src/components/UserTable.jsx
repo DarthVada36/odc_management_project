@@ -1,9 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { exportToPDF, exportToExcel } from '../utils/exportUtils';
+import { getAllEnrollments, deleteEnrollmentById } from '../services/enrollmentServices.js';
 
-const UserTable = ({ users }) => {
-  const headers = ['Nombre', 'Email', 'Rol']; // Encabezados de la tabla
-  const data = users.map((user) => [user.name, user.email, user.role]); // Filas de datos
+const UserTable = () => {
+  const [enrollments, setEnrollments] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const headers = ['Nombre', 'Email']; // Encabezados de la tabla
+
+  useEffect(() => {
+    const fetchEnrollments = async () => {
+      try {
+        const data = await getAllEnrollments();
+        setEnrollments(data);
+        setLoading(false);
+      } catch (error) {
+        console.error('Error al obtener los usuarios:', error);
+        setError(error);
+        setLoading(false);
+      };
+    };
+
+    fetchEnrollments();
+  }, []);
+
+  const handleDelete = async (id) => {
+    try {
+      // Llamar al servicio de eliminación
+      await deleteEnrollmentById(id);
+      // Actualizar el estado para eliminar el registro de la tabla
+      setEnrollments(enrollments.filter((enrollment) => enrollment.id !== id));
+    } catch (error) {
+      console.error('Error al eliminar la inscripción:', error);
+      setError(error);
+    }
+  };
+
+  const data = enrollments.map((enrollment) => [
+    enrollment.fullname,
+    enrollment.email
+  ]);
 
   const handleExportPDF = () => {
     exportToPDF('Listado de Usuarios', headers, data, 'usuarios.pdf');
@@ -12,6 +49,13 @@ const UserTable = ({ users }) => {
   const handleExportExcel = () => {
     exportToExcel('Usuarios', headers, data, 'usuarios.xlsx');
   };
+
+  if (loading) {
+    return <div>Cargando...</div>;
+  }
+  if (error) {
+    return <div>Error al cargar los usuarios</div>;
+  }
 
   return (
     <div className="bg-white shadow-md p-4 sm:p-6 md:p-8">
@@ -38,21 +82,26 @@ const UserTable = ({ users }) => {
             <tr>
               <th className="text-black p-2 sm:p-3 md:p-4">Nombre</th>
               <th className="text-black p-2 sm:p-3 md:p-4">Email</th>
-              <th className="text-black p-2 sm:p-3 md:p-4">Rol</th>
               <th className="text-black p-2 sm:p-3 md:p-4">Acciones</th>
               <th className="text-black p-2 sm:p-3 md:p-4">Contacto</th>
             </tr>
           </thead>
           <tbody>
-            {users.map((user, index) => (
+            {enrollments.map((enrollment, index) => (
               <tr key={index} className="text-center border-b border-orange">
-                <td className="p-2 sm:p-3 md:p-4">{user.name}</td>
-                <td className="p-2 sm:p-3 md:p-4">{user.email}</td>
-                <td className="p-2 sm:p-3 md:p-4">{user.role}</td>
+                <td className="p-2 sm:p-3 md:p-4">{enrollment.fullname}</td>
+                <td className="p-2 sm:p-3 md:p-4">{enrollment.email}</td>
                 <td className="p-2 sm:p-3 md:p-4">
-                  <button className="bg-orange text-black px-4 py-2 rounded border border-black">
-                    Editar
-                  </button>
+                  <div className="flex space-x-4">
+                    <button className="bg-white text-black px-4 py-2 rounded border border-black">
+                      Editar
+                    </button>
+                    <button
+                      onClick={() => handleDelete(enrollment.id)}
+                      className="bg-orange text-black px-4 py-2 rounded border border-black">
+                      Eliminar
+                    </button>
+                  </div>
                 </td>
                 <td className="p-2 sm:p-3 md:p-4">
                   <button className="bg-orange text-black px-4 py-2 rounded border border-black">
