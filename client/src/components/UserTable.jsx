@@ -128,11 +128,12 @@ const UserTable = () => {
                   </div>
                 </td>
                 {/* Contacto */}
-                <td className="p-2 sm:p-3 md:p-4">
-                  <button className="bg-orange text-black px-4 py-1 rounded border border-black w-full sm:w-auto">
-                    ✉️ Email
-                  </button>
-                </td>
+                <td className="p-2 sm:p-3 md:p-4 flex justify-center">
+  <button className="bg-orange text-black px-4 py-1 rounded border border-black w-full sm:w-auto flex items-center space-x-2">
+    <img src={'src/assets/email.png'} className="w-5 h-5" alt="Email Icon" />
+    <span>Email</span>
+  </button>
+</td>
               </tr>
             ))}
           </tbody>
