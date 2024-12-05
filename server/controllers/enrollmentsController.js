@@ -67,13 +67,13 @@ export const createEnrollment = async (req, res) => {
             email,
             gender,
             age,
-            is_first_activity,
-            id_admin,
+            is_first_activity: is_first_activity || false,
+            id_admin: id_admin || 8,
             id_course,
             group_id,
-            accepts_newsletter,
-            createdAt,
-            updatedAt
+            accepts_newsletter: accepts_newsletter || false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
         },
             { transaction });
 

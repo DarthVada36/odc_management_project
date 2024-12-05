@@ -15,13 +15,17 @@ const Enrollment = connectionDb.define('Enrollment', {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+        validate: {
+            isEmail: true, // Verifica que tenga un formato válido de correo
+        },
     },
     gender: {
         type: DataTypes.ENUM('mujer', 'hombre', 'otros generos', 'NS/NC'),
-        allowNull: true,
+        defaultValue: 'NS/NC',
     },
     age: {
         type: DataTypes.INTEGER,
+        defaultValue: null,
         allowNull: true,
         validate: {
             min: 0,
