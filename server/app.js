@@ -31,6 +31,7 @@ const PORT = process.env.PORT || 3000;
 
 // Rutas
 
+
 app.use('/api/auth', authRoutes);
 app.use('/api/enrollments', enrollmentRoutes)
 app.use('/api/courses', courseRoutes)
