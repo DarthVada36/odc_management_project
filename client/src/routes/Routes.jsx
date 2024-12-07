@@ -7,6 +7,7 @@ import { createBrowserRouter } from 'react-router-dom'
 import CreateAdminPage from '../pages/CreateAdminPage'
 
 import DashboardPage from '../pages/DashboardPage'
+import { ProtectedRoute } from '../components/ProtectedRoute'
 
 export const router = createBrowserRouter([
     {
@@ -19,15 +20,23 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'dashboard',
-                element: <DashboardPage />,
+                element: (
+                    <ProtectedRoute>
+                        <DashboardPage />
+                    </ProtectedRoute>
+                ),
             },
             {
-                path: '/access-admin',
+                path: 'access-admin',
                 element: <AccessAdminPage />,
             },
             {
-                path: '/new-admin',
-                element: <CreateAdminPage />,
+                path: 'new-admin',
+                element: (
+                    <ProtectedRoute allowedRoles={[1]}>
+                        <CreateAdminPage />
+                    </ProtectedRoute>
+                ),
             },
         ],
     },
