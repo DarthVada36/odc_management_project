@@ -67,46 +67,16 @@ export const createEnrollment = async (req, res) => {
             email,
             gender,
             age,
-            is_first_activity,
-            id_admin,
+            is_first_activity: is_first_activity || false,
+            id_admin: id_admin || 8,
             id_course,
             group_id,
-            accepts_newsletter,
-            createdAt,
-            updatedAt,
-            minors,
-        } = req.body;
+            accepts_newsletter: accepts_newsletter || false,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+        },
+            { transaction });
 
-        // Validaciones de datos obligatorios
-        if (!fullname || !email || !id_course) {
-            return res.status(400).json({
-                message: "Faltan campos obligatorios: fullname, email o id_course",
-            });
-        }
-
-        // Validación adicional para `is_first_activity` como booleano
-        const validatedFirstActivity =
-            typeof is_first_activity === "boolean" ? is_first_activity : false;
-
-        // Crear la inscripción principal
-        const enrollment = await Enrollment.create(
-            {
-                fullname,
-                email,
-                gender,
-                age,
-                is_first_activity: validatedFirstActivity, // Asegura que sea booleano
-                id_admin: id_admin || null, // id_admin es opcional
-                id_course,
-                group_id: group_id || null, // Es opcional
-                accepts_newsletter: accepts_newsletter || false, // Valor por defecto si no se envía
-                createdAt,
-                updatedAt,
-            },
-            { transaction }
-        );
-
-        // Crear menores asociados si existen
         if (minors && minors.length > 0) {
             const minorData = minors.map((minor) => ({
                 ...minor,

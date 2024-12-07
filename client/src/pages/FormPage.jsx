@@ -1,121 +1,134 @@
-import React, { useState, useEffect } from 'react';
-import MainForm from '../components/MainForm';
-import MinorForm from '../components/MinorForm';
-import AdultCompanionForm from '../components/AdultCompanionForm';
-import { createEnrollment } from '../services/enrollmentServices';
-import { createMinor } from '../services/minorServices';
-import { getCourseById } from '../services/coursesServices';
-import formImage from '../assets/img/imageform.svg';
+import React, { useState, useEffect } from "react";
+import MainForm from "../components/MainForm";
+import MinorForm from "../components/MinorForm";
+import AdultCompanionForm from "../components/AdultCompanionForm";
+import { createEnrollment } from "../services/enrollmentServices";
+import { createMinor } from "../services/minorServices";
+import { getCourseById } from "../services/coursesServices";
+import formImage from "../assets/img/imageform.svg";
 
-const RegisterPage = () => {
-  const [includeMinor, setIncludeMinor] = React.useState(false);
-  const [includeAdult, setIncludeAdult] = React.useState(false);
-  const [formData, setFormData] = React.useState({});
-  const [minors, setMinors] = useState([]); // Lista de menores
-  const [companions, setCompanions] = useState([]); // Lista de acompañantes adultos
-  const [isLoading, setIsLoading] = useState(false); // Estado de carga
-  const [responseMessage, setResponseMessage] = useState('');
-  const [courseTitle, setCourseTitle] = useState('');
+const FormPage = () => {
+  const [includeMinor, setIncludeMinor] = useState(false);
+  const [includeAdult, setIncludeAdult] = useState(false);
+  const [formData, setFormData] = useState({});
+  const [minors, setMinors] = useState([]);
+  const [companions, setCompanions] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [responseMessage, setResponseMessage] = useState(null);
+  const [courseTitle, setCourseTitle] = useState("");
 
   // Obtener el título del curso al cargar la página
   useEffect(() => {
     const fetchCourseTitle = async () => {
       try {
-        const course = await getCourseById(101); // ID del curso
-        setCourseTitle(course.title);
+        const course = await getCourseById(101); // Cambiar ID según tu lógica
+        setCourseTitle(course.title || "Curso no encontrado");
       } catch (error) {
-        console.error('Error al cargar el curso:', error.message);
+        setResponseMessage({ type: "error", text: "Error al cargar el curso." });
       }
     };
     fetchCourseTitle();
   }, []);
 
-  // Manejar el envío del formulario principal
-  const handleFormSubmit = (data) => {
-    setFormData(data);
-  };
-
-  // Manejar la adición de menores
-  const handleAddMinor = (minorData) => {
-    setMinors((prev) => [...prev, minorData]);
-  };
-
-  // Manejar la adición de acompañantes adultos
-  const handleAddCompanion = (companionData) => {
-    setCompanions((prev) => [...prev, companionData]);
-  };
-
-  // Enviar todos los datos al backend
-  const handleSendToBackend = async () => {
-    console.log("Datos formData enviados:", formData);
-    if (
-      !formData.fullname ||
-      !formData.email ||
-      !formData.age ||
-      !formData.gender
-    ) {
-      setResponseMessage(
-        'Por favor, completa todos los campos obligatorios del formulario principal.'
-      );
-      return;
+  // Validaciones generales
+  const validateFormData = () => {
+    const requiredFields = ["fullname", "email", "age", "gender"];
+    for (const field of requiredFields) {
+      if (!formData[field]) {
+        setResponseMessage({
+          type: "error",
+          text: `El campo "${field}" es obligatorio.`,
+        });
+        return false;
+      }
     }
 
     if (includeMinor && minors.length === 0) {
-      setResponseMessage(
-        'Por favor, agrega al menos un menor si seleccionaste la opción de acompañante menor.'
-      );
-      return;
+      setResponseMessage({
+        type: "error",
+        text: "Por favor, agrega al menos un menor si seleccionaste la opción.",
+      });
+      return false;
     }
 
     if (includeAdult && companions.length === 0) {
-      setResponseMessage(
-        'Por favor, agrega al menos un acompañante adulto si seleccionaste la opción de acompañante adulto.'
-      );
-      return;
+      setResponseMessage({
+        type: "error",
+        text: "Por favor, agrega al menos un acompañante adulto.",
+      });
+      return false;
     }
 
+    return true;
+  };
+
+  // Añadir menores
+  const handleAddMinor = (minorData) => {
+    setMinors((prevMinors) => [...prevMinors, minorData]);
+  };
+
+  // Añadir acompañantes adultos
+  const handleAddCompanion = (companionData) => {
+    setCompanions((prevCompanions) => [...prevCompanions, companionData]);
+  };
+
+  // Enviar datos al backend
+  const handleSendToBackend = async () => {
+    if (!validateFormData()) return;
+
     setIsLoading(true);
-    setResponseMessage('');
+    setResponseMessage(null);
 
     try {
-      // Crear la inscripción principal y obtener el group_id
+      // Crear inscripción principal
       const mainEnrollment = await createEnrollment(formData);
+      const groupId = mainEnrollment?.group_id;
 
-      const groupId = mainEnrollment.group_id; // Suponemos que el backend retorna el group_id
-
-      // Crear inscripciones para menores
-      if (includeMinor && minors.length > 0) {
-        for (const minor of minors) {
-          await createMinor({ ...minor, group_id: groupId });
-        }
+      if (!groupId) {
+        throw new Error("No se pudo obtener el group_id del servidor.");
       }
 
-      // Crear inscripciones para acompañantes adultos
-      if (includeAdult && companions.length > 0) {
-        for (const companion of companions) {
-          await createEnrollment({ ...companion, group_id: groupId });
-        }
-      }
+      // Crear inscripciones para menores y acompañantes
+      const requests = [
+        ...minors.map((minor) => createMinor({ ...minor, group_id: groupId })),
+        ...companions.map((companion) =>
+          createEnrollment({ ...companion, group_id: groupId })
+        ),
+      ];
 
-      setResponseMessage('Formulario enviado con éxito.');
+      await Promise.all(requests);
+
+      setResponseMessage({
+        type: "success",
+        text: "Inscripción realizada con éxito.",
+      });
+
+      // Reiniciar los formularios
+      setFormData({});
+      setMinors([]);
+      setCompanions([]);
     } catch (error) {
-      console.error('Error al enviar los datos:', error.message);
-      setResponseMessage(`Error: ${error.message}`);
+      console.error("Error details:", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Ha ocurrido un error inesperado.";
+      setResponseMessage({ type: "error", text: errorMessage });
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className='flex font flex-col items-center justify-center px-4'>
-      <h1 className='text-orange font-sans text-center text-3xl font-bold'>
-        Solicitud de inscripción a {courseTitle}
+    <div className="flex font flex-col items-center justify-center px-4">
+      <h1 className="text-orange font-sans text-center text-3xl font-bold">
+        Solicitud de inscripción a "{courseTitle}"
       </h1>
-      <div className='flex p-8 m-10 border border-orange flex-col gap-6 lg:flex-col lg:gap-4 px-4'>
-        <div className='flex flex-col-reverse lg:flex-row lg:justify-between items-center gap-6'>
-          <div className='flex-1 lg:flex justify-center'>
-            {/* Pasar el estado y las funciones como props */}
+      <div className="flex p-8 m-10 border border-orange flex-col gap-6 lg:flex-col lg:gap-4 px-4">
+        <div className="flex flex-col-reverse lg:flex-row lg:justify-between items-center gap-6">
+          <div>
             <MainForm
+              courseId={101}
               setIncludeMinor={setIncludeMinor}
               setIncludeAdult={setIncludeAdult}
               includeMinor={includeMinor}
@@ -123,40 +136,41 @@ const RegisterPage = () => {
               formData={formData}
               setFormData={setFormData}
             />
+
+            {includeMinor && <MinorForm onAddMinor={handleAddMinor} />}
+            {includeAdult && (
+              <AdultCompanionForm onAddCompanion={handleAddCompanion} />
+            )}
           </div>
-          <div className='flex-1'>
+          <div className="flex-1">
             <img
               src={formImage}
-              alt='Formulario Imagen'
-              className='w-[615px] h-[616px] lg:max-w-full object-contain'
+              alt="Formulario Imagen"
+              className="w-[615px] h-[616px] lg:max-w-full object-contain"
             />
           </div>
         </div>
 
-        {/* Botón para enviar */}
         <button
-          className='bg-orange text-white px-4 py-2 rounded-md font-semibold mt-4 disabled:opacity-50'
+          className="bg-orange text-white px-4 py-2 rounded-md font-semibold mt-4 disabled:opacity-50"
           onClick={handleSendToBackend}
           disabled={isLoading}
         >
-          {isLoading ? 'Enviando...' : 'Siguiente'}
+          {isLoading ? "Enviando..." : "Siguiente"}
         </button>
 
-        {/* Mensaje de respuesta */}
         {responseMessage && (
-          <p className='text-center text-red-500 mt-4'>{responseMessage}</p>
+          <p
+            className={`text-center mt-4 ${
+              responseMessage.type === "error" ? "text-red-500" : "text-green-500"
+            }`}
+          >
+            {responseMessage.text}
+          </p>
         )}
-
-        {/* Formularios adicionales */}
-        <div className='flex flex-col gap-6'>
-          {includeMinor && <MinorForm onAddMinor={handleAddMinor} />}
-          {includeAdult && (
-            <AdultCompanionForm onAddCompanion={handleAddCompanion} />
-          )}
-        </div>
       </div>
     </div>
   );
 };
 
-export default RegisterPage;
+export default FormPage;

@@ -24,6 +24,17 @@ export const getMinorById = async (id) => {
     }
 };
 
+// Get minors by Course ID -- GET
+export const getMinorsByCourseId = async (courseId) => {
+    try {
+        const res = await axios.get(`${API_URL}/course/${courseId}`);
+        return res.data;
+    } catch (error) {
+        console.error('Error al obtener los menores por Course ID', error.message);
+        throw error;
+    }
+};
+
 //Delete minor by ID -- DELETE
 export const deleteMinorById = async (id) => {
     try {
@@ -35,16 +46,18 @@ export const deleteMinorById = async (id) => {
     }
 };
 
-//Create minor -- POST
-export const createMinor = async (minorData) => {
+export const createMinor = async (data) => {
     try {
-        const res = await axios.post(API_URL, minorData);
-        return res.data;
+        const response = await axios.post(`/api/minors/enrollment/${data.enrollment_id}`, {
+            name: data.name || null,
+            age: data.age || null,
+        });
+        return response.data;
     } catch (error) {
-        console.error('Error al crear el menor', error.message);
-        throw error;
+        throw new Error(error.response?.data?.message || "Error al crear el menor");
     }
 };
+
 
 //Update minor by ID -- PUT
 export const updateMinorById = async (id, minorData) => {
