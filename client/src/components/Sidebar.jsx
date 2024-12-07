@@ -1,25 +1,38 @@
-import React from 'react';
-const Sidebar = () => {
+import React from 'react'
+
+const Sidebar = ({ onMenuSelect, activeComponent }) => {
+    const menuItems = [
+        { id: 'dashboard', label: 'Dashboard' },
+        { id: 'administrators', label: 'Administradores' },
+        { id: 'enrollments', label: 'Inscripciones' },
+    ]
+
     return (
-        <div className='bg-black text-white p-4 border-orange w-full md:w-1/4 min-h-screen flex flex-col'>
-            {/* Título del Sidebar */}
-            <div className='text-center text-orange font-bold text-xl mb-4 p-4'>Panel Administrador</div>
-            {/* Línea separadora naranja */}
+        <div className="flex flex-col w-full min-h-screen p-4 text-white bg-black border-orange md:w-1/4">
+            <div className="p-4 mb-4 text-xl font-bold text-center text-orange">
+                Panel Administrador
+            </div>
             <div className="border-t-2 border-orange"></div>
-             {/* Lista de opciones */}
-            <ul className='flex flex-col gap-4 p-8'>
-            
-                <li className='text-center font-bold hover:text-orange transition-colors cursor-pointer'>Dasboard</li>
-                <div className="border-t-2 border-orange mt-2"></div>
-                <li className='text-center font-bold hover:text-orange transition-colors cursor-pointer'>Administradores</li>
-                <div className="border-t-2 border-orange mt-2"></div>
-                <li className='text-center font-bold hover:text-orange transition-colors cursor-pointer'>Cursos</li>
-                <div className="border-t-2 border-orange mt-2"></div>
-                <li className='text-center font-bold hover:text-orange transition-colors cursor-pointer'>Inscripciones</li>
-                
-            </ul>        
+            <ul className="flex flex-col gap-4 p-8">
+                {menuItems.map((item) => (
+                    <React.Fragment key={item.id}>
+                        <li
+                            onClick={() => onMenuSelect(item.id)}
+                            className={`text-center font-bold hover:text-orange transition-colors cursor-pointer
+                                ${
+                                    activeComponent === item.id
+                                        ? 'text-orange'
+                                        : 'text-white'
+                                }`}
+                        >
+                            {item.label}
+                        </li>
+                        <div className="mt-2 border-t-2 border-orange"></div>
+                    </React.Fragment>
+                ))}
+            </ul>
         </div>
-    ) 
+    )
 }
 
-export default Sidebar;
+export default Sidebar
