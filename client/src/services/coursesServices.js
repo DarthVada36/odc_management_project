@@ -17,7 +17,7 @@ export const getAllCourses = async () => {
 
 
 // Función mock para obtener cursos
-export const getCourseById = async (id) => {
+/* export const getCourseById = async (id) => {
     const mockCourses = [
       {
         id: 101,
@@ -39,17 +39,17 @@ export const getCourseById = async (id) => {
       throw new Error("Curso no encontrado.");
     }
     return course;
-  };
+  }; */
 
-// export const getCourseById = async (id) => {
-//     try {
-//         const res = await axios.get(`${API_URL}/${id}`);
-//         return res.data;
-//     } catch (error) {
-//         console.error("No se pudo obtener el curso indicado", error.message);
-//         throw error;
-//     }
-// };
+export const getCourseById = async (id) => {
+    try {
+        const res = await axios.get(`${API_URL}/${id}`);
+        return res.data;
+    } catch (error) {
+        console.error("No se pudo obtener el curso indicado", error.message);
+        throw error;
+    }
+};
 
 //Delete course by ID -- DELETE
 

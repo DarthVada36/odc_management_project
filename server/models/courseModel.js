@@ -36,7 +36,7 @@ const Course = connectionDb.define('Course', {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-            isUrl: true, // Valida que sea un enlace válido
+            isUrl: true,
         },
     },
     tickets: {

@@ -5,8 +5,8 @@ import { authMiddleware } from '../middleware/authMiddleware.js';
 
 const courseRoutes = express.Router();
 
-courseRoutes.get('/', authMiddleware, checkRol(['superadmin', 'admin', 'facilitator']), getAllCourses);
-courseRoutes.get('/:id', authMiddleware, checkRol(['superadmin', 'admin', 'facilitator']), getCourseById);
+courseRoutes.get('/'/* , authMiddleware, checkRol(['superadmin', 'admin', 'facilitator']), */ ,getAllCourses);
+courseRoutes.get('/:id'/* , authMiddleware, checkRol(['superadmin', 'admin', 'facilitator']),*/, getCourseById );
 courseRoutes.post('/', authMiddleware, checkRol(['superadmin', 'admin']), createCourse);
 
 export default courseRoutes;

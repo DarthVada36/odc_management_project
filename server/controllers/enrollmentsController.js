@@ -60,53 +60,75 @@ export const getEnrollmentByIdWithMinors = async (req, res) => {
 export const createEnrollment = async (req, res) => {
     const transaction = await sequelize.transaction();
     try {
-        console.log("Datos recibidos en el backend:", req.body);
-
-        const {
-            fullname,
-            email,
-            gender,
-            age,
-            is_first_activity: is_first_activity || false,
-            id_admin: id_admin || 8,
-            id_course,
-            group_id,
-            accepts_newsletter: accepts_newsletter || false,
-            createdAt: new Date(),
-            updatedAt: new Date(),
+      console.log("Datos recibidos en el backend:", req.body);
+  
+      const {
+        fullname,
+        email,
+        gender = 'NS/NC',
+        age = 0,
+        is_first_activity = false,
+        id_admin = null,
+        id_course,
+        group_id = null,
+        accepts_newsletter = false,
+        minors = [],
+      } = req.body;
+  
+      // Validar campos obligatorios
+      if (!fullname || !email || !id_course) {
+        throw new Error(
+          "Faltan datos obligatorios: fullname, email, o id_course."
+        );
+      }
+  
+      // Crear inscripción principal
+      const enrollment = await Enrollment.create(
+        {
+          fullname,
+          email,
+          gender,
+          age,
+          is_first_activity,
+          id_admin,
+          id_course,
+          group_id,
+          accepts_newsletter,
         },
-            { transaction });
-
-        if (minors && minors.length > 0) {
-            const minorData = minors.map((minor) => ({
-                ...minor,
-                enrollment_id: enrollment.id, // Relacionar con la inscripción creada
-            }));
-            await Minor.bulkCreate(minorData, { transaction });
-        }
-
-        await transaction.commit();
-
-        // Obtener la inscripción creada con los menores incluidos
-        const createdEnrollment = await Enrollment.findOne({
-            where: { id: enrollment.id },
-            include: [
-                {
-                    model: Minor,
-                    as: "minors",
-                    attributes: ["id", "name", "age"],
-                },
-            ],
-        });
-
-        res.status(201).json(createdEnrollment);
+        { transaction }
+      );
+  
+      // Crear menores si están presentes
+      if (Array.isArray(minors) && minors.length > 0) {
+        const minorData = minors.map((minor) => ({
+          ...minor,
+          enrollment_id: enrollment.id,
+        }));
+        await Minor.bulkCreate(minorData, { transaction });
+      }
+  
+      await transaction.commit();
+  
+      // Obtener inscripción con menores (si los hay)
+      const createdEnrollment = await Enrollment.findOne({
+        where: { id: enrollment.id },
+        include: [
+          {
+            model: Minor,
+            as: "minors",
+            attributes: ["id", "name", "age"],
+          },
+        ],
+      });
+  
+      res.status(201).json(createdEnrollment);
     } catch (error) {
-        // Revertir la transacción si hay un error
-        await transaction.rollback();
-        console.error("Error al crear la inscripción:", error.message);
-        res.status(500).json({ message: error.message });
+      await transaction.rollback();
+      console.error("Error al crear la inscripción:", error.message);
+      res.status(500).json({ message: error.message });
     }
-};
+  };
+  
 
 
 // UPDATE ENROLLMENT BY ID
