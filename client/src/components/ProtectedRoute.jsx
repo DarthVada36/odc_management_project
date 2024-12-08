@@ -15,7 +15,7 @@ export const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     }
 
     if (allowedRoles.length > 0) {
-        // Validar si el usuario tiene uno de los roles permitidos
+        // Validate if the user's role is allowed for the route
         if (!allowedRoles.includes(admin?.role_id)) {
             console.warn(
                 `Acceso denegado: el rol del usuario (${admin?.role_id}) no está permitido para esta ruta.`
