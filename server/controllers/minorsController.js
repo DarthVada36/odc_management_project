@@ -22,3 +22,13 @@ export const getMinorByCourseId = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const createMinor = async (req, res) => {
+    try {
+        const { name, age, enrollment_id } = req.body;
+        const minor = await Minor.create({ name, age, enrollment_id });
+        res.status(201).json(minor);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
