@@ -144,28 +144,28 @@ const EnrollmentsTable = () => {
         </div>
 
         {/* Botón para crear un nuevo administrador */}
-        <button className="w-full px-4 py-2 mb-4 text-black rounded bg-orange button-auto sm:mb-6 md:mb-8">
+        {/* <button className="w-full px-4 py-2 mb-4 text-black rounded bg-orange button-auto sm:mb-6 md:mb-8">
           Crear nueva inscripción
-        </button>
+        </button> */}
 
         {/* Contenedor de la tabla */}
-        <div className="overflow-x-auto">
-          <table className="w-full border table-auto border-orange">
-            <thead className="text-white bg-orange">
+        <div className="flex-1 min-h-0">
+          <table className="w-full border-collapse table-auto">
+            <thead className="bg-primary">
               <tr>
-                <th className="p-2 text-black sm:p-3 md:p-4">
+                <th className="w-1/5 p-4 text-left text-black border-b-2 font-helvetica-w20-bold border-primary">
                   Nombre
                 </th>
-                <th className="p-2 text-black sm:p-3 md:p-4">
+                <th className="w-1/5 p-4 text-left text-black border-b-2 font-helvetica-w20-bold border-primary">
                   Email
                 </th>
-                <th className="p-2 text-black sm:p-3 md:p-4">
+                <th className="w-1/5 p-4 text-black border-b-2 font-helvetica-w20-bold border-primary">
                   Curso
                 </th>
-                <th className="p-2 text-black sm:p-3 md:p-4">
+                <th className="w-1/5 p-4 text-black border-b-2 font-helvetica-w20-bold border-primary">
                   Acciones
                 </th>
-                <th className="p-2 text-black sm:p-3 md:p-4">
+                <th className="w-1/5 p-4 text-black border-b-2 font-helvetica-w20-bold border-primary">
                   Contacto
                 </th>
               </tr>
@@ -174,44 +174,47 @@ const EnrollmentsTable = () => {
               {currentEnrollments.map((enrollment, index) => (
                 <tr
                   key={index}
-                  className="text-center border-b border-orange"
+                  className="transition-colors border-b border-gray-200 hover:bg-gray-50"
                 >
-                  <td className="p-2 sm:p-3 md:p-4">
+                  <td className="w-1/5 p-4 text-left font-helvetica-w20-bold">
                     <span className="block">
                       {enrollment.fullname}
                     </span>
                   </td>
-                  <td className="p-2 sm:p-3 md:p-4">
+                  <td className="w-1/5 p-4">
                     <span className="block text-center">
                       {enrollment.email}
                     </span>
                   </td>
-                  <td className="p-2 sm:p-3 md:p-4">
+                  <td className="w-1/5 p-4">
                     <span className="block text-center">
-                      {enrollment.course? enrollment.course.title : 'Sin curso'}
+                      {enrollment.course ? enrollment.course.title : 'Sin curso'}
                     </span>
                   </td>
-                  <td className="p-2 sm:p-3 md:p-4">
-                    <div className="flex flex-col items-center space-y-2 sm:flex-row sm:justify-center sm:space-x-2 sm:space-y-0">
+                  <td className="w-1/5 p-4">
+                    <div className="flex justify-center">
                       <button
                         onClick={() =>
                           handleDeleteClick(enrollment)
                         }
-                        className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold0"
+                        className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
                       >
                         Eliminar
                       </button>
                     </div>
                   </td>
-                  <td className="flex justify-center p-2 sm:p-3 md:p-4">
-                    <button className="flex items-center w-full px-4 py-1 space-x-2 text-black border border-black rounded bg-orange sm:w-auto">
+                  <td className="w-1/5 p-4">
+                    <div className="flex justify-center">
+                    <button 
+                    className="flex items-center px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white">
                       <img
                         src={'src/assets/email.png'}
-                        className="w-5 h-5"
+                        className="w-5 h-5 mr-2"
                         alt="Email Icon"
                       />
                       <span>Email</span>
                     </button>
+                    </div>
                   </td>
                 </tr>
               ))}
