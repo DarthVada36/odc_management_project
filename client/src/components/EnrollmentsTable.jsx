@@ -205,15 +205,15 @@ const EnrollmentsTable = () => {
                   </td>
                   <td className="w-1/5 p-4">
                     <div className="flex justify-center">
-                    <button 
-                    className="flex items-center px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white">
-                      <img
-                        src={'src/assets/email.png'}
-                        className="w-5 h-5 mr-2"
-                        alt="Email Icon"
-                      />
-                      <span>Email</span>
-                    </button>
+                      <button
+                        className="flex items-center px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white">
+                        <img
+                          src={'src/assets/email.png'}
+                          className="w-5 h-5 mr-2"
+                          alt="Email Icon"
+                        />
+                        <span>Email</span>
+                      </button>
                     </div>
                   </td>
                 </tr>

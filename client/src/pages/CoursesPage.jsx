@@ -45,6 +45,12 @@ const CoursesPage = () => {
             >
               Inscribirme
             </button>
+            <button
+              className="mt-4 bg-orange-500 text-dark px-4 py-2 rounded"
+              onClick={() => navigate(`/inscription/${course.id}`)}
+            >
+              Inscritos
+            </button>
           </div>
         ))}
       </div>
