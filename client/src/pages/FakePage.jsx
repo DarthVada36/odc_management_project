@@ -4,7 +4,14 @@ import EventCard from '../components/EventCard'; //Importo el componente EventCa
 const FakePage = () => {
     // almacena los eventos cargados desde el archivo JSON
     const [events, setEvents] = useState([]);
-    
+    // Hook useEffect para cargar los eventos al montar el componente
+    useEffect(() => {
+        // Fetch para Cargar los datos del archivo JSON
+        fetch('events.json')
+        .then((response) => response.json())
+        .then((data) => setEvents(data))
+        .catch((error) => console.error('Error al cargar los datos:', error)); //Captura errores
+    },[]);
 
     return ( 
     <div className='p-4'>
