@@ -7,7 +7,7 @@ const FakePage = ()=> {
 
 return(
 
-       );
+       )
 }
 
 export default FakePage;
