@@ -2,7 +2,8 @@ import React, {useEffect, useState} from 'react';
 import EventCard from '../components/EventCard'; //Importo el componente EventCard
 
 const FakePage = () => {
-    
+    // almacena los eventos cargados desde el archivo JSON
+    const [events, setEvents] = useState([]);
     
 
     return ( 
