@@ -30,8 +30,15 @@ const CoursesPage = () => {
 
   return (
     <div className="flex flex-col items-center">
-      <h1 className="text-2xl font-bold mb-6">Cursos Disponibles</h1>
-      <div className="grid gap-6">
+      <h1 className="text-2xl font-bold text-center mb-6">Cursos Disponibles</h1>
+      <div className="grid gap-4 justify-center w-full"
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap: '16px',
+          }}
+      >
+
         {courses.map((course) => (
           <div
             key={course.id}
