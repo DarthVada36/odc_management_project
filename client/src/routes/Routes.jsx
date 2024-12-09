@@ -8,6 +8,7 @@ import CreateAdminPage from '../pages/CreateAdminPage'
 
 import DashboardPage from '../pages/DashboardPage'
 import { ProtectedRoute } from '../components/ProtectedRoute'
+import FakePage from '../pages/FakePage'
 
 export const router = createBrowserRouter([
     {
@@ -40,7 +41,7 @@ export const router = createBrowserRouter([
             },
             {
                 path: 'fake-Page',
-                element: <fakePage />,
+                element: <FakePage />
             },
         ],
     },

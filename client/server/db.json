@@ -4,19 +4,20 @@
       "id": 1,
       "imageUrl": "https://via.placeholder.com/400x320",
       "title": "Evento 1",
-      "texto": "Este es el primer evento."
+      "description": "Este es el primer evento."
     },
     {
       "id": 2,
       "imageUrl": "https://via.placeholder.com/400x320",
       "title": "Evento 2",
-      "texto": "Este es el segundo evento."
+      "description": "Este es el segundo evento."
     },
     {
       "id": 3,
       "imageUrl": "https://via.placeholder.com/400x320",
       "title": "Evento 3",
-      "texto": "Este es el tercer evento."
+      "description": "Este es el tercer evento."
     }
+
   ]
 }
