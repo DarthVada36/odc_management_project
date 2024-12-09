@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 
 const ConfirmationModal = ({
+  title,
   isOpen,
   onClose,
   message,
@@ -37,7 +38,7 @@ const ConfirmationModal = ({
         </button>
 
         {/* Título del modal */}
-        <h3 className='text-lg font-bold mb-4 text-black'>Modal title</h3>
+        <h3 className='text-lg font-bold mb-4 text-black'>{title}</h3>
 
         {/* Mensaje */}
         <p className='text-gray-700 mb-6'>{message}</p>
