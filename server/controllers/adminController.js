@@ -61,6 +61,7 @@ const getAdminById = async (req, res) => {
             include: [
                 {
                     model: Role,
+                    as: 'role',
                     attributes: ['name'],
                 },
             ],
