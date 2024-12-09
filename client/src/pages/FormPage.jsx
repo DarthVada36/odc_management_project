@@ -6,8 +6,10 @@ import { createEnrollment } from '../services/enrollmentServices';
 import { createMinor } from '../services/minorServices';
 import { getCourseById } from '../services/coursesServices';
 import formImage from '../assets/img/imageform.svg';
+import { useParams } from 'react-router-dom';
 
 const FormPage = () => {
+  const { id } = useParams(); // Capturar el ID del curso desde la URL
   const [includeMinor, setIncludeMinor] = useState(false);
   const [includeAdult, setIncludeAdult] = useState(false);
   const [formData, setFormData] = useState({});
@@ -21,8 +23,9 @@ const FormPage = () => {
   useEffect(() => {
     const fetchCourseTitle = async () => {
       try {
-        const course = await getCourseById(101); // Cambiar ID según tu lógica
+        const course = await getCourseById(id);
         setCourseTitle(course.title || 'Curso no encontrado');
+        setFormData((prev) => ({ ...prev, id_course: id }));
       } catch (error) {
         setResponseMessage({
           type: 'error',
@@ -31,9 +34,8 @@ const FormPage = () => {
       }
     };
     fetchCourseTitle();
-  }, []);
+  }, [id]);
 
-  // Validaciones generales
   const validateFormData = () => {
     const requiredFields = ['fullname', 'email', 'age', 'gender'];
     for (const field of requiredFields) {
@@ -65,38 +67,28 @@ const FormPage = () => {
     return true;
   };
 
-  // Añadir menores
   const handleAddMinor = (minorData) => {
     setMinors((prevMinors) => [...prevMinors, minorData]);
   };
 
-  // Añadir acompañantes adultos
   const handleAddCompanion = (companionData) => {
     setCompanions((prevCompanions) => [...prevCompanions, companionData]);
   };
 
-  // Enviar datos al backend
   const handleSendToBackend = async () => {
-    // Utiliza la función global validateFormData directamente
     if (!validateFormData()) return;
 
     setIsLoading(true);
     setResponseMessage(null);
 
     try {
-      // Crear inscripción principal
-      const mainEnrollment = await createEnrollment({
-        ...formData,
-        id_course: formData.id_course || 101, // Asegurar id_course
-      });
+      const mainEnrollment = await createEnrollment(formData);
 
-      // Validar si se devolvió un group_id (solo en caso de acompañantes)
       const groupId = mainEnrollment?.group_id;
       if ((includeMinor || includeAdult) && !groupId) {
         throw new Error('No se pudo obtener el group_id del servidor.');
       }
 
-      // Preparar solicitudes de inscripción adicionales
       const minorRequests = minors.map((minor) =>
         createMinor({ ...minor, group_id: groupId })
       );
@@ -104,21 +96,17 @@ const FormPage = () => {
         createEnrollment({ ...companion, group_id: groupId })
       );
 
-      // Enviar solicitudes concurrentes
       await Promise.all([...minorRequests, ...companionRequests]);
 
-      // Mensaje de éxito
       setResponseMessage({
         type: 'success',
         text: 'Inscripción realizada con éxito.',
       });
 
-      // Reiniciar los formularios solo si todo fue exitoso
       setFormData({});
       setMinors([]);
       setCompanions([]);
     } catch (error) {
-      console.error('Error details:', error);
       const errorMessage =
         error.response?.data?.message ||
         error.message ||
@@ -138,7 +126,7 @@ const FormPage = () => {
         <div className='flex flex-col-reverse lg:flex-row lg:justify-between items-center gap-6'>
           <div>
             <MainForm
-              courseId={101}
+              courseId={id}
               setIncludeMinor={setIncludeMinor}
               setIncludeAdult={setIncludeAdult}
               includeMinor={includeMinor}
