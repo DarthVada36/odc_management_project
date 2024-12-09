@@ -10,6 +10,7 @@ import courseRoutes from './routes/courseRoutes.js'
 import minorRoutes from './routes/minorRoutes.js'
 import roleRoutes from './routes/roleRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
+import mailerRoutes from './routes/mailerRoutes.js';
 
 dotenv.config();
 
@@ -38,6 +39,7 @@ app.use('/api/courses', courseRoutes)
 app.use('/api/minors', minorRoutes)
 app.use('/api/roles', roleRoutes)
 app.use('/api/admins', adminRoutes)
+app.use('/api/mailer', mailerRoutes);
 
 const startServer = async () => {
     try {

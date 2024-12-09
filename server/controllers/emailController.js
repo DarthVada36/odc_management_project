@@ -1,4 +1,4 @@
-import { sendEmail } from './emailService.js';
+import { sendEmail } from '../mailer/emailService.js';
 
 /**
  * Controlador para enviar un correo.
@@ -18,6 +18,8 @@ export const sendEmailController = async (req, res) => {
     await sendEmail(recipients, subject, htmlContent);
     res.status(200).json({ message: 'Correo enviado exitosamente' });
   } catch (error) {
-    res.status(500).json({ message: 'Error al enviar el correo', error: error.message });
+    res
+      .status(500)
+      .json({ message: 'Error al enviar el correo', error: error.message });
   }
 };
