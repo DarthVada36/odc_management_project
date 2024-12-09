@@ -8,26 +8,26 @@ const Sidebar = ({ onMenuSelect, activeComponent }) => {
     ]
 
     return (
-        <div className="flex flex-col w-full min-h-screen p-4 text-white bg-black border-orange md:w-1/4">
-            <div className="p-4 mb-4 text-xl font-bold text-center text-orange">
+        <div className="flex flex-col w-full min-h-screen bg-black mobile:w-full tablet:w-1/4">
+            <div className="px-8 py-6 mb-4 text-2xl text-white font-helvetica-w20-bold">
                 Panel Administrador
             </div>
-            <div className="border-t-2 border-orange"></div>
-            <ul className="flex flex-col gap-4 p-8">
+            <div className="border-t border-neutral-600"></div>
+            <ul className="flex flex-col">
                 {menuItems.map((item) => (
                     <React.Fragment key={item.id}>
                         <li
                             onClick={() => onMenuSelect(item.id)}
-                            className={`text-center font-bold hover:text-orange transition-colors cursor-pointer
+                            className={`px-8 py-4 font-helvetica-w20-bold transition-all duration-300 cursor-pointer
                                 ${
                                     activeComponent === item.id
-                                        ? 'text-orange'
-                                        : 'text-white'
+                                        ? 'text-primary'
+                                        : 'text-white hover:text-primary'
                                 }`}
                         >
                             {item.label}
                         </li>
-                        <div className="mt-2 border-t-2 border-orange"></div>
+                        <div className="border-t border-neutral-600"></div>
                     </React.Fragment>
                 ))}
             </ul>

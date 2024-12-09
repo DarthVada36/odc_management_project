@@ -5,6 +5,8 @@ import { getAllAdmins } from '../services/adminServices'
 import { exportToPDF, exportToExcel } from '../utils/exportUtils'
 import excelIcon from '../assets/icons/file-excel.svg'
 import pdfIcon from '../assets/icons/file-pdf.svg'
+import { deleteAdminById } from '../services/adminServices'
+import { useAuth } from '../context/AuthContext'
 
 const AdministratorsTable = () => {
     const [admins, setAdmins] = useState([])
@@ -94,6 +96,29 @@ const AdministratorsTable = () => {
         }
     }
 
+    const { admin: currentAdmin } = useAuth()
+
+    const handleDeleteClick = async (admin) => {
+        if (currentAdmin.role_id !== 1) {
+            alert('No tienes permisos para eliminar administradores')
+            return
+        }
+
+        if (
+            window.confirm(
+                `¿Estás seguro de que deseas eliminar al administrador ${admin.username}?`
+            )
+        ) {
+            try {
+                await deleteAdminById(admin.id)
+                fetchAdmins()
+            } catch (error) {
+                console.error('Error al eliminar administrador:', error)
+                alert('Error al eliminar el administrador')
+            }
+        }
+    }
+
     if (loading) return <div>Cargando...</div>
     if (error) return <div>Error al cargar los administradores</div>
 
@@ -125,7 +150,7 @@ const AdministratorsTable = () => {
                 {/* Table container */}
                 <div className="flex-1 min-h-0">
                     <table className="w-full border-collapse table-auto">
-                        <thead className="bg-orange">
+                        <thead className="bg-primary">
                             <tr>
                                 <th className="w-2/5 p-4 text-left text-black border-b-2 font-helvetica-w20-bold border-primary">
                                     Usuario
@@ -162,10 +187,36 @@ const AdministratorsTable = () => {
                                     </td>
                                     <td className="w-1/5 p-4">
                                         <div className="flex justify-center gap-2">
-                                            <button className="px-4 py-2 text-black transition-colors duration-300 bg-primary hover:bg-orange/80">
+                                            <button
+                                                onClick={() =>
+                                                    currentAdmin.role_id === 1
+                                                        ? alert(
+                                                              'Función de editar pendiente'
+                                                          )
+                                                        : alert(
+                                                              'No tienes permisos para editar administradores'
+                                                          )
+                                                }
+                                                className={`px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold
+                    ${
+                        currentAdmin.role_id === 1
+                            ? 'hover:bg-dark hover:text-white cursor-pointer'
+                            : 'opacity-50 cursor-not-allowed'
+                    }`}
+                                            >
                                                 Editar
                                             </button>
-                                            <button className="px-4 py-2 text-black transition-colors duration-300 border border-black bg-yts hover:bg-black hover:text-white">
+                                            <button
+                                                onClick={() =>
+                                                    handleDeleteClick(admin)
+                                                }
+                                                className={`px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold
+                    ${
+                        currentAdmin.role_id === 1
+                            ? 'hover:bg-dark hover:text-white cursor-pointer'
+                            : 'opacity-50 cursor-not-allowed'
+                    }`}
+                                            >
                                                 Eliminar
                                             </button>
                                         </div>
