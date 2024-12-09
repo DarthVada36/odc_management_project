@@ -1,36 +1,49 @@
 import React, {useEffect, useState} from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getAllCourses } from '../services/coursesServices';
+//import { useNavigate } from 'react-router-dom';
+//import { getAllCourses } from '../services/coursesServices';
 import EventCard from '../components/EventCard'; //Importo el componente EventCard
 
 
 const FakePage = () => {
     // almacena los eventos cargados desde el archivo JSON
-    const [courses, setCourses] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const navigate = useNavigate();
-  
-    // Cargar cursos desde la API
-    useEffect(() => {
-      const fetchCourses = async () => {
-        try {
-          const data = await getAllCourses();
-          setCourses(data);
-        } catch (err) {
-          setError('No se pudieron cargar los cursos');
-          console.error(err);
-        } finally {
-          setIsLoading(false);
-        }
-      };
-  
-      fetchCourses();
-    }, []);
-  
-    if (isLoading) return <p>Cargando cursos...</p>;
-    if (error) return <p className="text-red-500">{error}</p>;
-  
+    const events = [
+        {
+          id: 1,
+          imageUrl: 'https://via.placeholder.com/400x320',
+          title: 'Evento 1',
+          description: 'Este es el primer evento.'
+        },
+        {
+          id: 2,
+          imageUrl: 'https://via.placeholder.com/400x320',
+          title: 'Evento 2',
+          description: 'Este es el segundo evento.'
+        },
+        {
+          id: 3,
+          imageUrl: 'https://via.placeholder.com/400x320',
+          title: 'Evento 3',
+          description: 'Este es el tercer evento.'
+        },
+        {
+            id: 4,
+            imageUrl: 'https://via.placeholder.com/400x320',
+            title: 'Evento 1',
+            description: 'Este es el primer evento.'
+          },
+          {
+            id: 5,
+            imageUrl: 'https://via.placeholder.com/400x320',
+            title: 'Evento 2',
+            description: 'Este es el segundo evento.'
+          },
+          {
+            id: 6,
+            imageUrl: 'https://via.placeholder.com/400x320',
+            title: 'Evento 3',
+            description: 'Este es el tercer evento.'
+          }
+      ];
 
     return ( 
     <div className='p-4'>
