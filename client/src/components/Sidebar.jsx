@@ -1,25 +1,38 @@
-import React from 'react';
-const Sidebar = () => {
+import React from 'react'
+
+const Sidebar = ({ onMenuSelect, activeComponent }) => {
+    const menuItems = [
+        { id: 'dashboard', label: 'Dashboard' },
+        { id: 'administrators', label: 'Administradores' },
+        { id: 'enrollments', label: 'Inscripciones' },
+    ]
+
     return (
-        <div className='bg-black text-white p-4 border-orange w-full md:w-1/4 min-h-screen flex flex-col'>
-            {/* Título del Sidebar */}
-            <div className='text-center text-orange font-bold text-xl mb-4 p-4'>Panel Administrador</div>
-            {/* Línea separadora naranja */}
-            <div className="border-t-2 border-orange"></div>
-             {/* Lista de opciones */}
-            <ul className='flex flex-col gap-4 p-8'>
-            
-                <li className='text-center font-bold hover:text-orange transition-colors cursor-pointer'>Dasboard</li>
-                <div className="border-t-2 border-orange mt-2"></div>
-                <li className='text-center font-bold hover:text-orange transition-colors cursor-pointer'>Administradores</li>
-                <div className="border-t-2 border-orange mt-2"></div>
-                <li className='text-center font-bold hover:text-orange transition-colors cursor-pointer'>Cursos</li>
-                <div className="border-t-2 border-orange mt-2"></div>
-                <li className='text-center font-bold hover:text-orange transition-colors cursor-pointer'>Inscripciones</li>
-                
-            </ul>        
+        <div className="flex flex-col w-full min-h-screen bg-black mobile:w-full tablet:w-1/4">
+            <div className="px-8 py-6 mb-4 text-2xl text-white font-helvetica-w20-bold">
+                Panel Administrador
+            </div>
+            <div className="border-t border-neutral-600"></div>
+            <ul className="flex flex-col">
+                {menuItems.map((item) => (
+                    <React.Fragment key={item.id}>
+                        <li
+                            onClick={() => onMenuSelect(item.id)}
+                            className={`px-8 py-4 font-helvetica-w20-bold transition-all duration-300 cursor-pointer
+                                ${
+                                    activeComponent === item.id
+                                        ? 'text-primary'
+                                        : 'text-white hover:text-primary'
+                                }`}
+                        >
+                            {item.label}
+                        </li>
+                        <div className="border-t border-neutral-600"></div>
+                    </React.Fragment>
+                ))}
+            </ul>
         </div>
-    ) 
+    )
 }
 
-export default Sidebar;
+export default Sidebar
