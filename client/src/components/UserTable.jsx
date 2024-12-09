@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 import { getAllEnrollments, deleteEnrollmentById } from '../services/enrollmentServices.js';
 import { sendEmail } from '../services/emailService'; // Importa el servicio para enviar correos
-import EmailEditorComponent from './EmailEditorComponent.jsx';
+import EmailEditorComponent from './EmailEditorApiComponent.jsx';
 
 const UserTable = () => {
   const [enrollments, setEnrollments] = useState([]);
