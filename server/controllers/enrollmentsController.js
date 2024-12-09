@@ -1,4 +1,5 @@
 import Enrollment from '../models/enrollmentModel.js';
+import Course from '../models/courseModel.js';
 import Minor from '../models/minorModel.js';
 import sequelize from '../database/connectionDb.js';
 
@@ -7,6 +8,11 @@ export const getAllEnrollments = async (req, res) => {
     try {
         const enrollments = await Enrollment.findAll({
             include: [
+                {
+                    model: Course,
+                    as: 'course',
+                    attributes: ['title'], // Solo incluye el título del curso
+                }, 
                 {
                     model: Minor,
                     as: 'minors',
