@@ -38,6 +38,10 @@ export const router = createBrowserRouter([
                     </ProtectedRoute>
                 ),
             },
+            {
+                path: 'fakePage',
+                element: <fakePage />,
+            },
         ],
     },
 ])
