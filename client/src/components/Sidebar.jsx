@@ -1,11 +1,18 @@
 import React from 'react'
+import { useAuth } from '../context/AuthContext'
 
 const Sidebar = ({ onMenuSelect, activeComponent }) => {
+    const { admin } = useAuth()
     const menuItems = [
         { id: 'dashboard', label: 'Dashboard' },
-        { id: 'administrators', label: 'Administradores' },
+        { id: 'administrators', label: 'Administradores', requiredRole: 1 },
         { id: 'enrollments', label: 'Inscripciones' },
+        { id: 'courses', label: 'Cursos' },
     ]
+
+    const filteredMenuItems = menuItems.filter(
+        (item) => !item.requiredRole || admin?.role_id === item.requiredRole
+    )
 
     return (
         <div className="flex flex-col w-full min-h-screen bg-black mobile:w-full tablet:w-1/4">
@@ -14,7 +21,7 @@ const Sidebar = ({ onMenuSelect, activeComponent }) => {
             </div>
             <div className="border-t border-neutral-600"></div>
             <ul className="flex flex-col">
-                {menuItems.map((item) => (
+                {filteredMenuItems.map((item) => (
                     <React.Fragment key={item.id}>
                         <li
                             onClick={() => onMenuSelect(item.id)}
