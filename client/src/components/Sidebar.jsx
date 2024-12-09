@@ -15,7 +15,7 @@ const Sidebar = ({ onMenuSelect, activeComponent }) => {
     )
 
     return (
-        <div className="flex flex-col w-full min-h-screen bg-black mobile:w-full tablet:w-1/4">
+        <div className="flex flex-col w-full min-h-screen bg-black laptop:w-[28.4rem] mobile:w-full tablet:w-1/4">
             <div className="px-8 py-6 mb-4 text-2xl text-white font-helvetica-w20-bold">
                 Panel Administrador
             </div>
