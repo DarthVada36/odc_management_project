@@ -21,7 +21,7 @@ const Nav = () => {
 
     useEffect(() => {
         if (location.pathname === '/dashboard') {
-            setActiveLabel('Dashboard')
+            setActiveLabel('Panel de administrador')
         } else if (location.pathname === '/') {
             setActiveLabel(null)
         }
@@ -42,9 +42,9 @@ const Nav = () => {
             return ['Inscripción', 'Cursos', 'Contacto']
         }
         if (isDashboardRoute) {
-            return ['Dashboard']
+            return ['Panel de administrador']
         }
-        return ['Dashboard']
+        return ['Panel de administrador']
     }
 
     const currentMenuItems = getMenuItems()
@@ -170,7 +170,7 @@ const Nav = () => {
 
     // Event handlers for menu interactions
     const handleLabelClick = (item) => {
-        if (item === 'Dashboard') {
+        if (item === 'Panel de administrador') {
             navigate('/dashboard')
         }
         setActiveLabel(item)
