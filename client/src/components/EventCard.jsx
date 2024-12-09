@@ -19,7 +19,7 @@ const EventCard = ({ imageUrl, title, description }) => {
                 </h2>
 
                 <p className="text-gray-600 mb-6">
-                    {description || "Secondary-text"}
+                    {description || "Description"} 
                 </p>
 
                 {/* Buttons Container */}
