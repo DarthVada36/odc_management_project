@@ -13,7 +13,6 @@ export const getAllCourses = async () => {
     }
 };
 
-//Get course by ID -- GET
 
 export const getCourseById = async (id) => {
     try {
