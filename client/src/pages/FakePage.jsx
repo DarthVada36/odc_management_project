@@ -48,7 +48,7 @@ const FakePage = () => {
     return ( 
     <div className='p-4'>
         {/* Título de la página */}
-        <h1 className='text-3xl font-bold text-center mb-6'>Curso1</h1>
+        <h1 className='text-2xl font-bold text-center mb-6'>Curso1</h1>
         {/* Contenedor responsivo de la tarjetas */}
         <div className='grid gap-4 justify-center w-full'
              style={{
