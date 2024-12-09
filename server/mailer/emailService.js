@@ -1,33 +1,35 @@
 import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
 
-dotenv.config();
-
+// Configuración del transportador de nodemailer
 const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: process.env.SMTP_PORT,
-  secure: false, // Cambiar a true si se usa SSL/TLS
+  service: 'gmail', // Cambia esto si usas otro proveedor (como Outlook)
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
+    user: process.env.EMAIL_USER, // Correo remitente
+    pass: process.env.EMAIL_PASS, // Contraseña o token
   },
 });
 
-// Función para enviar correos
-export const sendEmail = async ({ recipients, subject, html }) => {
+/**
+ * Servicio para enviar correos.
+ * @param {string[]} recipients - Lista de destinatarios.
+ * @param {string} subject - Asunto del correo.
+ * @param {string} htmlContent - Contenido HTML del correo.
+ * @returns {Promise<void>}
+ */
+export const sendEmail = async (recipients, subject, htmlContent) => {
   try {
     const mailOptions = {
-      from: `"Gestión de Cursos" <${process.env.SMTP_USER}>`,
-      to: recipients.join(','), // Destinatarios separados por coma
-      subject,
-      html,
+      from: process.env.EMAIL_USER, // Remitente
+      to: recipients.join(', '), // Destinatarios (separados por comas)
+      subject, // Asunto
+      html: htmlContent, // Contenido en formato HTML
     };
 
-    const info = await transporter.sendMail(mailOptions);
-    console.log(`Correo enviado: ${info.messageId}`);
-    return info;
+    // Enviar el correo
+    await transporter.sendMail(mailOptions);
+    console.log('Correo enviado exitosamente');
   } catch (error) {
-    console.error('Error al enviar el correo:', error);
-    throw error;
+    console.error('Error al enviar el correo:', error.message);
+    throw new Error('No se pudo enviar el correo');
   }
 };

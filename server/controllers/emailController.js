@@ -1,20 +1,23 @@
-import { sendEmail } from '../services/emailService.js';
+import { sendEmail } from './emailService.js';
 
-export const sendBulkEmails = async (req, res) => {
-  const { recipients, subject, html } = req.body;
+/**
+ * Controlador para enviar un correo.
+ * @param {Object} req - Solicitud HTTP.
+ * @param {Object} res - Respuesta HTTP.
+ */
+export const sendEmailController = async (req, res) => {
+  const { recipients, subject, htmlContent } = req.body;
 
-  if (!recipients || recipients.length === 0) {
-    return res.status(400).json({ message: 'No se proporcionaron destinatarios.' });
-  }
-
-  if (!html) {
-    return res.status(400).json({ message: 'No se proporcionó contenido HTML.' });
+  // Validar que se envíen todos los campos necesarios
+  if (!recipients || !subject || !htmlContent) {
+    return res.status(400).json({ message: 'Faltan campos requeridos' });
   }
 
   try {
-    const info = await sendEmail({ recipients, subject, html });
-    res.status(200).json({ message: 'Correos enviados 📨', info });
+    // Llamar al servicio de correo
+    await sendEmail(recipients, subject, htmlContent);
+    res.status(200).json({ message: 'Correo enviado exitosamente' });
   } catch (error) {
-    res.status(500).json({ message: 'Error al enviar correos', error });
+    res.status(500).json({ message: 'Error al enviar el correo', error: error.message });
   }
 };
