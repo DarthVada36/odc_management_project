@@ -5,6 +5,7 @@ import FormPage from '../pages/FormPage'
 import AccessAdminPage from '../pages/AccessAdminPage' // Asegúrate de importar la nueva página
 import { createBrowserRouter } from 'react-router-dom'
 import CreateAdminPage from '../pages/CreateAdminPage'
+
 import DashboardPage from '../pages/DashboardPage'
 import { ProtectedRoute } from '../components/ProtectedRoute'
 import FakePage from '../pages/FakePage'
