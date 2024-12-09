@@ -21,7 +21,7 @@ const Course = connectionDb.define('Course', {
         },
     },
     description: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT, // Para descripciones más largas
         allowNull: false,
     },
     date: {
@@ -36,7 +36,8 @@ const Course = connectionDb.define('Course', {
         type: DataTypes.STRING,
         allowNull: false,
         validate: {
-        isUrl: true,
+            isUrl: true,
+        },
     },
     tickets: {
         type: DataTypes.INTEGER,

@@ -22,3 +22,80 @@ export const getMinorByCourseId = async (req, res) => {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const createMinorByEnrollmentId = async (req, res) => {
+    try {
+        const { enrollment_id } = req.params;
+        const { name, age } = req.body;
+
+        // Verificar que la inscripción existe
+        const enrollmentExists = await Enrollment.findByPk(enrollment_id);
+        if (!enrollmentExists) {
+            return res.status(404).json({ message: "Inscripción no encontrada" });
+        }
+
+        // Crear el menor (permitimos campos vacíos si la lógica lo requiere)
+        const minor = await Minor.create({
+            name: name || null,
+            age: age || null,
+            enrollment_id,
+        });
+
+        res.status(201).json(minor);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const getMinorsByEnrollmentId = async (req, res) => {
+    try {
+        const { enrollment_id } = req.params;
+
+        const minors = await Minor.findAll({ where: { enrollment_id } });
+        if (minors.length === 0) {
+            return res.status(404).json({ message: "No hay menores asociados a esta inscripción" });
+        }
+
+        res.status(200).json(minors);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+export const updateMinorById = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, age } = req.body;
+
+        const minor = await Minor.findByPk(id);
+        if (!minor) {
+            return res.status(404).json({ message: "Menor no encontrado" });
+        }
+
+        // Actualizamos solo los campos proporcionados
+        minor.name = name || minor.name;
+        minor.age = age || minor.age;
+        await minor.save();
+
+        res.status(200).json(minor);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};
+
+
+export const deleteMinorById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const minor = await Minor.findByPk(id);
+        if (!minor) {
+            return res.status(404).json({ message: "Menor no encontrado" });
+        }
+
+        await minor.destroy();
+        res.status(200).json({ message: "Menor eliminado con éxito" });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+};

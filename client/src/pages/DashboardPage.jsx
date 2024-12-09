@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
 import Sidebar from '../components/Sidebar'
-import UserTable from '../components/UserTable'
 import AdministratorsTable from '../components/AdministratorsTable'
 import MainPanel from '../components/MainPanel'
+import EnrollmentsTable from '../components/EnrollmentsTable'
 
 const DashboardPage = () => {
     const [activeComponent, setActiveComponent] = useState('dashboard')
@@ -12,7 +12,7 @@ const DashboardPage = () => {
             case 'administrators':
                 return <AdministratorsTable />
             case 'enrollments':
-                return <UserTable />
+                return <EnrollmentsTable />
             default:
                 return <MainPanel title="Dashboard" />
         }
