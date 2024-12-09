@@ -19,9 +19,12 @@ const FakePage = () => {
         <h1 className='text-3xl font-bold text-center mb-6'>Curso1</h1>
         {/* Contenedor responsivo de la tarjetas */}
         <div className='grid gap-4'
-        {/* Cada tarjeta ocupará un espacio mínimo de 320px, si hay + espacion se ajustará automaticamente */}
+        
         style={{
+            //Cada tarjeta ocupará un espacio mínimo de 320px, si hay + espacion se ajustará automaticamente */}
+            display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+            gap:'16px',
               }}
         >
         {/* Mapeo de los eventos y los muestro como tarjetas */}    
