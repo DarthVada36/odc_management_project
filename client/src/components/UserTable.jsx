@@ -5,7 +5,7 @@ import {
   getAllEnrollments,
   deleteEnrollmentById,
 } from '../services/enrollmentServices.js';
-import EmailEditorComponent from './EmailEditor';
+import EmailEditorComponent from './EmailEditorComponent.jsx';
 
 const UserTable = () => {
   const [enrollments, setEnrollments] = useState([]);

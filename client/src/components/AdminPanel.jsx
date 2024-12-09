@@ -5,12 +5,12 @@ import {
 } from '../services/enrollmentServices.js';
 import UserTable from './UserTable';
 import SearchBar from './SearchBar';
-import EmailEditorComponent from './EmailEditor.jsx';
+import EmailEditorComponent from './EmailEditorComponent.jsx';
 
 const AdminPanel = () => {
   const [enrollments, setEnrollments] = useState([]);
   const [filteredEnrollments, setFilteredEnrollments] = useState([]);
-  const [showEmailEditor, setShowEmailEditor] = useState(false);
+  const [showEmailEditorComponent, setShowEmailEditorComponent] = useState(false);
   const [selectedRecipients, setSelectedRecipients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -47,7 +47,7 @@ const AdminPanel = () => {
   // Abrir el editor con los destinatarios seleccionados
   const handleOpenEditor = (recipients) => {
     setSelectedRecipients(recipients); // Establecer destinatarios
-    setShowEmailEditor(true); // Mostrar el editor
+    setShowEmailEditorComponent(true); // Mostrar el editor
   };
 
   // Manejar el envío del correo
@@ -65,12 +65,12 @@ const AdminPanel = () => {
       alert('Hubo un error al enviar el correo');
     }
 
-    setShowEmailEditor(false); // Cerrar el editor después del envío
+    setShowEmailEditorComponent(false); // Cerrar el editor después del envío
   };
 
   // Cerrar el editor sin enviar
   const handleCloseEditor = () => {
-    setShowEmailEditor(false);
+    setShowEmailEditorComponent(false);
   };
 
   if (loading) {
@@ -108,7 +108,7 @@ const AdminPanel = () => {
       </div>
 
       {/* Editor de correos */}
-      {showEmailEditor && (
+      {showEmailEditorComponent && (
         <EmailEditorComponent
           onSendEmail={handleSendEmail}
           onClose={handleCloseEditor}
