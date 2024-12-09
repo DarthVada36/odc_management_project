@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000/api/mailer';
+const API_URL = 'http://localhost:3000/api/mailer/send';
 
 /**
  * Servicio para enviar correos.
