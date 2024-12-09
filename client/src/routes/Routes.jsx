@@ -39,7 +39,7 @@ export const router = createBrowserRouter([
                 ),
             },
             {
-                path: 'fakePage',
+                path: 'fake-Page',
                 element: <fakePage />,
             },
         ],
