@@ -16,7 +16,7 @@ const EnrollmentsTable = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const itemsPerPage = 5
+  const itemsPerPage = 10
 
   // const totalPages = Math.ceil(enrollments.length / itemsPerPage)
   const indexOfLastItem = currentPage * itemsPerPage
@@ -197,7 +197,7 @@ const EnrollmentsTable = () => {
                         onClick={() =>
                           handleDeleteClick(enrollment)
                         }
-                        className="flex-grow w-full px-2 py-1 text-black bg-white border border-black rounded sm:flex-grow-0"
+                        className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold0"
                       >
                         Eliminar
                       </button>
