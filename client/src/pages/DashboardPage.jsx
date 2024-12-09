@@ -1,19 +1,34 @@
-import React from 'react';
-import AdminPanel from '../components/AdminPanel.jsx';
-import Sidebar from '../components/Sidebar.jsx';
+import React, { useState } from 'react'
+import Sidebar from '../components/Sidebar'
+import UserTable from '../components/UserTable'
+import AdministratorsTable from '../components/AdministratorsTable'
+import MainPanel from '../components/MainPanel'
 
 const DashboardPage = () => {
-  return (
-    <div className='flex h-screen'>
-      {/* Barra lateral */}
-      <Sidebar className='w-1/4 bg-gray-200' />
+    const [activeComponent, setActiveComponent] = useState('dashboard')
 
-      {/* Contenido principal */}
-      <div className='flex-1 flex flex-col bg-gray-100'>
-        {/* Panel de Administración */}
-        <AdminPanel />
-      </div>
-    </div>
-  );
-};
-export default DashboardPage;
+    const renderComponent = () => {
+        switch (activeComponent) {
+            case 'administrators':
+                return <AdministratorsTable />
+            case 'enrollments':
+                return <UserTable />
+            default:
+                return <MainPanel title="Dashboard" />
+        }
+    }
+
+    return (
+        <div className="flex h-screen">
+            <Sidebar
+                onMenuSelect={setActiveComponent}
+                activeComponent={activeComponent}
+            />
+            <div className="flex flex-col flex-1 bg-gray-100">
+                {renderComponent()}
+            </div>
+        </div>
+    )
+}
+
+export default DashboardPage
