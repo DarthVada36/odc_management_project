@@ -3,7 +3,9 @@ import { motion } from 'framer-motion'
 import { IoMenuOutline } from 'react-icons/io5'
 import { HiX } from 'react-icons/hi'
 import sessionLeaveIcon from '../../assets/icons/session-leave.svg'
-import loginAdministratoIcon from '../../assets/icons/login-administrator.svg'
+// import loginAdministratoIcon from '../../assets/icons/login-administrator.svg'
+import { useAuth } from '../../context/AuthContext'
+import { useLocation, useNavigate } from 'react-router-dom'
 
 // Main navigation component with floating navbar functionality
 const Nav = () => {
@@ -13,7 +15,44 @@ const Nav = () => {
     const [activeLang, setActiveLang] = useState('ES')
     const [showFloating, setShowFloating] = useState(false)
     const [hasAnimated, setHasAnimated] = useState(false)
-    const menuItems = ['Inscripción', 'Cursos', 'Dashboard', 'Contacto']
+    const { isAuthenticated, logout } = useAuth()
+    const location = useLocation()
+    const navigate = useNavigate()
+
+    useEffect(() => {
+        if (location.pathname === '/dashboard') {
+            setActiveLabel('Dashboard')
+        } else if (location.pathname === '/') {
+            setActiveLabel(null)
+        }
+    }, [location.pathname])
+
+    // Determine the menu items based on the current route
+    const getMenuItems = () => {
+        if (location.pathname === '/access-admin') {
+            return []
+        }
+
+        const isHome = location.pathname === '/'
+        const isDashboardRoute = ['/dashboard', '/new-admin'].includes(
+            location.pathname
+        )
+
+        if (isHome) {
+            return ['Inscripción', 'Cursos', 'Contacto']
+        }
+        if (isDashboardRoute) {
+            return ['Dashboard']
+        }
+        return ['Dashboard']
+    }
+
+    const currentMenuItems = getMenuItems()
+
+    const handleLogout = () => {
+        logout()
+        navigate('/access-admin')
+    }
 
     // Controls initial animation state
     useEffect(() => {
@@ -131,10 +170,12 @@ const Nav = () => {
 
     // Event handlers for menu interactions
     const handleLabelClick = (item) => {
+        if (item === 'Dashboard') {
+            navigate('/dashboard')
+        }
         setActiveLabel(item)
         setIsFloatingMenuOpen(false)
         setIsInitialMenuOpen(false)
-        setIsMenuOpen(false)
     }
 
     const handleLanguageChange = (lang) => {
@@ -234,7 +275,7 @@ const Nav = () => {
                             className="items-center hidden gap-8 ml-[1.2rem] laptop:flex"
                             variants={shouldAnimate ? blockVariants : {}}
                         >
-                            {menuItems.map((item) => (
+                            {currentMenuItems.map((item) => (
                                 <motion.a
                                     key={item}
                                     variants={
@@ -264,7 +305,7 @@ const Nav = () => {
                         animate="visible"
                     >
                         {/* Login icon */}
-                        <motion.button
+                        {/* <motion.button
                             variants={shouldAnimate ? containerVariants : {}}
                             className="p-2 mt-[1.8rem] text-white hover:text-primary transition-colors duration-300 ease-in-out"
                         >
@@ -273,19 +314,24 @@ const Nav = () => {
                                 alt="Iniciar sesión"
                                 className="desktop:w-8 desktop:h-8 laptop:w-7 laptop:h-7 tablet:w-7 tablet:h-7 mobile:w-7 mobile:h-7"
                             />
-                        </motion.button>
+                        </motion.button> */}
 
                         {/* Logout icon */}
-                        <motion.button
-                            variants={shouldAnimate ? containerVariants : {}}
-                            className="p-2 text-white transition-colors duration-300 ease-in-out hover:text-primary"
-                        >
-                            <img
-                                src={sessionLeaveIcon}
-                                alt="Cerrar sesión"
-                                className="desktop:w-8 mt-[1.8rem] desktop:h-8 laptop:w-7 laptop:h-7 tablet:w-7 tablet:h-7 mobile:w-7 mobile:h-7"
-                            />
-                        </motion.button>
+                        {isAuthenticated ? (
+                            <motion.button
+                                onClick={handleLogout}
+                                variants={
+                                    shouldAnimate ? containerVariants : {}
+                                }
+                                className="p-2 text-white transition-colors duration-300 ease-in-out hover:text-primary"
+                            >
+                                <img
+                                    src={sessionLeaveIcon}
+                                    alt="Cerrar sesión"
+                                    className="desktop:w-8 mt-[1.8rem] desktop:h-8 laptop:w-7 laptop:h-7 tablet:w-7 tablet:h-7 mobile:w-7 mobile:h-7"
+                                />
+                            </motion.button>
+                        ) : null}
 
                         {/* Menu button - mobile only */}
                         <button
@@ -325,7 +371,7 @@ const Nav = () => {
                     className="absolute left-0 right-0 bg-black border-t border-neutral-600 laptop:hidden mobile-menu"
                 >
                     <div className="flex flex-col px-2 font-bold font-helvetica-w20-bold text-[14px]">
-                        {menuItems.map((item) => (
+                        {currentMenuItems.map((item) => (
                             <a
                                 key={item}
                                 href="#"
