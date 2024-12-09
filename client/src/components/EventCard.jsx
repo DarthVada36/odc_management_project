@@ -24,7 +24,7 @@ const EventCard = ({ imageUrl, title, description }) => {
 
                 {/* Buttons Container */}
                 <div className="flex gap-4">
-  <button className="px-6 py-2 bg-orange text-black font-semibold rounded hover:bg-orange-600 transition-colors">
+  <button className="px-6 py-2 bg-orange text-black font-semibold hover:bg-black hover:text-white transition-colors">
     Inscripciones
   </button>
 
