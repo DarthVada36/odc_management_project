@@ -23,7 +23,25 @@ const FakePage = () => {
           imageUrl: 'https://via.placeholder.com/400x320',
           title: 'Evento 3',
           description: 'Este es el tercer evento.'
-        }
+        },
+        {
+            id: 4,
+            imageUrl: 'https://via.placeholder.com/400x320',
+            title: 'Evento 1',
+            description: 'Este es el primer evento.'
+          },
+          {
+            id: 5,
+            imageUrl: 'https://via.placeholder.com/400x320',
+            title: 'Evento 2',
+            description: 'Este es el segundo evento.'
+          },
+          {
+            id: 6,
+            imageUrl: 'https://via.placeholder.com/400x320',
+            title: 'Evento 3',
+            description: 'Este es el tercer evento.'
+          }
       ];
 
     return ( 
