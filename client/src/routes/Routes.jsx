@@ -5,7 +5,6 @@ import FormPage from '../pages/FormPage'
 import AccessAdminPage from '../pages/AccessAdminPage' // Asegúrate de importar la nueva página
 import { createBrowserRouter } from 'react-router-dom'
 import CreateAdminPage from '../pages/CreateAdminPage'
-
 import DashboardPage from '../pages/DashboardPage'
 
 export const router = createBrowserRouter([
@@ -18,7 +17,7 @@ export const router = createBrowserRouter([
                 element: <FormPage />,
             },
             {
-                path: 'dashboard',
+                path: '/dashboard',
                 element: <DashboardPage />,
             },
 
