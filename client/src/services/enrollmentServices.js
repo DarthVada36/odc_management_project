@@ -24,17 +24,6 @@ export const getEnrollmentById = async (id) => {
     }
 };
 
-//Delete enrollment by ID -- DELETE
-export const deleteEnrollmentById = async (id) => {
-    try {
-        const res = await axios.delete(`${API_URL}/${id}`);
-        return res.data;
-    } catch (error) {
-        console.error("No se pudo eliminar la inscripción indicada", error.message);
-        throw error;
-    }
-};
-
 //Create enrollment -- POST
 export const createEnrollment = async (data) => {
     try {
@@ -70,6 +59,17 @@ export const updateEnrollmentById = async (id, enrollmentData) => {
         return res.data;
     } catch (error) {
         console.error("No se pudo actualizar la inscripción", error.message);
+        throw error;
+    }
+};
+
+//Delete enrollment by ID -- DELETE
+export const deleteEnrollmentById = async (id) => {
+    try {
+        const res = await axios.delete(`${API_URL}/${id}`);
+        return res.data;
+    } catch (error) {
+        console.error("No se pudo eliminar la inscripción indicada", error.message);
         throw error;
     }
 };

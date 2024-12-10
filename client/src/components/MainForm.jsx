@@ -9,7 +9,7 @@ const MainForm = ({
   setFormData,
   onAddMinor, // Nueva prop para manejar menores
   minors = [],
-  courseId, // Lista de menores
+  courseId, 
 }) => {
   const {
     register,
@@ -61,11 +61,13 @@ const MainForm = ({
   };
 
   const addMinor = () => {
-    if (validateMinor()) {
-      onAddMinor(minor);
-      setMinor({ name: "", age: "" });
-    }
-  };
+  if (validateMinor()) {
+    const updatedMinors = [...(formData.minors || []), minor];
+    setFormData({ ...formData, minors: updatedMinors });
+    onAddMinor(minor);
+    setMinor({ name: "", age: "" });
+  }
+};
 
   return (
     <div className="p-6 border border-orange bg-light shadow-md w-full max-w-screen">
