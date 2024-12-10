@@ -12,9 +12,9 @@ const apiClient = axios.create({
   },
 });
 
-/**
- * Obtiene todas las plantillas de Unlayer.
- */
+
+//Obtiene todas las plantillas de Unlayer.
+ 
 export const getTemplates = async (req, res) => {
   try {
     const response = await apiClient.get('/templates');
@@ -28,9 +28,8 @@ export const getTemplates = async (req, res) => {
   }
 };
 
-/**
- * Guarda una nueva plantilla en Unlayer.
- */
+// Guarda una nueva plantilla en Unlayer.
+ 
 export const saveTemplate = async (req, res) => {
   const { name, design } = req.body;
 
