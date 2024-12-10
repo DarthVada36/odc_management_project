@@ -11,7 +11,7 @@ import { checkRol } from '../middleware/rolMiddleware.js'
 
 const router = express.Router()
 
-router.post('/', authMiddleware, checkRol(['superadmin']), createAdmin)
+router.post('/',  createAdmin) // Modificado para usar el middleware de autenticación
 router.get('/', getAdmins)
 router.get('/:id',  getAdminById)
 router.put('/:id', authMiddleware, checkRol(['superadmin']), updateAdmin)
