@@ -7,7 +7,6 @@ const Sidebar = ({ onMenuSelect, activeComponent }) => {
         { id: 'dashboard', label: 'Dashboard' },
         { id: 'administrators', label: 'Administradores', requiredRole: 1 },
         { id: 'enrollments', label: 'Inscripciones' },
-        { id: 'enrollmentsByCourse', label: 'Inscripciones por Curso' },
         { id: 'courses', label: 'Cursos' },
     ]
 

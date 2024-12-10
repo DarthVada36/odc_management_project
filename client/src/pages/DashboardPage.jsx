@@ -6,8 +6,9 @@ import MainPanel from '../components/MainPanel'
 import EnrollmentsTable from '../components/EnrollmentsTable'
 import EnrollmentsTableByCourse from '../components/EnrollmentsTableByCourse'
 
+
 const DashboardPage = () => {
-const [activeComponent, setActiveComponent] = useState('dashboard');
+    const [activeComponent, setActiveComponent] = useState('dashboard');
 
     const renderComponent = () => {
         switch (activeComponent) {
@@ -15,8 +16,12 @@ const [activeComponent, setActiveComponent] = useState('dashboard');
                 return <AdministratorsTable />
             case 'enrollments':
                 return <EnrollmentsTable />
-            case 'courses' :
-                return <CoursesTable />
+            case 'courses':
+                return <CoursesTable 
+                onShowEnrollmentsByCourse={() =>{
+                    setActiveComponent('enrollmentsByCourse');
+                }}
+                />
             case 'enrollmentsByCourse':
                 return <EnrollmentsTableByCourse />
             default:
