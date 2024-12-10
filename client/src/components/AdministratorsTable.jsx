@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import MainPanel from './MainPanel'
 import Pagination from './Pagination'
-import { getAllAdmins } from '../services/adminServices'
+import { getAllAdmins, deleteAdminById } from '../services/adminServices'
 import { exportToPDF, exportToExcel } from '../utils/exportUtils'
 import excelIcon from '../assets/icons/file-excel.svg'
 import pdfIcon from '../assets/icons/file-pdf.svg'
-import { deleteAdminById } from '../services/adminServices'
 import ConfirmationModal from './ConfirmationModal'
+import AdminForm from './AdminForm'
+import { useAuth } from '../context/AuthContext'
 
 const AdministratorsTable = () => {
     const [admins, setAdmins] = useState([])
@@ -16,14 +17,14 @@ const AdministratorsTable = () => {
     const [currentPage, setCurrentPage] = useState(1)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalMessage, setModalMessage] = useState('')
+    const [showModal, setShowModal] = useState(false)
     const [selectedAdmin, setSelectedAdmin] = useState(null)
+    const [isEditing, setIsEditing] = useState(false)
+    const { authRequest } = useAuth()
     const itemsPerPage = 6
 
-    // Calculate the index of the first and last item to display on the current page
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
-
-    // Obtain the current items to display on the current page
     const currentAdmins = filteredAdmins.slice(
         indexOfFirstItem,
         indexOfLastItem
@@ -99,7 +100,7 @@ const AdministratorsTable = () => {
         }
     }
 
-    const handleDeleteClick = async (admin) => {
+    const handleDeleteClick = (admin) => {
         setSelectedAdmin(admin)
         setModalMessage(
             `¿Estás seguro de que deseas eliminar al administrador ${admin.username}?`
@@ -118,6 +119,30 @@ const AdministratorsTable = () => {
         }
     }
 
+    const handleEditClick = async (admin) => {
+        try {
+            const response = await authRequest(
+                `http://localhost:3000/api/admins/${admin.id}`
+            )
+            const adminData = await response.json()
+            setSelectedAdmin(adminData)
+            setIsEditing(true)
+            setShowModal(true)
+        } catch (error) {
+            console.error(
+                'Error al obtener los datos del administrador:',
+                error
+            )
+            alert('Error al cargar los datos del administrador')
+        }
+    }
+
+    const handleCreateClick = () => {
+        setSelectedAdmin(null)
+        setIsEditing(false)
+        setShowModal(true)
+    }
+
     if (loading) return <div>Cargando...</div>
     if (error) return <div>Error al cargar los administradores</div>
 
@@ -128,25 +153,31 @@ const AdministratorsTable = () => {
             onSearch={handleSearch}
         >
             <div className="flex flex-col h-[calc(100vh-240px)]">
-                {/* Export buttons */}
-                <div className="flex justify-end mb-3 space-x-4">
-                    <img
-                        src={pdfIcon}
-                        alt="Exportar a PDF"
-                        className="w-10 h-10 cursor-pointer hover:opacity-80"
-                        onClick={handleExportPDF}
-                        title="Exportar a PDF"
-                    />
-                    <img
-                        src={excelIcon}
-                        alt="Exportar a Excel"
-                        className="w-10 h-10 cursor-pointer hover:opacity-80"
-                        onClick={handleExportExcel}
-                        title="Exportar a Excel"
-                    />
+                <div className="flex justify-between mb-3 space-x-4">
+                    <button
+                        onClick={handleCreateClick}
+                        className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                    >
+                        Crear Nuevo Administrador
+                    </button>
+                    <div className="flex gap-4">
+                        <img
+                            src={pdfIcon}
+                            alt="Exportar a PDF"
+                            className="w-10 h-10 cursor-pointer hover:opacity-80"
+                            onClick={handleExportPDF}
+                            title="Exportar a PDF"
+                        />
+                        <img
+                            src={excelIcon}
+                            alt="Exportar a Excel"
+                            className="w-10 h-10 cursor-pointer hover:opacity-80"
+                            onClick={handleExportExcel}
+                            title="Exportar a Excel"
+                        />
+                    </div>
                 </div>
 
-                {/* Table container */}
                 <div className="flex-1 min-h-0">
                     <table className="w-full border-collapse table-auto">
                         <thead className="bg-primary">
@@ -188,9 +219,7 @@ const AdministratorsTable = () => {
                                         <div className="flex justify-center gap-2">
                                             <button
                                                 onClick={() =>
-                                                    alert(
-                                                        'Función de editar pendiente'
-                                                    )
+                                                    handleEditClick(admin)
                                                 }
                                                 className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
                                             >
@@ -212,7 +241,6 @@ const AdministratorsTable = () => {
                     </table>
                 </div>
 
-                {/* Pagination */}
                 <div className="h-16">
                     <Pagination
                         currentPage={currentPage}
@@ -223,12 +251,59 @@ const AdministratorsTable = () => {
                     />
                 </div>
             </div>
+
             <ConfirmationModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 message={modalMessage}
                 onConfirm={handleDeleteConfirm}
             />
+
+            {showModal && (
+                <AdminForm
+                    initialData={selectedAdmin}
+                    isEditing={isEditing}
+                    onSubmit={async (formData) => {
+                        try {
+                            if (isEditing) {
+                                await authRequest(
+                                    `http://localhost:3000/api/admins/${selectedAdmin.id}`,
+                                    {
+                                        method: 'PUT',
+                                        body: JSON.stringify(formData),
+                                    }
+                                )
+                            } else {
+                                await authRequest(
+                                    'http://localhost:3000/api/admins',
+                                    {
+                                        method: 'POST',
+                                        body: JSON.stringify(formData),
+                                    }
+                                )
+                            }
+                            await fetchAdmins()
+                            setShowModal(false)
+                            return true
+                        } catch (error) {
+                            console.error('Error:', error)
+                            alert(error.message)
+                            return false
+                        }
+                    }}
+                    onCancel={() => {
+                        setShowModal(false)
+                        setSelectedAdmin(null)
+                        setIsEditing(false)
+                    }}
+                    title={
+                        isEditing
+                            ? 'Editar Administrador'
+                            : 'Crear nuevo Administrador'
+                    }
+                    submitText={isEditing ? 'Guardar cambios' : 'Crear'}
+                />
+            )}
         </MainPanel>
     )
 }
