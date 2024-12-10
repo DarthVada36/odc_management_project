@@ -2,10 +2,21 @@ import axios from 'axios'
 
 const API_URL = 'http://localhost:3000/api/admins'
 
-//Get all admins -- GET
+// Auxiliar function to get the auth headers
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('authToken')
+    return {
+        headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+        },
+    }
+}
+
+// Get all admins -- GET
 export const getAllAdmins = async () => {
     try {
-        const res = await axios.get(API_URL)
+        const res = await axios.get(API_URL, getAuthHeaders())
         return res.data
     } catch (error) {
         console.error(
@@ -16,10 +27,10 @@ export const getAllAdmins = async () => {
     }
 }
 
-//Get admin by ID
+// Get admin by ID
 export const getAdminById = async (id) => {
     try {
-        const res = await axios.get(`${API_URL}/${id}`)
+        const res = await axios.get(`${API_URL}/${id}`, getAuthHeaders())
         return res.data
     } catch (error) {
         console.error(
@@ -30,10 +41,10 @@ export const getAdminById = async (id) => {
     }
 }
 
-//Delete admin by ID -- DELETE
+// Delete admin by ID -- DELETE
 export const deleteAdminById = async (id) => {
     try {
-        const res = await axios.delete(`${API_URL}/${id}`)
+        const res = await axios.delete(`${API_URL}/${id}`, getAuthHeaders())
         return res.data
     } catch (error) {
         console.error(
@@ -44,10 +55,10 @@ export const deleteAdminById = async (id) => {
     }
 }
 
-//Create admin -- POST
+// Create admin -- POST
 export const createAdmin = async (adminData) => {
     try {
-        const res = await axios.post(API_URL, adminData)
+        const res = await axios.post(API_URL, adminData, getAuthHeaders())
         return res.data
     } catch (error) {
         console.error('No se pudo crear el administrador', error.message)
@@ -55,10 +66,14 @@ export const createAdmin = async (adminData) => {
     }
 }
 
-//Update admin by ID -- PUT
+// Update admin by ID -- PUT
 export const updateAdminById = async (id, adminData) => {
     try {
-        const res = await axios.put(`${API_URL}/${id}`, adminData)
+        const res = await axios.put(
+            `${API_URL}/${id}`,
+            adminData,
+            getAuthHeaders()
+        )
         return res.data
     } catch (error) {
         console.error(

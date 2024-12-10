@@ -1,70 +1,80 @@
 import React, { useState, useEffect } from 'react'
-import { useAuth } from '../context/AuthContext'
 
 const AdminForm = ({
-    initialData = {},
+    initialData = null,
     onSubmit,
     onCancel,
     submitText = 'Crear Administrador',
     title = 'Crear nuevo Administrador',
+    isEditing = false,
 }) => {
-    const [username, setUsername] = useState(initialData.username || '')
-    const [password, setPassword] = useState('')
-    const [confirmPassword, setConfirmPassword] = useState('')
+    const [formData, setFormData] = useState({
+        username: '',
+        password: '',
+        confirmPassword: '',
+        roleId: '',
+    })
+
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [passwordError, setPasswordError] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
-    const [successMessage, setSuccessMessage] = useState('')
-    const [roleId, setRoleId] = useState(initialData.role_id || '')
+
+    useEffect(() => {
+        if (isEditing && initialData) {
+            setFormData({
+                username: initialData.username || '',
+                password: initialData.password || '',
+                confirmPassword: initialData.password || '',
+                roleId: initialData.role_id?.toString() || '',
+            })
+        }
+    }, [isEditing, initialData])
+
+    const handleChange = (e) => {
+        e.stopPropagation()
+        const { name, value } = e.target
+        setFormData((prev) => ({
+            ...prev,
+            [name]: value,
+        }))
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
+        e.stopPropagation()
 
-        if (password !== confirmPassword) {
+        if (formData.password !== formData.confirmPassword) {
             setPasswordError('Las contraseñas no coinciden')
             return
         }
 
-        if (!roleId) {
+        if (!formData.roleId) {
             setErrorMessage('Por favor, selecciona un rol')
             return
         }
 
-        setPasswordError('')
-        setErrorMessage('')
-        setSuccessMessage('')
-
-        const formData = {
-            username,
-            password,
-            role_id: parseInt(roleId),
+        const submitData = {
+            username: formData.username,
+            password: formData.password,
+            role_id: parseInt(formData.roleId),
         }
 
-        const success = await onSubmit(formData)
+        const success = await onSubmit(submitData)
         if (success) {
             onCancel()
         }
     }
 
-    useEffect(() => {
-        setUsername(initialData.username || '')
-        setPassword('')
-        setConfirmPassword('')
-        setRoleId(initialData.role_id || '')
-        setPasswordError('')
-        setErrorMessage('')
-        setSuccessMessage('')
-    }, [initialData])
-
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
+            <div className="absolute inset-0 bg-black/50" onClick={onCancel} />
             <div
-                className="absolute inset-0 bg-black/50"
-                onClick={onCancel}
-            ></div>
-            <div className="relative w-[500px] bg-white p-8">
+                className="relative w-[500px] bg-white p-8"
+                onClick={(e) => e.stopPropagation()}
+            >
                 <button
+                    type="button"
                     onClick={onCancel}
                     className="absolute p-2 text-gray-500 hover:text-dark top-4 right-4"
                 >
@@ -84,18 +94,24 @@ const AdminForm = ({
 
                 <h2 className="mb-8 text-2xl font-bold text-dark">{title}</h2>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form
+                    onSubmit={handleSubmit}
+                    className="space-y-6"
+                    autoComplete="off"
+                >
                     <div className="flex flex-col">
                         <label className="mb-2 font-bold text-dark">
                             Usuario
                         </label>
                         <input
                             type="text"
-                            value={username}
-                            onChange={(e) => setUsername(e.target.value)}
+                            name="username"
+                            value={formData.username}
+                            onChange={handleChange}
                             required
                             className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
                             placeholder="Nombre de usuario"
+                            autoComplete="off"
                         />
                     </div>
 
@@ -106,23 +122,24 @@ const AdminForm = ({
                         <div className="relative">
                             <input
                                 type={showPassword ? 'text' : 'password'}
-                                value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+                                name="password"
+                                value={formData.password}
+                                onChange={handleChange}
                                 required
                                 className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
                                 placeholder="Contraseña"
+                                autoComplete="new-password"
                             />
                             <button
                                 type="button"
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    setShowPassword(!showPassword)
+                                }}
                                 className="absolute transform -translate-y-1/2 right-3 top-1/2"
-                                onClick={() => setShowPassword(!showPassword)}
                             >
                                 <img
-                                    src={
-                                        showPassword
-                                            ? '/src/assets/password-open-eye.png'
-                                            : '/src/assets/password-eye.png'
-                                    }
+                                    src="/src/assets/password-eye.png"
                                     alt={showPassword ? 'Ocultar' : 'Mostrar'}
                                     className="w-6 h-6"
                                 />
@@ -137,27 +154,24 @@ const AdminForm = ({
                         <div className="relative">
                             <input
                                 type={showConfirmPassword ? 'text' : 'password'}
-                                value={confirmPassword}
-                                onChange={(e) =>
-                                    setConfirmPassword(e.target.value)
-                                }
+                                name="confirmPassword"
+                                value={formData.confirmPassword}
+                                onChange={handleChange}
                                 required
                                 className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
                                 placeholder="Confirmar contraseña"
+                                autoComplete="new-password"
                             />
                             <button
                                 type="button"
-                                className="absolute transform -translate-y-1/2 right-3 top-1/2"
-                                onClick={() =>
+                                onClick={(e) => {
+                                    e.stopPropagation()
                                     setShowConfirmPassword(!showConfirmPassword)
-                                }
+                                }}
+                                className="absolute transform -translate-y-1/2 right-3 top-1/2"
                             >
                                 <img
-                                    src={
-                                        showConfirmPassword
-                                            ? '/src/assets/password-open-eye.png'
-                                            : '/src/assets/password-eye.png'
-                                    }
+                                    src="/src/assets/password-eye.png"
                                     alt={
                                         showConfirmPassword
                                             ? 'Ocultar'
@@ -172,8 +186,9 @@ const AdminForm = ({
                     <div className="flex flex-col">
                         <label className="mb-2 font-bold text-dark">Rol</label>
                         <select
-                            value={roleId}
-                            onChange={(e) => setRoleId(e.target.value)}
+                            name="roleId"
+                            value={formData.roleId}
+                            onChange={handleChange}
                             required
                             className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
                         >
@@ -184,17 +199,11 @@ const AdminForm = ({
                         </select>
                     </div>
 
-                    {/* Error messages */}
                     {passwordError && (
                         <p className="text-sm text-red-500">{passwordError}</p>
                     )}
                     {errorMessage && (
                         <p className="text-sm text-red-500">{errorMessage}</p>
-                    )}
-                    {successMessage && (
-                        <p className="text-sm text-green-500">
-                            {successMessage}
-                        </p>
                     )}
 
                     <div className="flex justify-end gap-4 mt-8">
