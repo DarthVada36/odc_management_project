@@ -37,20 +37,23 @@ export const saveTemplate = async (req, res) => {
   const { name, design } = req.body;
 
   if (!name || !design) {
-    return res.status(400).json({ message: 'Faltan parámetros requeridos: name y design' });
+    return res.status(400).json({ message: 'Faltan parámetros requeridos' });
   }
 
   try {
+    console.log('Enviando plantilla:', { name, design });
     const response = await apiClient.post('/templates', { name, design });
-    return res.status(201).json(response.data); // Responde con el JSON completo
+    console.log('Respuesta de Unlayer:', response.data);
+    res.status(201).json(response.data);
   } catch (error) {
-    console.error('Error al guardar plantilla:', error.message);
-    return res.status(error.response?.status || 500).json({
+    console.error('Error al guardar la plantilla:', error.message);
+    res.status(error.response?.status || 500).json({
       message: 'Error al guardar la plantilla',
       details: error.response?.data || error.message,
     });
   }
 };
+
 
 /**
  * Genera una firma HMAC-SHA256 para un usuario.
