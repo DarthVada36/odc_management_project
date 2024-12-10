@@ -46,17 +46,6 @@ export const deleteMinorById = async (id) => {
     }
 };
 
-export const createMinor = async (data) => {
-    try {
-        const response = await axios.post(`/api/minors/enrollment/${data.enrollment_id}`, {
-            name: data.name || null,
-            age: data.age || null,
-        });
-        return response.data;
-    } catch (error) {
-        throw new Error(error.response?.data?.message || "Error al crear el menor");
-    }
-};
 
 
 //Update minor by ID -- PUT
