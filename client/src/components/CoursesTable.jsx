@@ -1,18 +1,26 @@
-import Pagination from './Pagination'
 import React, { useEffect, useState } from 'react'
+import Pagination from './Pagination'
 import { exportToPDF, exportToExcel } from '../utils/exportUtils'
 import MainPanel from './MainPanel.jsx'
+import CourseForm from './CourseForm'
+import ConfirmationModal from './ConfirmationModal'
 
 import {
     getAllCourses,
-    deleteCourseById,
-} from '../services/coursesServices.js'
+    removeCourseById,
+    updateCourseById as updateCourse,
+    createCourse,
+} from '../services/coursesServices'
 
 const CoursesTable = () => {
     const [courses, setCourses] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [filteredCourses, setFilteredCourses] = useState([])
+    const [isFormOpen, setIsFormOpen] = useState(false)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+    const [selectedCourse, setSelectedCourse] = useState(null)
+
     // Pagination
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 5
@@ -27,6 +35,7 @@ const CoursesTable = () => {
             try {
                 const data = await getAllCourses()
                 setCourses(data)
+                setFilteredCourses(data)
                 setLoading(false)
             } catch (error) {
                 console.error('Error fetching courses:', error)
@@ -38,19 +47,63 @@ const CoursesTable = () => {
         fetchCourses()
     }, [])
 
+    const handleEdit = (course) => {
+        setSelectedCourse(course)
+        setIsFormOpen(true)
+    }
+
+    const handleCreate = () => {
+        setSelectedCourse(null)
+        setIsFormOpen(true)
+    }
+
+    const handleDeleteClick = (course) => {
+        setSelectedCourse(course)
+        setIsDeleteModalOpen(true)
+    }
+
     const handleDelete = async (id) => {
         try {
-            await deleteCourseById(id)
+            await removeCourseById(id)
             setCourses(courses.filter((course) => course.id !== id))
+            setFilteredCourses(filteredCourses.filter((course) => course.id !== id))
+            setIsDeleteModalOpen(false)
+            setSelectedCourse(null)
         } catch (error) {
             console.error('Error deleting course:', error)
             setError(error)
         }
     }
 
+    const handleSubmit = async (formData) => {
+        try {
+            let updatedCourse
+            if (selectedCourse) {
+                // Actualizar curso existente
+                updatedCourse = await updateCourse(selectedCourse.id, formData)
+                setCourses(courses.map(course =>
+                    course.id === selectedCourse.id ? updatedCourse : course
+                ))
+                setFilteredCourses(filteredCourses.map(course =>
+                    course.id === selectedCourse.id ? updatedCourse : course
+                ))
+            } else {
+                // Crear nuevo curso
+                updatedCourse = await createCourse(formData)
+                setCourses([...courses, updatedCourse])
+                setFilteredCourses([...filteredCourses, updatedCourse])
+            }
+            setIsFormOpen(false)
+            return true
+        } catch (error) {
+            console.error('Error saving course:', error)
+            setError(error)
+            return false
+        }
+    }
+
     const handleExportPDF = () => {
         try {
-            // Implement PDF export logic
             const headers = ['Título', 'Descripción', 'Fecha', 'Schedule', 'Link', 'Tickets']
             const data = courses.map((course) => [
                 course.title,
@@ -68,7 +121,6 @@ const CoursesTable = () => {
 
     const handleExportExcel = () => {
         try {
-            // Implement Excel export logic
             const headers = ['Title', 'Description', 'Date', 'Schedule', 'Link', 'Tickets']
             const data = courses.map((course) => [
                 course.title,
@@ -83,6 +135,7 @@ const CoursesTable = () => {
             console.error('Error exporting to Excel:', error)
         }
     }
+
     const handleSearch = (searchTerm) => {
         const lowerCaseSearch = searchTerm.toLowerCase()
         const filtered = courses.filter((course) =>
@@ -102,17 +155,16 @@ const CoursesTable = () => {
         <MainPanel
             title="Gestión de Cursos"
             totalItems={filteredCourses.length}
-            onSearch={handleSearch}>
-        
-        <div className="p-2 bg-white shadow-md sm:p-6 md:p-8 rounded-lg">
-            {/* Botones de exportación */}
-            <div className="flex justify-end mb-6 space-x-4">
-    <button
-        onClick={handleExportPDF}
-        className="p-2 hover:bg-orange-600"ss
-        aria-label="Exportar a PDF"
-    >
-        <svg
+            onSearch={handleSearch}
+        >
+        <div className="flex justify-end mb-6">
+    <div className="flex space-x-4">
+        <button
+            onClick={handleExportPDF}
+            className="p-2 hover:bg-orange-600"
+            aria-label="Exportar a PDF"
+        >
+                    <svg
             width="35"
             height="35"
             viewBox="0 0 100 100"
@@ -124,13 +176,13 @@ const CoursesTable = () => {
                 transform="matrix(.1 0 0 .1 17.5 8.6)"
             />
         </svg> 
-    </button>
-    <button
-        onClick={handleExportExcel}
-        className=" hover:bg-orange-600"
-        aria-label="Exportar a Excel"
-    >
-        <svg
+        </button>
+        <button
+            onClick={handleExportExcel}
+            className="hover:bg-orange-600"
+            aria-label="Exportar a Excel"
+        >
+          <svg
             width="35"
             height="35"
             viewBox="0 0 100 100"
@@ -143,14 +195,14 @@ const CoursesTable = () => {
                 transform="scale(.1)"
             />
         </svg>
-    </button>
+        </button>
+    </div>
 </div>
 
-    
+
             {/* Contenedor de la tabla */}
             <div className="overflow-x-auto">
                 <table className="w-full border-collapse table-auto">
-                    {/* Encabezado de la tabla */}
                     <thead className="text-base font-bold text-black bg-orange">
                         <tr>
                             <th className="px-4 py-3 text-left">Título</th>
@@ -159,16 +211,15 @@ const CoursesTable = () => {
                             <th className="px-4 py-3 text-left">Horario</th>
                             <th className="px-4 py-3 text-left">Enlace</th>
                             <th className="px-4 py-3 text-left">Tickets</th>
-                            <th className="p-2 text-black  text-left sm:p-3 md:p-4">
+                            <th className="p-2 text-black text-left sm:p-3 md:p-4">
                                 Acciones
                             </th>
                         </tr>
                     </thead>
-                    {/* Cuerpo de la tabla */}
                     <tbody>
-                        {currentCourses.map((course, index) => (
+                        {currentCourses.map((course) => (
                             <tr
-                                key={index}
+                                key={course.id}
                                 className="bg-white mb-8 hover:bg-gray-50 border-b border-gray-200"
                             >
                                 <td className="px-4 text-sm py-3 text-left">{course.title}</td>
@@ -186,30 +237,31 @@ const CoursesTable = () => {
                                     >
                                         Ver
                                     </a>
-                                    
                                 </td>
                                 <td className="px-4 text-sm py-3 text-left">{course.tickets}</td>
-                                <td className="p- sm:p-3 md:p-4">
+                                <td className="p-2 sm:p-3 md:p-4">
                                     <div className="flex flex-col items-center space-y-2 sm:flex-row sm:justify-center sm:space-x-2 sm:space-y-0">
-                                        <button className="flex-grow w-full px-4 py-1 text-black border border-black  sm:flex-grow-0">
+                                        <button
+                                            onClick={() => handleEdit(course)}
+                                            className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                                        >
                                             Editar
                                         </button>
                                         <button
-                                            onClick={() =>
-                                                handleDelete(enrollment.id)
-                                            }
-                                            className="flex-grow w-full px-2 py-1 text-black border border-black sm:flex-grow-0"
+                                            onClick={() => handleDeleteClick(course)}
+                                            className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
                                         >
                                             Eliminar
                                         </button>
                                     </div>
+
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
-    
+
             {/* Paginación */}
             <div className="mt-6">
                 <Pagination
@@ -218,10 +270,35 @@ const CoursesTable = () => {
                     onPageChange={setCurrentPage}
                 />
             </div>
-        </div>
-       </MainPanel>
-    )};
-    
-    
+
+            {/* Modal de formulario */}
+            {isFormOpen && (
+                <CourseForm
+                    initialData={selectedCourse}
+                    isEditing={!!selectedCourse}
+                    title={selectedCourse ? 'Editar Curso' : 'Crear nuevo Curso'}
+                    submitText={selectedCourse ? 'Guardar Cambios' : 'Crear Curso'}
+                    onSubmit={handleSubmit}
+                    onCancel={() => {
+                        setIsFormOpen(false)
+                        setSelectedCourse(null)
+                    }}
+                />
+            )}
+
+            {/* Modal de confirmación para eliminar */}
+            <ConfirmationModal
+                isOpen={isDeleteModalOpen}
+                title="Eliminar Curso"
+                message={`¿Estás seguro de que deseas eliminar el curso "${selectedCourse?.title}"?`}
+                onConfirm={() => handleDelete(selectedCourse?.id)}
+                onClose={() => {
+                    setIsDeleteModalOpen(false)
+                    setSelectedCourse(null)
+                }}
+            />
+        </MainPanel>
+    )
+}
 
 export default CoursesTable
