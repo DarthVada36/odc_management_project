@@ -48,6 +48,12 @@ const EmailEditorComponent = ({ onClose, recipients }) => {
 
   // Cargar plantilla en el editor
   const handleLoadTemplate = (design) => {
+    if (!design) {
+      alert('La plantilla seleccionada no tiene diseño disponible.');
+      return;
+    }
+  
+    console.log('Diseño cargado:', design); // Verifica el diseño en la consola
     editorRef.current.editor.loadDesign(design);
   };
 
@@ -81,22 +87,22 @@ const EmailEditorComponent = ({ onClose, recipients }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-white w-full max-w-4xl p-6 rounded-md shadow-lg">
+    <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
+      <div className='bg-white w-full max-w-6xl p-6 rounded-md shadow-lg'>
         {/* Encabezado */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-lg font-bold text-orange">Editor de correos</h2>
+        <div className='flex justify-between items-center mb-4'>
+          <h2 className='text-lg font-bold text-orange'>Editor de correos</h2>
           <button
             onClick={onClose}
-            className="text-black font-bold text-lg"
-            aria-label="Cerrar editor"
+            className='text-black font-bold text-lg'
+            aria-label='Cerrar editor'
           >
             ✕
           </button>
         </div>
 
         {/* Contenedor del editor */}
-        <div className="border border-gray-300 rounded-md">
+        <div className='border border-gray-300 rounded-md'>
           <EmailEditor
             ref={editorRef}
             options={{
@@ -107,7 +113,7 @@ const EmailEditorComponent = ({ onClose, recipients }) => {
         </div>
 
         {/* Botones */}
-        <div className="flex justify-between space-x-4 mt-4">
+        <div className='flex justify-between space-x-4 mt-4'>
           <button
             onClick={handleSaveTemplate}
             className={`px-4 py-2 rounded ${
@@ -118,13 +124,13 @@ const EmailEditorComponent = ({ onClose, recipients }) => {
             {isSaving ? 'Guardando...' : 'Guardar plantilla'}
           </button>
           <select
-            className="px-4 py-2 border rounded"
+            className='px-4 py-2 border rounded'
             onChange={(e) => {
               const template = templates.find((t) => t.id === e.target.value);
               if (template) handleLoadTemplate(template.design);
             }}
           >
-            <option value="">Cargar plantilla...</option>
+            <option value=''>Cargar plantilla...</option>
             {templates.map((template) => (
               <option key={template.id} value={template.id}>
                 {template.name}
@@ -144,7 +150,7 @@ const EmailEditorComponent = ({ onClose, recipients }) => {
           </button>
           <button
             onClick={onClose}
-            className="bg-gray-300 text-black px-4 py-2 rounded"
+            className='bg-gray-300 text-black px-4 py-2 rounded'
           >
             Cancelar
           </button>
