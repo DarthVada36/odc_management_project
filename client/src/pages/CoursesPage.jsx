@@ -31,7 +31,7 @@ const CoursesPage = () => {
   return (
     
     <div className="flex flex-col items-center mb-8 px-4">  {/* Contenedo para Separar el footerpx4.separadelmargen */}
-      <h1 className="text-3xl font-bold text-left mt-8 mb-8 w-full">Cursos Disponibles</h1>
+      <h1 className="text-3xl font-bold text-center mt-8 mb-8 w-full">Cursos Disponibles</h1> {/* texto a la izquierda */}
       <div className="grid gap-4 justify-center w-full max-w-screen-lg mx-auto"
           style={{
             display: 'grid',
