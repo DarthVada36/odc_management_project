@@ -16,7 +16,7 @@ const EnrollmentsTable = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const itemsPerPage = 10
+  const itemsPerPage = 6
 
   // const totalPages = Math.ceil(enrollments.length / itemsPerPage)
   const indexOfLastItem = currentPage * itemsPerPage
