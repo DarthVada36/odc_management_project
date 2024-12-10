@@ -31,7 +31,7 @@ const CoursesPage = () => {
   return (
     
     <div className="flex flex-col items-center mb-8 px-4">  {/* Contenedo para Separar el footerpx4.separadelmargen */}
-      <h1 className="text-3xl font-bold text-center mt-8 mb-8">Cursos Disponibles</h1>
+      <h1 className="text-3xl font-bold text-left mt-8 mb-8 w-full">Cursos Disponibles</h1>
       <div className="grid gap-4 justify-center w-full max-w-screen-lg mx-auto"
           style={{
             display: 'grid',
@@ -49,7 +49,7 @@ const CoursesPage = () => {
             <p className="text-gray-600">{course.description}</p>
             <div className='mt-4 text-left'>
             <button
-              className="mt-4 bg-orange text-dark px-4 py-2 rounded-none hover:bg-black hover:text-white transition-colors"
+              className="mt-4 bg-orange text-black px-4 py-2 rounded-none font-bold hover:bg-black hover:text-white transition-colors"
               onClick={() => navigate(`/inscription/${course.id}`)}
             >
               Inscribirme
