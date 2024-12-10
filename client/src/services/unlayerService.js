@@ -8,6 +8,9 @@ const api = axios.create({
     username: unlayerConfig.apiKey, // La API Key de Unlayer
     password: '', // La API requiere una contraseña vacía
   },
+  headers: {
+    'Content-Type': 'application/json',
+  },
 });
 
 /**

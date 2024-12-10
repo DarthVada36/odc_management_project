@@ -111,7 +111,7 @@ const EmailEditorComponent = ({ onClose, recipients }) => {
           <button
             onClick={handleSaveTemplate}
             className={`px-4 py-2 rounded ${
-              isSaving ? 'bg-gray-400 text-white' : 'bg-blue-500 text-white'
+              isSaving ? 'bg-gray-400 text-white' : 'bg-blue-500 text-black'
             }`}
             disabled={isSaving}
           >
@@ -136,7 +136,7 @@ const EmailEditorComponent = ({ onClose, recipients }) => {
             className={`px-4 py-2 rounded ${
               isSending
                 ? 'bg-gray-400 text-white cursor-not-allowed'
-                : 'bg-green-500 text-white'
+                : 'bg-green-500 text-black'
             }`}
             disabled={isSending}
           >
