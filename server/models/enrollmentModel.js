@@ -44,7 +44,7 @@ const Enrollment = connectionDb.define('Enrollment', {
       model: 'admins',
       key: 'id',
     },
-    allowNull: false, //Cambiar a true
+    allowNull: true, //Cambiar a true
   },
   id_course: {
     type: DataTypes.INTEGER,

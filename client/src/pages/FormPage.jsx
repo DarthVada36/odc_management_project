@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import MainForm from "../components/MainForm";
-import AdultCompanionForm from "../components/AdultCompanionForm";
 import { createEnrollment } from "../services/enrollmentServices";
 import { getCourseById } from "../services/coursesServices";
 import formImage from "../assets/img/imageform.svg";
@@ -9,13 +8,11 @@ import { useParams } from "react-router-dom";
 const FormPage = () => {
   const { id } = useParams(); // Capturar el ID del curso desde la URL
   const [includeMinor, setIncludeMinor] = useState(false);
-  const [includeAdult, setIncludeAdult] = useState(false);
   const [formData, setFormData] = useState({});
   const [minors, setMinors] = useState([]);
-  const [companions, setCompanions] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [responseMessage, setResponseMessage] = useState(null);
   const [courseTitle, setCourseTitle] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Estado de carga
+  const [responseMessage, setResponseMessage] = useState(null); // Mensajes de respuesta
 
   // Obtener el título del curso al cargar la página
   useEffect(() => {
@@ -35,7 +32,7 @@ const FormPage = () => {
   }, [id]);
 
   const validateFormData = () => {
-    const requiredFields = ["fullname", "email", "age", "gender"];
+    const requiredFields = ["fullname", "email", "age", "gender", "id_course"];
     for (const field of requiredFields) {
       if (!formData[field]) {
         setResponseMessage({
@@ -45,75 +42,57 @@ const FormPage = () => {
         return false;
       }
     }
-
-    if (includeMinor && minors.length === 0) {
-      setResponseMessage({
-        type: "error",
-        text: "Por favor, agrega al menos un menor si seleccionaste la opción.",
-      });
-      return false;
-    }
-
-    if (includeAdult && companions.length === 0) {
-      setResponseMessage({
-        type: "error",
-        text: "Por favor, agrega al menos un acompañante adulto.",
-      });
-      return false;
-    }
-
     return true;
   };
 
-  const handleAddMinor = (minorData) => {
-    setMinors((prevMinors) => [...prevMinors, minorData]);
-  };
+ const handleAddMinor = (minorData) => {
+  setMinors((prev) => [...prev, minorData]);
+};
 
-  const handleAddCompanion = (companionData) => {
-    setCompanions((prevCompanions) => [...prevCompanions, companionData]);
-  };
+const handleSendToBackend = async () => {
+  if (!validateFormData()) return;
 
-  const handleSendToBackend = async () => {
-    if (!validateFormData()) return;
+  setIsLoading(true);
+  setResponseMessage(null);
 
-    setIsLoading(true);
-    setResponseMessage(null);
+  try {
+    const mainEnrollment = await createEnrollment(formData);
 
-    try {
-      const mainEnrollment = await createEnrollment(formData);
-
-      const groupId = mainEnrollment?.group_id;
-      if ((includeMinor || includeAdult) && !groupId) {
-        throw new Error("No se pudo obtener el group_id del servidor.");
-      }
-
-      const minorRequests = minors.map((minor) =>
-        createMinor({ ...minor, group_id: groupId })
-      );
-      const companionRequests = companions.map((companion) =>
-        createEnrollment({ ...companion, group_id: groupId })
-      );
-
-      await Promise.all([...minorRequests, ...companionRequests]);
-
-      setResponseMessage({
-        type: "success",
-        text: "Inscripción realizada con éxito.",
-      });
-
-      setFormData({});
-      setMinors([]);
-      setCompanions([]);
-    } catch (error) {
-      const errorMessage =
-        error.response?.data?.message ||
-        error.message ||
-        "Ha ocurrido un error inesperado.";
-      setResponseMessage({ type: "error", text: errorMessage });
-    } finally {
-      setIsLoading(false);
+    // Obtener el enrollment_id de la respuesta del servidor
+    const enrollmentId = mainEnrollment?.enrollment_id; // Cambia "enrollment_id" si el campo tiene otro nombre
+    if (!enrollmentId) {
+      throw new Error('No se pudo obtener el enrollment_id del servidor.');
     }
-  };
+
+    // Crear menores asociados al enrollment_id
+    const minorRequests = minors.map((minor) =>
+      createMinor({ ...minor, enrollment_id: enrollmentId })
+    );
+  
+    await Promise.all([...minorRequests]);
+
+    setResponseMessage({
+      type: 'success',
+      text: 'Inscripción realizada con éxito.',
+    });
+
+    setFormData({});
+    setMinors([]);
+    
+  } catch (error) {
+    const errorMessage =
+      error.response?.data?.message ||
+      error.message ||
+      'Ha ocurrido un error inesperado.';
+      setResponseMessage({
+        type: 'success',
+        text: 'Inscripción realizada con éxito.',
+      });
+  } finally {
+    setIsLoading(false);
+  }
+};
+
 
   return (
     <div className="flex font flex-col items-center justify-center px-4">
@@ -123,18 +102,16 @@ const FormPage = () => {
       <div className="flex p-8 m-10 border border-orange flex-col gap-6 lg:flex-col lg:gap-4 px-4">
         <div className="flex flex-col-reverse lg:flex-row lg:justify-between items-center gap-6">
           <div>
-            <MainForm
-              courseId={id}
-              setIncludeMinor={setIncludeMinor}
-              setIncludeAdult={setIncludeAdult}
-              includeMinor={includeMinor}
-              includeAdult={includeAdult}
-              formData={formData}
-              setFormData={setFormData}
-            />
-            {includeAdult && (
-              <AdultCompanionForm onAddCompanion={handleAddCompanion} />
-            )}
+          <MainForm
+        courseId={id}
+        setIncludeMinor={setIncludeMinor}
+        includeMinor={includeMinor}
+        formData={formData}
+        setFormData={setFormData}
+        onAddMinor={handleAddMinor}
+        minors={minors}
+      />
+          
           </div>
           <div className="flex-1">
             <img
@@ -156,7 +133,7 @@ const FormPage = () => {
         {responseMessage && (
           <p
             className={`text-center mt-4 ${
-              responseMessage.type === "error"
+              responseMessage.type === "tas bien wey y algo esta mal del front"
                 ? "text-red-500"
                 : "text-green-500"
             }`}

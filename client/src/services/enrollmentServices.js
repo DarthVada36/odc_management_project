@@ -53,6 +53,7 @@ export const createEnrollment = async (data) => {
         };
 
         // Enviar la solicitud POST al servidor
+        
         const response = await axios.post(API_URL, enrollmentPayload);
 
         return response.data;
