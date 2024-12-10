@@ -7,6 +7,8 @@ import excelIcon from '../assets/icons/file-excel.svg'
 import pdfIcon from '../assets/icons/file-pdf.svg'
 import { deleteAdminById } from '../services/adminServices'
 import ConfirmationModal from './ConfirmationModal'
+import AdminForm from './AdminForm'
+import { useAuth } from '../context/AuthContext'
 
 const AdministratorsTable = () => {
     const [admins, setAdmins] = useState([])
@@ -17,6 +19,8 @@ const AdministratorsTable = () => {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalMessage, setModalMessage] = useState('')
     const [selectedAdmin, setSelectedAdmin] = useState(null)
+    const [showCreateModal, setShowCreateModal] = useState(false)
+    const { authRequest } = useAuth()
     const itemsPerPage = 6
 
     // Calculate the index of the first and last item to display on the current page
@@ -129,21 +133,29 @@ const AdministratorsTable = () => {
         >
             <div className="flex flex-col h-[calc(100vh-240px)]">
                 {/* Export buttons */}
-                <div className="flex justify-end mb-3 space-x-4">
-                    <img
-                        src={pdfIcon}
-                        alt="Exportar a PDF"
-                        className="w-10 h-10 cursor-pointer hover:opacity-80"
-                        onClick={handleExportPDF}
-                        title="Exportar a PDF"
-                    />
-                    <img
-                        src={excelIcon}
-                        alt="Exportar a Excel"
-                        className="w-10 h-10 cursor-pointer hover:opacity-80"
-                        onClick={handleExportExcel}
-                        title="Exportar a Excel"
-                    />
+                <div className="flex justify-between mb-3 space-x-4">
+                    <button
+                        onClick={() => setShowCreateModal(true)}
+                        className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                    >
+                        Crear Nuevo Administrador
+                    </button>
+                    <div className="flex gap-4">
+                        <img
+                            src={pdfIcon}
+                            alt="Exportar a PDF"
+                            className="w-10 h-10 cursor-pointer hover:opacity-80"
+                            onClick={handleExportPDF}
+                            title="Exportar a PDF"
+                        />
+                        <img
+                            src={excelIcon}
+                            alt="Exportar a Excel"
+                            className="w-10 h-10 cursor-pointer hover:opacity-80"
+                            onClick={handleExportExcel}
+                            title="Exportar a Excel"
+                        />
+                    </div>
                 </div>
 
                 {/* Table container */}
@@ -229,6 +241,33 @@ const AdministratorsTable = () => {
                 message={modalMessage}
                 onConfirm={handleDeleteConfirm}
             />
+            {showCreateModal && (
+                <AdminForm
+                    onSubmit={async (formData) => {
+                        try {
+                            const response = await authRequest(
+                                'http://localhost:3000/api/auth/register',
+                                {
+                                    method: 'POST',
+                                    body: JSON.stringify(formData),
+                                }
+                            )
+                            if (response.ok) {
+                                await fetchAdmins()
+                                setShowCreateModal(false) // Cerrar modal después de crear exitosamente
+                                return true
+                            }
+                            return false
+                        } catch (error) {
+                            console.error('Error:', error)
+                            return false
+                        }
+                    }}
+                    onCancel={() => setShowCreateModal(false)}
+                    title="Crear nuevo Administrador"
+                    submitText="Crear"
+                />
+            )}
         </MainPanel>
     )
 }
