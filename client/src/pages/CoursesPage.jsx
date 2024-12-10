@@ -29,10 +29,9 @@ const CoursesPage = () => {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="flex flex-col items-center">
-      {/* Título separado del navbar */}
-    <div className="flex flex-col items-center mb-8 px-4">  {/* Contenedo para Separar el footer */}
-      <h1 className="text-3xl font-bold text-center mb-8">Cursos Disponibles</h1>
+    
+    <div className="flex flex-col items-center mb-8 px-4">  {/* Contenedo para Separar el footerpx4.separadelmargen */}
+      <h1 className="text-3xl font-bold text-center mt-8 mb-8">Cursos Disponibles</h1>
       <div className="grid gap-4 justify-center w-full max-w-screen-lg mx-auto"
           style={{
             display: 'grid',
