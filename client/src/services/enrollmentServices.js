@@ -36,14 +36,30 @@ export const deleteEnrollmentById = async (id) => {
 };
 
 //Create enrollment -- POST
-export const createEnrollment = async (enrollmentData) => {
+export const createEnrollment = async (data) => {
     try {
-        const res = await axios.post(API_URL, enrollmentData);
-        return res.data;
+        const response = await axios.post(API_URL, {
+            fullname: data.fullname,                  // Nombre completo
+            email: data.email,                        // Correo electrónico
+            gender: data.gender || 'NS/NC',            // Género, por defecto 'NS/NC'
+            age: data.age || 0,                       // Edad, por defecto 0
+            is_first_activity: data.is_first_activity || false,  // ¿Es la primera actividad?
+            id_admin: data.id_admin || null,           // ID del administrador (opcional)
+            id_course: data.id_course || 101,          // ID del curso (por defecto 101)
+            group_id: data.group_id || null,           // ID del grupo (opcional)
+            accepts_newsletter: data.accepts_newsletter || false, // ¿Acepta el boletín?
+            // No es necesario enviar createdAt y updatedAt si estás usando Sequelize, 
+            // ya que estos se manejan automáticamente
+        });
+
+        return response.data;
     } catch (error) {
-        console.error("No se pudo crear la inscripción", error.message);
+        console.error("Error al crear la inscripción:", error);
         throw error;
+        
     }
+    
+    
 };
 
 //Update enrollment by ID -- PUT

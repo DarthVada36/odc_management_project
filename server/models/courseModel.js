@@ -10,14 +10,18 @@ const Course = connectionDb.define('Course', {
     external_id: {
         type: DataTypes.STRING, // Para sincronización futura con el CMS
         allowNull: true,
+        unique: true, // Evita duplicados
     },
     title: {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+        validate: {
+            len: [5, 255], // Longitud mínima y máxima
+        },
     },
     description: {
-        type: DataTypes.STRING,
+        type: DataTypes.TEXT, // Para descripciones más largas
         allowNull: false,
     },
     date: {
@@ -31,6 +35,9 @@ const Course = connectionDb.define('Course', {
     link: {
         type: DataTypes.STRING,
         allowNull: false,
+        validate: {
+            isUrl: true,
+        },
     },
     tickets: {
         type: DataTypes.INTEGER,

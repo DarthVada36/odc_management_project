@@ -6,7 +6,7 @@ import { exportToPDF, exportToExcel } from '../utils/exportUtils'
 import excelIcon from '../assets/icons/file-excel.svg'
 import pdfIcon from '../assets/icons/file-pdf.svg'
 import { deleteAdminById } from '../services/adminServices'
-import { useAuth } from '../context/AuthContext'
+import ConfirmationModal from './ConfirmationModal'
 
 const AdministratorsTable = () => {
     const [admins, setAdmins] = useState([])
@@ -14,6 +14,9 @@ const AdministratorsTable = () => {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [currentPage, setCurrentPage] = useState(1)
+    const [isModalOpen, setIsModalOpen] = useState(false)
+    const [modalMessage, setModalMessage] = useState('')
+    const [selectedAdmin, setSelectedAdmin] = useState(null)
     const itemsPerPage = 6
 
     // Calculate the index of the first and last item to display on the current page
@@ -96,26 +99,22 @@ const AdministratorsTable = () => {
         }
     }
 
-    const { admin: currentAdmin } = useAuth()
-
     const handleDeleteClick = async (admin) => {
-        if (currentAdmin.role_id !== 1) {
-            alert('No tienes permisos para eliminar administradores')
-            return
-        }
+        setSelectedAdmin(admin)
+        setModalMessage(
+            `¿Estás seguro de que deseas eliminar al administrador ${admin.username}?`
+        )
+        setIsModalOpen(true)
+    }
 
-        if (
-            window.confirm(
-                `¿Estás seguro de que deseas eliminar al administrador ${admin.username}?`
-            )
-        ) {
-            try {
-                await deleteAdminById(admin.id)
-                fetchAdmins()
-            } catch (error) {
-                console.error('Error al eliminar administrador:', error)
-                alert('Error al eliminar el administrador')
-            }
+    const handleDeleteConfirm = async () => {
+        setIsModalOpen(false)
+        try {
+            await deleteAdminById(selectedAdmin.id)
+            fetchAdmins()
+        } catch (error) {
+            console.error('Error al eliminar administrador:', error)
+            alert('Error al eliminar el administrador')
         }
     }
 
@@ -189,20 +188,11 @@ const AdministratorsTable = () => {
                                         <div className="flex justify-center gap-2">
                                             <button
                                                 onClick={() =>
-                                                    currentAdmin.role_id === 1
-                                                        ? alert(
-                                                              'Función de editar pendiente'
-                                                          )
-                                                        : alert(
-                                                              'No tienes permisos para editar administradores'
-                                                          )
+                                                    alert(
+                                                        'Función de editar pendiente'
+                                                    )
                                                 }
-                                                className={`px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold
-                    ${
-                        currentAdmin.role_id === 1
-                            ? 'hover:bg-dark hover:text-white cursor-pointer'
-                            : 'opacity-50 cursor-not-allowed'
-                    }`}
+                                                className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
                                             >
                                                 Editar
                                             </button>
@@ -210,12 +200,7 @@ const AdministratorsTable = () => {
                                                 onClick={() =>
                                                     handleDeleteClick(admin)
                                                 }
-                                                className={`px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold
-                    ${
-                        currentAdmin.role_id === 1
-                            ? 'hover:bg-dark hover:text-white cursor-pointer'
-                            : 'opacity-50 cursor-not-allowed'
-                    }`}
+                                                className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
                                             >
                                                 Eliminar
                                             </button>
@@ -238,6 +223,12 @@ const AdministratorsTable = () => {
                     />
                 </div>
             </div>
+            <ConfirmationModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                message={modalMessage}
+                onConfirm={handleDeleteConfirm}
+            />
         </MainPanel>
     )
 }
