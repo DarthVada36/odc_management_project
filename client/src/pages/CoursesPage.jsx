@@ -29,9 +29,11 @@ const CoursesPage = () => {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="flex flex-col items-center mb-8">
+    <div className="flex flex-col items-center">
+      {/* Título separado del navbar */}
+    <div className="flex flex-col items-center mb-8 px-4">  {/* Contenedo para Separar el footer */}
       <h1 className="text-3xl font-bold text-center mb-8">Cursos Disponibles</h1>
-      <div className="grid gap-4 justify-center w-full"
+      <div className="grid gap-4 justify-center w-full max-w-screen-lg mx-auto"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
@@ -42,7 +44,7 @@ const CoursesPage = () => {
         {courses.map((course) => (
           <div
             key={course.id}
-            className="border p-4 rounded shadow-md w-80"
+            className="border p-4 rounded shadow-md "
           >
             <h2 className="font-semibold text-lg">{course.title}</h2>
             <p className="text-gray-600">{course.description}</p>
