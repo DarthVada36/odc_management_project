@@ -2,10 +2,11 @@ import React, { useState } from 'react'
 import Sidebar from '../components/Sidebar'
 import UserTable from '../components/UserTable'
 import AdministratorsTable from '../components/AdministratorsTable'
+import CoursesTable from '../components/CoursesTable'  // Importa el componente de la tabla de cursos
 import MainPanel from '../components/MainPanel'
 
 const DashboardPage = () => {
-    const [activeComponent, setActiveComponent] = useState('dashboard')
+const [activeComponent, setActiveComponent] = useState('dashboard');
 
     const renderComponent = () => {
         switch (activeComponent) {
@@ -13,6 +14,8 @@ const DashboardPage = () => {
                 return <AdministratorsTable />
             case 'enrollments':
                 return <UserTable />
+            case 'courses':  // Caso para los cursos
+                return <CoursesTable />
             default:
                 return <MainPanel title="Dashboard" />
         }
