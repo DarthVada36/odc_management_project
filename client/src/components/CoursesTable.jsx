@@ -109,7 +109,7 @@ const CoursesTable = () => {
             <div className="flex justify-end mb-6 space-x-4">
     <button
         onClick={handleExportPDF}
-        className="p-2 hover:bg-orange-600"ss
+        className="p-2 hover:bg-orange-600"
         aria-label="Exportar a PDF"
     >
         <svg
