@@ -11,6 +11,7 @@ import minorRoutes from './routes/minorRoutes.js'
 import roleRoutes from './routes/roleRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import mailerRoutes from './routes/mailerRoutes.js';
+import unlayerRoutes from './routes/unlayerRoutes.js';
 
 dotenv.config();
 
@@ -32,7 +33,6 @@ const PORT = process.env.PORT || 3000;
 
 // Rutas
 
-
 app.use('/api/auth', authRoutes);
 app.use('/api/enrollments', enrollmentRoutes)
 app.use('/api/courses', courseRoutes)
@@ -40,6 +40,7 @@ app.use('/api/minors', minorRoutes)
 app.use('/api/roles', roleRoutes)
 app.use('/api/admins', adminRoutes)
 app.use('/api/mailer', mailerRoutes);
+app.use('/api/unlayer', unlayerRoutes);
 
 const startServer = async () => {
     try {
