@@ -15,6 +15,8 @@ const [activeComponent, setActiveComponent] = useState('dashboard');
                 return <AdministratorsTable />
             case 'enrollments':
                 return <EnrollmentsTable />
+            case 'courses' :
+                return <CoursesTable />
             case 'enrollmentsByCourse':
                 return <EnrollmentsTableByCourse />
             default:

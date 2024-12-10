@@ -1,6 +1,8 @@
 import Pagination from './Pagination'
 import React, { useEffect, useState } from 'react'
 import { exportToPDF, exportToExcel } from '../utils/exportUtils'
+import MainPanel from './MainPanel.jsx'
+
 import {
     getAllCourses,
     deleteCourseById,
@@ -10,7 +12,7 @@ const CoursesTable = () => {
     const [courses, setCourses] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
-
+    const [filteredCourses, setFilteredCourses] = useState([])
     // Pagination
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 5
@@ -81,6 +83,13 @@ const CoursesTable = () => {
             console.error('Error exporting to Excel:', error)
         }
     }
+    const handleSearch = (searchTerm) => {
+        const lowerCaseSearch = searchTerm.toLowerCase()
+        const filtered = courses.filter((course) =>
+            course.title.toLowerCase().includes(lowerCaseSearch)
+        )
+        setFilteredCourses(filtered)
+    }
 
     if (loading) {
         return <div>Loading...</div>
@@ -88,7 +97,13 @@ const CoursesTable = () => {
     if (error) {
         return <div>Error loading courses</div>
     }
+
     return (
+        <MainPanel
+            title="Gestión de Cursos"
+            totalItems={filteredCourses.length}
+            onSearch={handleSearch}>
+        
         <div className="p-2 bg-white shadow-md sm:p-6 md:p-8 rounded-lg">
             {/* Botones de exportación */}
             <div className="flex justify-end mb-6 space-x-4">
@@ -204,6 +219,7 @@ const CoursesTable = () => {
                 />
             </div>
         </div>
+       </MainPanel>
     )};
     
     
