@@ -9,7 +9,7 @@ const MainForm = ({
   setFormData,
   onAddMinor, // Nueva prop para manejar menores
   minors = [],
-  courseId, 
+  courseId,
 }) => {
   const {
     register,
@@ -29,6 +29,7 @@ const MainForm = ({
         setFormData((prevData) => ({
           ...prevData,
           courseId: course.id, // Asociar el ID del curso al formulario
+          minors: prevData.minors || [], // Asegurarse de que "minors" esté definido
         }));
         setCourseError("");
       } catch (error) {
@@ -61,19 +62,17 @@ const MainForm = ({
   };
 
   const addMinor = () => {
-  if (validateMinor()) {
-    const updatedMinors = [...(formData.minors || []), minor];
-    setFormData({ ...formData, minors: updatedMinors });
-    onAddMinor(minor);
-    setMinor({ name: "", age: "" });
-  }
-};
+    if ((formData.minors || []).length >= 3) return;
+    if (validateMinor()) {
+      const updatedMinors = [...(formData.minors || []), minor];
+      setFormData({ ...formData, minors: updatedMinors });
+      setMinor({ name: "", age: "" });
+    }
+  };
 
   return (
     <div className="p-6 border border-orange bg-light shadow-md w-full max-w-screen">
-      <h2 className="font-semibold text-lg mb-4 text-orange">
-        Datos Personales
-      </h2>
+      <h2 className="font-semibold text-lg mb-4 text-orange">Datos Personales</h2>
       {courseError && <p className="text-red-500">{courseError}</p>}
       {courseData && (
         <div className="mb-4 p-4 border rounded-md bg-gray-100">
@@ -181,34 +180,40 @@ const MainForm = ({
         {includeMinor && (
           <div className="mt-4">
             <h3 className="font-bold text-lg mb-2">Menores</h3>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                name="name"
-                placeholder="Nombre del menor"
-                value={minor.name}
-                onChange={handleMinorChange}
-                className="border p-2 rounded-md"
-              />
-              <input
-                type="number"
-                name="age"
-                placeholder="Edad"
-                value={minor.age}
-                onChange={handleMinorChange}
-                className="border p-2 rounded-md"
-              />
-              <button
-                type="button"
-                onClick={addMinor}
-                className="bg-orange text-white px-4 py-2 rounded-md"
-              >
-                Agregar
-              </button>
-            </div>
+            {(formData.minors || []).length < 3 ? (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Nombre del menor"
+                  value={minor.name}
+                  onChange={handleMinorChange}
+                  className="border p-2 rounded-md"
+                />
+                <input
+                  type="number"
+                  name="age"
+                  placeholder="Edad"
+                  value={minor.age}
+                  onChange={handleMinorChange}
+                  className="border p-2 rounded-md"
+                />
+                <button
+                  type="button"
+                  onClick={addMinor}
+                  className="bg-orange text-white px-4 py-2 rounded-md"
+                >
+                  Agregar
+                </button>
+              </div>
+            ) : (
+              <p className="text-red-500 mt-4">
+                Límite máximo de menores inscritos alcanzado.
+              </p>
+            )}
             {minorError && <p className="text-red-500">{minorError}</p>}
             <ul>
-              {(minors || []).map((minor, index) => (
+              {(formData.minors || []).map((minor, index) => (
                 <li key={index}>
                   {minor.name} - {minor.age} años
                 </li>
@@ -216,7 +221,6 @@ const MainForm = ({
             </ul>
           </div>
         )}
-      
       </form>
     </div>
   );
