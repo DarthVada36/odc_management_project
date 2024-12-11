@@ -120,7 +120,6 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
                 <button
                     onClick={handleExportPDF}
                     className="p-2 hover:bg-orange-600"
-                    ss
                     aria-label="Exportar a PDF"
                 >
                     <svg
