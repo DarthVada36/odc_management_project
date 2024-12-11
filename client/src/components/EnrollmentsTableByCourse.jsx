@@ -322,7 +322,7 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
           }}
           title={
             isEditing
-              ? 'Editar Administrador'
+              ? 'Editar Inscripción'
               : 'Crear nuevo Administrador'
           }
           submitText={isEditing ? 'Guardar cambios' : 'Crear'}
