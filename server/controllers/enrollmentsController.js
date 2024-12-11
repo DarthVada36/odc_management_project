@@ -256,3 +256,29 @@ export const deleteEnrollmentById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// GET ALL ENROLLMENTS BY COURSE ID
+export const getAllEnrollmentsByCourseId = async (req, res) => {
+  try {
+      const enrollments = await Enrollment.findAll({
+          include: [
+              {
+                  model: Course,
+                  as: 'course',
+                  attributes: ['title'], // Solo incluye el título del curso
+              }, 
+              {
+                  model: Minor,
+                  as: 'minors',
+                  attributes: ['id', 'name', 'age'],
+              },
+          ],
+          where: {
+              id_course: req.params.id,
+          },
+      });           
+      res.status(200).json(enrollments);
+  } catch (error) {
+      res.status(500).json({ message: error.message });
+  }
+};
