@@ -50,6 +50,11 @@ const EnrollmentForm = ({
     };
 
     const addMinor = () => {
+        if (formData.minors.length >= 3) {
+            setErrorMessage('Solo puedes añadir un máximo de 3 menores');
+            return;
+        }
+
         if (!newMinor.name || !newMinor.age) {
             setErrorMessage('El nombre y la edad del menor son obligatorios');
             return;
@@ -74,7 +79,7 @@ const EnrollmentForm = ({
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!formData.fullname || !formData.email || !formData.id_course) {
+        if (!formData.fullname || !formData.email || !formData.age ) {
             setErrorMessage('Por favor, completa los campos obligatorios');
             return;
         }
@@ -115,7 +120,7 @@ const EnrollmentForm = ({
 
                 <form onSubmit={handleSubmit} className="space-y-3">
                     <div className="flex flex-col">
-                        <label className="mb-2 font-bold text-dark">
+                        <label className="mb-1 font-bold text-dark">
                             Nombre Completo
                         </label>
                         <input
@@ -124,26 +129,26 @@ const EnrollmentForm = ({
                             value={formData.fullname}
                             onChange={handleChange}
                             required
-                            className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
+                            className="w-full p-2 border border-gray-300 focus:border-dark focus:outline-none"
                             placeholder="Nombre Completo"
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4 items-center">
                         <div className="flex flex-col">
-                            <label className="mb-2 font-bold text-dark">Email</label>
+                            <label className="mb-1 font-bold text-dark">Email</label>
                             <input
                                 type="email"
                                 name="email"
                                 value={formData.email}
                                 onChange={handleChange}
                                 required
-                                className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
+                                className="w-full p-2 border border-gray-300 focus:border-dark focus:outline-none"
                                 placeholder="Correo Electrónico"
                             />
                         </div>
 
-                        <div className="flex items-center gap-2">
+                        <div className="-mb-6 flex items-center gap-2">
                             <input
                                 type="checkbox"
                                 name="is_first_activity"
@@ -160,12 +165,12 @@ const EnrollmentForm = ({
 
                     <div className="grid grid-cols-2 gap-4 items-center">
                         <div className="flex flex-col">
-                            <label className="mb-2 font-bold text-dark">Género</label>
+                            <label className="mb-1 font-bold text-dark">Género</label>
                             <select
                                 name="gender"
                                 value={formData.gender}
                                 onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
+                                className="w-full p-2 border border-gray-300 focus:border-dark focus:outline-none"
                             >
                                 <option value="NS/NC">NS/NC</option>
                                 <option value="mujer">Mujer</option>
@@ -175,7 +180,7 @@ const EnrollmentForm = ({
                         </div>
 
                         <div className="flex flex-col">
-                            <label className="mb-2 font-bold text-dark">
+                            <label className="mb-1 font-bold text-dark">
                                 Edad
                             </label>
                             <input
@@ -183,13 +188,11 @@ const EnrollmentForm = ({
                                 name="age"
                                 value={formData.age}
                                 onChange={handleChange}
-                                className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
+                                className="w-full p-2 border border-gray-300 focus:border-dark focus:outline-none"
                                 placeholder="Edad"
                             />
                         </div>
                     </div>
-
-
 
                     <div>
                         <h3 className="mb-2 font-bold text-dark">
@@ -204,7 +207,7 @@ const EnrollmentForm = ({
                                     type="text"
                                     name="name"
                                     value={minor.name}
-                                    className="w-1/2 p-2 border border-gray-300"
+                                    className="w-1/2 p-1 border border-gray-300"
                                 />
 
                                 <div className="flex items-center">
@@ -212,7 +215,7 @@ const EnrollmentForm = ({
                                         type="text"
                                         name="age"
                                         value={minor.age}
-                                        className="w-16 p-2 border border-gray-300"
+                                        className="w-16 p-1 border border-gray-300"
                                     />
                                     <span className="ml-2 text-gray-500">años</span>
                                 </div>
@@ -220,7 +223,7 @@ const EnrollmentForm = ({
                                 <button
                                     type="button"
                                     onClick={() => removeMinor(index)}
-                                    className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                                    className="px-4 py-1 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
                                 >
                                     Eliminar
                                 </button>
@@ -233,7 +236,7 @@ const EnrollmentForm = ({
                                 value={newMinor.name}
                                 onChange={handleMinorChange}
                                 placeholder="Nombre del Menor"
-                                className="w-1/2 p-2 border border-gray-300"
+                                className="w-1/2 p-1 border border-gray-300"
                             />
                             <input
                                 type="number"
@@ -241,12 +244,12 @@ const EnrollmentForm = ({
                                 value={newMinor.age}
                                 onChange={handleMinorChange}
                                 placeholder="Edad"
-                                className="w-16 p-2 border border-gray-300"
+                                className="w-16 p-1 border border-gray-300"
                             />
                             <button
                                 type="button"
                                 onClick={addMinor}
-                                className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                                className="px-4 py-1 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
                             >
                                 Añadir
                             </button>
@@ -261,13 +264,13 @@ const EnrollmentForm = ({
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                            className="px-4 py-1 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 bg-dark text-white hover:bg-gray-700"
+                            className="px-4 py-1 bg-dark text-white hover:bg-gray-700"
                         >
                             {submitText}
                         </button>
@@ -279,4 +282,3 @@ const EnrollmentForm = ({
 };
 
 export default EnrollmentForm;
-

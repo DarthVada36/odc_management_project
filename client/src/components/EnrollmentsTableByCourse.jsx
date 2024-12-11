@@ -166,8 +166,6 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
       totalItems={filteredEnrollments.length}
       onSearch={handleSearch}
     >
-      <div> </div>
-      {/* Export buttons */}
       <div className="flex flex-col h-[calc(100vh-240px)]">
         <div className="flex justify-between mb-3 space-x-4">
           <button

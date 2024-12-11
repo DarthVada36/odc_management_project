@@ -16,7 +16,7 @@ const EnrollmentsTable = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const itemsPerPage = 6
+  const itemsPerPage = 4
 
   // const totalPages = Math.ceil(enrollments.length / itemsPerPage)
   const indexOfLastItem = currentPage * itemsPerPage
@@ -125,30 +125,25 @@ const EnrollmentsTable = () => {
     >
 
       <div className="flex flex-col h-[calc(100vh-240px)]">
-        {/* Export buttons */}
         <div className="flex justify-end mb-3 space-x-4">
-          <img
-            src={pdfIcon}
-            alt="Exportar a PDF"
-            className="w-10 h-10 cursor-pointer hover:opacity-80"
-            onClick={handleExportPDF}
-            title="Exportar a PDF"
-          />
-          <img
-            src={excelIcon}
-            alt="Exportar a Excel"
-            className="w-10 h-10 cursor-pointer hover:opacity-80"
-            onClick={handleExportExcel}
-            title="Exportar a Excel"
-          />
+          <div className="flex gap-4">
+            <img
+              src={pdfIcon}
+              alt="Exportar a PDF"
+              className="w-10 h-10 cursor-pointer hover:opacity-80"
+              onClick={handleExportPDF}
+              title="Exportar a PDF"
+            />
+            <img
+              src={excelIcon}
+              alt="Exportar a Excel"
+              className="w-10 h-10 cursor-pointer hover:opacity-80"
+              onClick={handleExportExcel}
+              title="Exportar a Excel"
+            />
+          </div>
         </div>
 
-        {/* Botón para crear un nuevo administrador */}
-        {/* <button className="w-full px-4 py-2 mb-4 text-black rounded bg-orange button-auto sm:mb-6 md:mb-8">
-          Crear nueva inscripción
-        </button> */}
-
-        {/* Contenedor de la tabla */}
         <div className="flex-1 min-h-0">
           <table className="w-full border-collapse table-auto">
             <thead className="bg-primary">
@@ -222,7 +217,6 @@ const EnrollmentsTable = () => {
           </table>
         </div>
 
-        {/* Pagination */}
         <div className="h-16">
           <Pagination
             currentPage={currentPage}
