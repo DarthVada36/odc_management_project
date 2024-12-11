@@ -99,7 +99,7 @@ const AdminDashboard = () => {
                     getAllEnrollments(),
                 ])
 
-                // Calcular grupos de edad incluyendo menores
+                // Calculate age groups including minors
                 const ageGroups = [
                     { name: '< 14', value: 0 },
                     { name: '15-24', value: 0 },
@@ -108,7 +108,7 @@ const AdminDashboard = () => {
                     { name: 'NS/NC', value: 0 },
                 ]
 
-                // Calcular distribución de género
+                // Calculate gender distribution
                 const genderCounts = enrollments.reduce((acc, curr) => {
                     acc[curr.gender] = (acc[curr.gender] || 0) + 1
                     return acc
@@ -124,7 +124,7 @@ const AdminDashboard = () => {
                     { name: 'NS/NC', value: genderCounts['NS/NC'] || 0 },
                 ]
 
-                // Calcular métricas por curso
+                // Calculate metrics by course
                 const coursesMetrics = courses.map((course) => {
                     const courseEnrollments = enrollments.filter(
                         (e) => e.id_course === course.id
@@ -145,14 +145,14 @@ const AdminDashboard = () => {
                     }
                 })
 
-                // Calcular tasa de primera actividad
+                // Calculate first activity rate
                 const firstTimeCount = enrollments.filter(
                     (e) => e.is_first_activity
                 ).length
                 const firstTimeRate =
                     (firstTimeCount / enrollments.length) * 100
 
-                // Agrupar por días para la evolución temporal
+                // Aggregate by days for the temporal evolution
                 const dailyEnrollments = enrollments.reduce((acc, curr) => {
                     const date = new Date(curr.createdAt)
                         .toISOString()
@@ -172,12 +172,12 @@ const AdminDashboard = () => {
                     return acc
                 }, {})
 
-                // Convertir a array y ordenar
+                // Convert to array and sort
                 const dailyEnrollmentsArray = Object.values(
                     dailyEnrollments
                 ).sort((a, b) => new Date(a.date) - new Date(b.date))
 
-                // Agrupar edades
+                // Group ages
                 enrollments.forEach((enrollment) => {
                     if (enrollment.age === 0) {
                         ageGroups[4].value++
@@ -192,7 +192,7 @@ const AdminDashboard = () => {
                     }
                 })
 
-                // Calcular tasa de ocupación global
+                // Calculate occupancy rate
                 const totalCapacity = courses.reduce(
                     (sum, course) => sum + course.tickets,
                     0
@@ -269,7 +269,7 @@ const AdminDashboard = () => {
                 Dashboard
             </h1>
 
-            {/* Métricas Principales */}
+            {/* Main metrics */}
             <div className="grid grid-cols-2 gap-3 laptop:grid-cols-4 tablet:gap-4">
                 <MetricCard
                     icon={BookOpen}
@@ -297,9 +297,9 @@ const AdminDashboard = () => {
                 />
             </div>
 
-            {/* Gráficos */}
+            {/* Graphs */}
             <div className="grid grid-cols-1 gap-4 laptop:grid-cols-2 tablet:gap-6">
-                {/* Distribución por Edad */}
+                {/* Distribution by Age */}
                 <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
                     <h2 className="mb-4 text-base font-semibold tablet:text-lg">
                         Distribución por Edad
@@ -329,7 +329,7 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
-                {/* Distribución por Género */}
+                {/* Distribution by Gender */}
                 <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
                     <h2 className="mb-4 text-base font-semibold tablet:text-lg">
                         Distribución por Género
@@ -369,7 +369,7 @@ const AdminDashboard = () => {
                     </div>
                 </div>
 
-                {/* Evolución de Inscripciones */}
+                {/* Evolution of Enrollments */}
                 <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
                     <div className="flex flex-col gap-4 mb-4 tablet:flex-row tablet:items-center tablet:justify-between">
                         <h2 className="text-base font-semibold tablet:text-lg">
@@ -420,7 +420,7 @@ const AdminDashboard = () => {
                         </ResponsiveContainer>
                     </div>
                 </div>
-                {/* Ocupación por Curso */}
+                {/* Occupancy by Course */}
                 <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
                     <div className="flex flex-col gap-4 mb-4 tablet:flex-row tablet:items-center tablet:justify-between">
                         <h2 className="text-base font-semibold tablet:text-lg">
@@ -440,7 +440,7 @@ const AdminDashboard = () => {
                         />
                     </div>
                     {selectedCourse === 'all' ? (
-                        // Vista general de todos los cursos
+                        // View general of all courses
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 rounded-lg bg-neutral-50">
                                 <p className="text-sm text-neutral-600">

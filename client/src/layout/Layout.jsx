@@ -16,7 +16,7 @@ const Layout = () => {
         </div>
     )
 
-    // Envolver con DashboardProvider solo cuando estamos en rutas del dashboard
+    // Envolve the content with DashboardProvider only when we are in the dashboard route
     return isDashboardRoute ? (
         <DashboardProvider>{content}</DashboardProvider>
     ) : (

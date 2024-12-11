@@ -20,7 +20,6 @@ const Sidebar = () => {
 
     return (
         <div className="hidden laptop:block w-[28.4rem] min-h-screen bg-black">
-            {/* ... resto del código ... */}
             <ul className="flex flex-col">
                 {filteredMenuItems.map((item) => (
                     <React.Fragment key={item.id}>
