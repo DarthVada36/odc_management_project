@@ -15,11 +15,14 @@ const EmailEditorApiComponent = ({ onClose, recipients }) => {
   useEffect(() => {
     const initializeEditor = async () => {
       try {
-        const { data } = await axios.post('http://localhost:3000/api/unlayer/user', {
-          userId: 'madridodc',
-          name: 'Madrid ODC',
-          email: 'madridodc@gmail.com',
-        });
+        const { data } = await axios.post(
+          'http://localhost:3000/api/unlayer/user',
+          {
+            userId: 'madridodc',
+            name: 'Madrid ODC',
+            email: 'madridodc@gmail.com',
+          }
+        );
 
         console.log('Respuesta del servidor (user data):', data);
 
@@ -33,7 +36,10 @@ const EmailEditorApiComponent = ({ onClose, recipients }) => {
           console.error('El editor o el contenedor no están disponibles.');
         }
       } catch (error) {
-        console.error('Error al inicializar el editor:', error.response?.data || error.message);
+        console.error(
+          'Error al inicializar el editor:',
+          error.response?.data || error.message
+        );
       }
     };
 
@@ -130,8 +136,9 @@ const EmailEditorApiComponent = ({ onClose, recipients }) => {
             ✕
           </button>
         </div>
-        <div className='border border-gray-300 rounded-md' id='email-editor'>
+        <div className='border border-gray-300 rounded-md'>
           <EmailEditor
+            id='email-editor'
             ref={editorRef}
             options={{
               projectId: unlayerConfig.projectId,

@@ -8,11 +8,16 @@ const UNLAYER_API_URL = 'https://api.unlayer.com/v2';
 const UNLAYER_API_KEY = process.env.UNLAYER_API_KEY;
 const UNLAYER_PROJECT_SECRET = process.env.UNLAYER_PROJECT_SECRET;
 
+console.log('UNLAYER_API_KEY:', UNLAYER_API_KEY);
+console.log('UNLAYER_PROJECT_SECRET:', UNLAYER_PROJECT_SECRET);
+
 // Configuración del cliente Axios
 const apiClient = axios.create({
   baseURL: UNLAYER_API_URL,
   headers: {
-    Authorization: `Basic ${Buffer.from(`${UNLAYER_API_KEY}:`).toString('base64')}`,
+    Authorization: `Basic ${Buffer.from(`${UNLAYER_API_KEY}:`).toString(
+      'base64'
+    )}`,
     'Content-Type': 'application/json',
   },
 });
@@ -32,7 +37,7 @@ export const getTemplates = async (req, res) => {
 };
 
 //Guardar una plantilla en Unlayer.
- 
+
 export const saveTemplate = async (req, res) => {
   const { name, design } = req.body;
 
@@ -54,7 +59,6 @@ export const saveTemplate = async (req, res) => {
   }
 };
 
-
 /**
  * Genera una firma HMAC-SHA256 para un usuario.
  * @param {string} userId - ID único del usuario.
@@ -73,7 +77,9 @@ export const getUserWithSignature = (req, res) => {
   const { userId, name, email } = req.body;
 
   if (!userId) {
-    return res.status(400).json({ message: 'El ID de usuario es obligatorio.' });
+    return res
+      .status(400)
+      .json({ message: 'El ID de usuario es obligatorio.' });
   }
 
   try {
