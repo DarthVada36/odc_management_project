@@ -10,8 +10,7 @@ import AdminDashboard from '../components/AdminDashboard'
 import { useDashboard } from '../context/DashboardContext'
 
 const DashboardPage = () => {
-    const { activeComponent } = useDashboard()
-
+    const { activeComponent, setActiveComponent } = useDashboard()
     const [selectedCourseId, setSelectedCourseId] = useState(null)
 
     const renderComponent = () => {
@@ -26,7 +25,7 @@ const DashboardPage = () => {
                 return (
                     <CoursesTable
                         onShowEnrollmentsByCourse={(courseId) => {
-                            setSelectedCourseId(courseId) // Guarda el ID del curso seleccionado
+                            setSelectedCourseId(courseId)
                             setActiveComponent('enrollmentsByCourse')
                         }}
                     />

@@ -2,7 +2,6 @@ import Pagination from './Pagination'
 import React, { useEffect, useState } from 'react'
 import { exportToPDF, exportToExcel } from '../utils/exportUtils'
 import MainPanel from './MainPanel.jsx'
-
 import { getAllCourses, deleteCourseById } from '../services/coursesServices.js'
 
 const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
