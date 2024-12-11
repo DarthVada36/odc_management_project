@@ -23,14 +23,12 @@ Minor.belongsTo(Enrollment, { foreignKey: 'enrollment_id', as: 'enrollment' })
 
 // Exportar modelos y función de sincronización
 const syncModels = async () => {
-    try {
-        await connectionDb.sync({ alter: true })
-        console.log(
-            'Modelos sincronizados con la base de datos (^_-)db(-_^) 🚀'
-        )
-    } catch (error) {
-        console.error('Error al sincronizar modelos:', error.message)
-    }
-}
+  try {
+    await connectionDb.sync({ alter: false });
+    console.log('Modelos sincronizados con la base de datos (^_-)db(-_^) 🚀');
+  } catch (error) {
+    console.error('Error al sincronizar modelos:', error.message);
+  }
+};
 
 export { Role, Admin, Minor, Enrollment, Course, syncModels }

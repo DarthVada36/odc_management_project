@@ -24,6 +24,17 @@ export const getEnrollmentById = async (id) => {
     }
 };
 
+
+export const getAllEnrollmentsByCourseId = async (courseId) => {
+    try {
+        const res = await axios.get(`${API_URL}/by-course/${courseId}`);
+        return res.data;
+    } catch (error) {
+        console.error("No se pudo obtener la inscripción indicada", error.message);
+        throw error;
+    }
+};
+
 //Delete enrollment by ID -- DELETE
 export const deleteEnrollmentById = async (id) => {
     try {
