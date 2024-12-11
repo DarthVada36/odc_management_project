@@ -33,3 +33,13 @@ export const deleteTemplate = async (id) => {
     throw error;
   }
 };
+// Actualizar una plantilla
+export const updateTemplate = async (id, data) => {
+  try {
+    const response = await axios.put(`${API_URL}/${id}`, data);
+    return response.data;
+  } catch (error) {
+    console.error('Error al actualizar la plantilla:', error.message);
+    throw error;
+  }
+};

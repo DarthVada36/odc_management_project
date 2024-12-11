@@ -57,3 +57,39 @@ export const deleteTemplate = async (req, res) => {
     res.status(500).json({ message: 'Error al eliminar plantilla' });
   }
 };
+// Actualizar una plantilla
+// Actualizar una plantilla
+export const updateTemplate = async (req, res) => {
+  const { id } = req.params;
+  const { name, design } = req.body;
+
+  if (!name && !design) {
+    return res.status(400).json({ message: 'Debes proporcionar al menos un campo para actualizar.' });
+  }
+
+  try {
+    const template = await Template.findByPk(id);
+
+    if (!template) {
+      return res.status(404).json({ message: 'Plantilla no encontrada.' });
+    }
+
+    // Validar el diseño si se incluye en la actualización
+    if (design) {
+      const { valid, message } = validateTemplate(design);
+      if (!valid) {
+        return res.status(400).json({ message });
+      }
+    }
+
+    // Actualizar solo los campos proporcionados
+    if (name) template.name = name;
+    if (design) template.design = design;
+
+    await template.save();
+    res.status(200).json(template);
+  } catch (error) {
+    console.error('Error al actualizar la plantilla:', error.message);
+    res.status(500).json({ message: 'Error al actualizar la plantilla.' });
+  }
+};
