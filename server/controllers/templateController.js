@@ -1,5 +1,5 @@
 import Template from '../models/templateModel.js';
-import { validateTemplate } from '../utilss/validations/validateTemplate.js';
+import { validateTemplate } from '../utils/validations/validateTemplate.js';
 // Obtener todas las plantillas
 export const getTemplates = async (req, res) => {
   try {
