@@ -11,7 +11,7 @@ import minorRoutes from './routes/minorRoutes.js'
 import roleRoutes from './routes/roleRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
 import mailerRoutes from './routes/mailerRoutes.js';
-import unlayerRoutes from './routes/unlayerRoutes.js';
+import templateRoutes from './routes/templateRoutes.js';
 
 dotenv.config();
 
@@ -47,7 +47,7 @@ app.use('/api/minors', minorRoutes)
 app.use('/api/roles', roleRoutes)
 app.use('/api/admins', adminRoutes)
 app.use('/api/mailer', mailerRoutes);
-app.use('/api/unlayer', unlayerRoutes);
+app.use('/api/templates', templateRoutes);
 
 const startServer = async () => {
     try {

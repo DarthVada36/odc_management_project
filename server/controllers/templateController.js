@@ -20,6 +20,18 @@ export const saveTemplate = async (req, res) => {
   if (!name || !design) {
     return res.status(400).json({ message: 'Faltan parámetros requeridos' });
   }
+  const validateTemplate = (design) => {
+    if (!design || typeof design !== 'object') {
+      return false;
+    }
+  
+    const requiredFields = ['counters', 'body', 'schemaVersion'];
+    return requiredFields.every((field) => field in design);
+  };
+  // Validar la plantilla
+  if (!validateTemplate(design)) {
+    return res.status(400).json({ message: 'La plantilla no es válida' });
+  }
 
   try {
     const newTemplate = await Template.create({
@@ -33,7 +45,8 @@ export const saveTemplate = async (req, res) => {
   }
 };
 
-// (Opcional) Eliminar una plantilla
+
+// Eliminar una plantilla
 export const deleteTemplate = async (req, res) => {
   const { id } = req.params;
 
