@@ -6,8 +6,10 @@ import MainPanel from '../components/MainPanel'
 import EnrollmentsTable from '../components/EnrollmentsTable'
 import EnrollmentsTableByCourse from '../components/EnrollmentsTableByCourse'
 
+
 const DashboardPage = () => {
-const [activeComponent, setActiveComponent] = useState('dashboard');
+    const [activeComponent, setActiveComponent] = useState('dashboard');
+    const [selectedCourseId, setSelectedCourseId] = useState(null);
 
     const renderComponent = () => {
         switch (activeComponent) {
@@ -15,10 +17,17 @@ const [activeComponent, setActiveComponent] = useState('dashboard');
                 return <AdministratorsTable />
             case 'enrollments':
                 return <EnrollmentsTable />
-            case 'courses' :
-                return <CoursesTable />
+            case 'courses':
+                return (
+                    <CoursesTable 
+                        onShowEnrollmentsByCourse={(courseId) => {
+                            setSelectedCourseId(courseId); // Guarda el ID del curso seleccionado
+                            setActiveComponent('enrollmentsByCourse');
+                        }}
+                    />
+                );
             case 'enrollmentsByCourse':
-                return <EnrollmentsTableByCourse />
+                return <EnrollmentsTableByCourse courseId={selectedCourseId} />
             default:
                 return <MainPanel title="Dashboard" />
         }
