@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import MainPanel from './MainPanel';
 import Pagination from './Pagination';
-import { getAllEnrollments, deleteEnrollmentById } from '../services/enrollmentServices';
+import { getEnrollmentById, deleteEnrollmentById, getAllEnrollmentsByCourseId } from '../services/enrollmentServices';
+import { getCourseById } from '../services/coursesServices';
 import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 import pdfIcon from '../assets/icons/file-pdf.svg';
 import excelIcon from '../assets/icons/file-excel.svg';
@@ -10,7 +11,7 @@ import EnrollmentForm from './EnrollmentForm';
 import { useAuth } from '../context/AuthContext';
 
 
-const EnrollmentsTableByCourse = () => {
+const EnrollmentsTableByCourse = ({ courseId }) => {
 
   const [enrollments, setEnrollments] = useState([]);
   const [filteredEnrollments, setFilteredEnrollments] = useState([]);
@@ -22,6 +23,7 @@ const EnrollmentsTableByCourse = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [courseName, setCourseName] = useState(''); // Nuevo estado para el nombre del curso
   const [selectedCourse, setSelectedCourse] = useState(''); // Nuevo estado para el curso seleccionado
   const { authRequest } = useAuth();
   const itemsPerPage = 4;
@@ -36,7 +38,7 @@ const EnrollmentsTableByCourse = () => {
   const fetchEnrollments = async () => {
     try {
       setLoading(true);
-      const data = await getAllEnrollments();
+      const data = await getAllEnrollmentsByCourseId(courseId);
       setEnrollments(data);
       setFilteredEnrollments(data);
       setLoading(false);
@@ -44,6 +46,15 @@ const EnrollmentsTableByCourse = () => {
       console.error('Error al obtener las inscripciones:', error);
       setError(error);
       setLoading(false);
+    }
+  };
+
+  const fetchCourseName = async () => {
+    try {
+      const course = await getCourseById(courseId);
+      setCourseName(course.name);
+    } catch (error) {
+      console.error('Error al obtener el nombre del curso:', error);
     }
   };
 
@@ -147,12 +158,13 @@ const EnrollmentsTableByCourse = () => {
 
   return (
     <MainPanel
-      title="Gestión de inscripciones del curso ${courseId}"
+      title="Gestión de inscripciones por curso"
       totalItems={filteredEnrollments.length}
       onSearch={handleSearch}
     >
+    <div> </div>
       {/* Export buttons */}
-      <div className="flex flex-col h-[calc(100vh-240px)]">
+      <div className="flex flex-col h-[calc(100vh-240px)]">{courseId}
         <div className="flex justify-between mb-3 space-x-4">
           <button
             className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"

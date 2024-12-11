@@ -203,7 +203,7 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
                                             Eliminar
                                         </button>
                                         <button
-                                            onClick={onShowEnrollmentsByCourse}
+                                            onClick={() => onShowEnrollmentsByCourse(course.id)}
                                             className="flex items-center px-2 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white">
                                             Inscritos
                                         </button>

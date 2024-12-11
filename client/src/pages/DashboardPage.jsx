@@ -9,6 +9,7 @@ import EnrollmentsTableByCourse from '../components/EnrollmentsTableByCourse'
 
 const DashboardPage = () => {
     const [activeComponent, setActiveComponent] = useState('dashboard');
+    const [selectedCourseId, setSelectedCourseId] = useState(null);
 
     const renderComponent = () => {
         switch (activeComponent) {
@@ -17,13 +18,16 @@ const DashboardPage = () => {
             case 'enrollments':
                 return <EnrollmentsTable />
             case 'courses':
-                return <CoursesTable 
-                onShowEnrollmentsByCourse={() =>{
-                    setActiveComponent('enrollmentsByCourse');
-                }}
-                />
+                return (
+                    <CoursesTable 
+                        onShowEnrollmentsByCourse={(courseId) => {
+                            setSelectedCourseId(courseId); // Guarda el ID del curso seleccionado
+                            setActiveComponent('enrollmentsByCourse');
+                        }}
+                    />
+                );
             case 'enrollmentsByCourse':
-                return <EnrollmentsTableByCourse />
+                return <EnrollmentsTableByCourse courseId={selectedCourseId} />
             default:
                 return <MainPanel title="Dashboard" />
         }
