@@ -49,6 +49,14 @@ const EnrollmentForm = ({
         }));
     };
 
+    const handleMinorEdit = (index, field, value) => {
+        setFormData((prev) => {
+            const updatedMinors = [...prev.minors];
+            updatedMinors[index][field] = value;
+            return { ...prev, minors: updatedMinors };
+        });
+    };
+
     const addMinor = () => {
         if (formData.minors.length >= 3) {
             setErrorMessage('Solo puedes añadir un máximo de 3 menores');
@@ -79,7 +87,7 @@ const EnrollmentForm = ({
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        if (!formData.fullname || !formData.email || !formData.age ) {
+        if (!formData.fullname || !formData.email || !formData.age) {
             setErrorMessage('Por favor, completa los campos obligatorios');
             return;
         }
@@ -207,6 +215,7 @@ const EnrollmentForm = ({
                                     type="text"
                                     name="name"
                                     value={minor.name}
+                                    onChange={(e) => handleMinorEdit(index, 'name', e.target.value)}
                                     className="w-1/2 p-1 border border-gray-300"
                                 />
 
@@ -215,6 +224,7 @@ const EnrollmentForm = ({
                                         type="text"
                                         name="age"
                                         value={minor.age}
+                                        onChange={(e) => handleMinorEdit(index, 'age', e.target.value)}
                                         className="w-16 p-1 border border-gray-300"
                                     />
                                     <span className="ml-2 text-gray-500">años</span>
@@ -229,30 +239,37 @@ const EnrollmentForm = ({
                                 </button>
                             </div>
                         ))}
-                        <div className="flex gap-2 mt-4 ">
-                            <input
-                                type="text"
-                                name="name"
-                                value={newMinor.name}
-                                onChange={handleMinorChange}
-                                placeholder="Nombre del Menor"
-                                className="w-1/2 p-1 border border-gray-300"
-                            />
-                            <input
-                                type="number"
-                                name="age"
-                                value={newMinor.age}
-                                onChange={handleMinorChange}
-                                placeholder="Edad"
-                                className="w-16 p-1 border border-gray-300"
-                            />
-                            <button
-                                type="button"
-                                onClick={addMinor}
-                                className="px-4 py-1 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
-                            >
-                                Añadir
-                            </button>
+                        <div className='mb-2 text-dark'>
+                            <div className="flex items-center justify-between p-2 ">
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={newMinor.name}
+                                    onChange={handleMinorChange}
+                                    placeholder="Nombre del Menor"
+                                    className="w-1/2 p-1 border border-gray-300"
+                                />
+
+                                <div className="flex items-center">
+                                    <input
+                                        type="number"
+                                        name="age"
+                                        value={newMinor.age}
+                                        onChange={handleMinorChange}
+                                        placeholder="Edad"
+                                        className="w-16 p-1 border border-gray-300"
+                                    />
+                                    <span className="ml-2 text-gray-500">años</span>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={addMinor}
+                                    className="px-5 py-1 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                                >
+                                    Añadir
+                                </button>
+                            </div>
                         </div>
                     </div>
 
