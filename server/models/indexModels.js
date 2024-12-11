@@ -24,7 +24,7 @@ Minor.belongsTo(Enrollment, { foreignKey: 'enrollment_id', as: 'enrollment' })
 // Exportar modelos y función de sincronización
 const syncModels = async () => {
     try {
-        await connectionDb.sync({ alter: false })
+        await connectionDb.sync({ alter: true })
         console.log(
             'Modelos sincronizados con la base de datos (^_-)db(-_^) 🚀'
         )
