@@ -3,17 +3,14 @@ import React, { useEffect, useState } from 'react'
 import { exportToPDF, exportToExcel } from '../utils/exportUtils'
 import MainPanel from './MainPanel.jsx'
 
-import {
-    getAllCourses,
-    deleteCourseById,
-} from '../services/coursesServices.js'
+import { getAllCourses, deleteCourseById } from '../services/coursesServices.js'
 
 const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
     const [courses, setCourses] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [filteredCourses, setFilteredCourses] = useState([])
-        // Pagination
+    // Pagination
     const [currentPage, setCurrentPage] = useState(1)
     const itemsPerPage = 5
     const totalPages = Math.ceil(courses.length / itemsPerPage)
@@ -51,7 +48,14 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
     const handleExportPDF = () => {
         try {
             // Implement PDF export logic
-            const headers = ['Título', 'Descripción', 'Fecha', 'Schedule', 'Link', 'Tickets']
+            const headers = [
+                'Título',
+                'Descripción',
+                'Fecha',
+                'Schedule',
+                'Link',
+                'Tickets',
+            ]
             const data = courses.map((course) => [
                 course.title,
                 course.description,
@@ -65,11 +69,18 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
             console.error('Error exporting to PDF:', error)
         }
     }
-    
+
     const handleExportExcel = () => {
         try {
             // Implement Excel export logic
-            const headers = ['Title', 'Description', 'Date', 'Schedule', 'Link', 'Tickets']
+            const headers = [
+                'Title',
+                'Description',
+                'Date',
+                'Schedule',
+                'Link',
+                'Tickets',
+            ]
             const data = courses.map((course) => [
                 course.title,
                 course.description,
@@ -102,14 +113,15 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
         <MainPanel
             title="Gestión de Cursos"
             totalItems={filteredCourses.length}
-            onSearch={handleSearch}>
-
-            {/* <div className="p-2 bg-white shadow-md sm:p-6 md:p-8 rounded-lg"> */}
+            onSearch={handleSearch}
+        >
+            {/* <div className="p-2 bg-white rounded-lg shadow-md sm:p-6 md:p-8"> */}
             {/* Botones de exportación */}
             <div className="flex justify-end mb-6 space-x-4">
                 <button
                     onClick={handleExportPDF}
-                    className="p-2 hover:bg-orange-600" ss
+                    className="p-2 hover:bg-orange-600"
+                    ss
                     aria-label="Exportar a PDF"
                 >
                     <svg
@@ -146,7 +158,6 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
                 </button>
             </div>
 
-
             {/* Contenedor de la tabla */}
             <div className="overflow-x-auto">
                 <table className="w-full border-collapse table-auto">
@@ -159,7 +170,7 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
                             <th className="px-4 py-3 text-left">Horario</th>
                             <th className="px-4 py-3 text-left">Enlace</th>
                             <th className="px-4 py-3 text-left">Tickets</th>
-                            <th className="p-2 text-black  text-left sm:p-3 md:p-4">
+                            <th className="p-2 text-left text-black sm:p-3 md:p-4">
                                 Acciones
                             </th>
                         </tr>
@@ -169,15 +180,21 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
                         {currentCourses.map((course, index) => (
                             <tr
                                 key={index}
-                                className="bg-white mb-8 hover:bg-gray-50 border-b border-gray-200"
+                                className="mb-8 bg-white border-b border-gray-200 hover:bg-gray-50"
                             >
-                                <td className="px-4 text-sm py-3 text-left">{course.title}</td>
-                                <td className="px-4 text-sm py-3 text-left">{course.description}</td>
-                                <td className="px-4 text-sm py-3 text-left">
+                                <td className="px-4 py-3 text-sm text-left">
+                                    {course.title}
+                                </td>
+                                <td className="px-4 py-3 text-sm text-left">
+                                    {course.description}
+                                </td>
+                                <td className="px-4 py-3 text-sm text-left">
                                     {new Date(course.date).toLocaleDateString()}
                                 </td>
-                                <td className="px-4 mb-16 text-sm py-3 text-left">{course.schedule}</td>
-                                <td className="px-4 text-sm py-3 text-left">
+                                <td className="px-4 py-3 mb-16 text-sm text-left">
+                                    {course.schedule}
+                                </td>
+                                <td className="px-4 py-3 text-sm text-left">
                                     <a
                                         href={course.link}
                                         className="text-blue-600 underline hover:text-blue-800"
@@ -186,9 +203,10 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
                                     >
                                         Ver
                                     </a>
-
                                 </td>
-                                <td className="px-4 text-sm py-3 text-left">{course.tickets}</td>
+                                <td className="px-4 py-3 text-sm text-left">
+                                    {course.tickets}
+                                </td>
                                 <td className="sm:p-3 md:p-4">
                                     <div className="flex flex-col items-center space-y-2 sm:flex-row sm:justify-center sm:space-x-2 sm:space-y-0">
                                         <button className="flex items-center px-2 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white">
@@ -203,8 +221,13 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
                                             Eliminar
                                         </button>
                                         <button
-                                            onClick={() => onShowEnrollmentsByCourse(course.id)}
-                                            className="flex items-center px-2 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white">
+                                            onClick={() =>
+                                                onShowEnrollmentsByCourse(
+                                                    course.id
+                                                )
+                                            }
+                                            className="flex items-center px-2 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                                        >
                                             Inscritos
                                         </button>
                                     </div>
@@ -226,8 +249,6 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
             {/* </div> */}
         </MainPanel>
     )
-};
-
-
+}
 
 export default CoursesTable
