@@ -22,7 +22,7 @@ const AdministratorsTable = () => {
     const [isEditing, setIsEditing] = useState(false)
     const { authRequest } = useAuth()
     const itemsPerPage = 6
-
+    const totalPages = Math.ceil(filteredAdmins.length / itemsPerPage)
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
     const currentAdmins = filteredAdmins.slice(
@@ -30,21 +30,20 @@ const AdministratorsTable = () => {
         indexOfLastItem
     )
 
-    const fetchAdmins = async () => {
-        try {
-            setLoading(true)
-            const data = await getAllAdmins()
-            setAdmins(data)
-            setFilteredAdmins(data)
-            setLoading(false)
-        } catch (error) {
-            console.error('Error al obtener los administradores:', error)
-            setError(error)
-            setLoading(false)
-        }
-    }
-
     useEffect(() => {
+        const fetchAdmins = async () => {
+            try {
+                setLoading(true)
+                const data = await getAllAdmins()
+                setAdmins(data)
+                setFilteredAdmins(data)
+                setLoading(false)
+            } catch (error) {
+                console.error('Error al obtener los administradores:', error)
+                setError(error)
+                setLoading(false)
+            }
+        }
         fetchAdmins()
     }, [])
 
@@ -54,6 +53,7 @@ const AdministratorsTable = () => {
             admin.username.toLowerCase().includes(lowerCaseSearch)
         )
         setFilteredAdmins(filtered)
+        setCurrentPage(1)
     }
 
     const handleExportPDF = async () => {
@@ -112,7 +112,10 @@ const AdministratorsTable = () => {
         setIsModalOpen(false)
         try {
             await deleteAdminById(selectedAdmin.id)
-            fetchAdmins()
+            setFilteredAdmins(
+                filteredAdmins.filter((a) => a.id !== selectedAdmin.id)
+            )
+            setCurrentPage(1) // Resetear la página después de una eliminación
         } catch (error) {
             console.error('Error al eliminar administrador:', error)
             alert('Error al eliminar el administrador')
@@ -152,48 +155,46 @@ const AdministratorsTable = () => {
             totalItems={filteredAdmins.length}
             onSearch={handleSearch}
         >
-            <div className="flex flex-col h-[calc(100vh-240px)]">
-                <div className="flex justify-between mb-3 space-x-4">
+            <div className="flex flex-col h-full">
+                {/* Actions buttons */}
+                <div className="flex flex-col justify-between mb-4 space-y-2 mobile:flex-col tablet:flex-row tablet:space-y-0">
                     <button
                         onClick={handleCreateClick}
-                        className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                        className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
                     >
                         Crear Nuevo Administrador
                     </button>
-                    <div className="flex gap-4">
+                    <div className="flex items-center justify-start gap-4 tablet:justify-end">
                         <img
                             src={pdfIcon}
                             alt="Exportar a PDF"
-                            className="w-10 h-10 cursor-pointer hover:opacity-80"
+                            className="w-8 h-8 transition-opacity duration-300 cursor-pointer opacity-70 hover:opacity-100"
                             onClick={handleExportPDF}
                             title="Exportar a PDF"
                         />
                         <img
                             src={excelIcon}
                             alt="Exportar a Excel"
-                            className="w-10 h-10 cursor-pointer hover:opacity-80"
+                            className="w-8 h-8 transition-opacity duration-300 cursor-pointer opacity-70 hover:opacity-100"
                             onClick={handleExportExcel}
                             title="Exportar a Excel"
                         />
                     </div>
                 </div>
 
-                <div className="flex-1 min-h-0">
-                    <table className="w-full border-collapse table-auto">
-                        <thead className="bg-primary">
-                            <tr>
-                                <th className="w-2/5 p-4 text-left text-black border-b-2 font-helvetica-w20-bold border-primary">
+                {/* Table of Admins */}
+                <div className="flex-1 overflow-auto">
+                    <table className="w-full mb-4 border-collapse">
+                        <thead>
+                            <tr className="border-b-2 border-orange">
+                                <th className="w-1/3 p-3 text-left font-helvetica-w20-bold">
                                     Usuario
                                 </th>
-                                <th className="w-1/5 p-4 text-left text-black border-b-2 font-helvetica-w20-bold border-primary">
-                                    <div className="flex justify-start ml-10">
-                                        Rol
-                                    </div>
+                                <th className="w-1/3 p-3 text-left font-helvetica-w20-bold">
+                                    Rol
                                 </th>
-                                <th className="w-1/5 p-4 text-black border-b-2 font-helvetica-w20-bold border-primary">
-                                    <div className="flex justify-start ml-4">
-                                        Acciones
-                                    </div>
+                                <th className="w-1/3 p-3 text-center font-helvetica-w20-bold">
+                                    Acciones
                                 </th>
                             </tr>
                         </thead>
@@ -201,27 +202,25 @@ const AdministratorsTable = () => {
                             {currentAdmins.map((admin) => (
                                 <tr
                                     key={admin.id}
-                                    className="transition-colors border-b border-gray-200 hover:bg-gray-50"
+                                    className="transition-colors duration-300 border-b hover:bg-neutral-200"
                                 >
-                                    <td className="w-2/5 p-4 text-left font-helvetica-w20-bold">
+                                    <td className="p-3 text-left font-helvetica-w20-bold">
                                         {admin.username}
                                     </td>
-                                    <td className="w-2/5 p-4 text-left">
-                                        <div className="ml-10">
-                                            {admin.role_id === 1
-                                                ? 'Superadmin'
-                                                : admin.role_id === 2
-                                                ? 'Admin'
-                                                : 'Facilitator'}
-                                        </div>
+                                    <td className="p-3 text-left">
+                                        {admin.role_id === 1
+                                            ? 'Superadmin'
+                                            : admin.role_id === 2
+                                            ? 'Admin'
+                                            : 'Facilitator'}
                                     </td>
-                                    <td className="w-1/5 p-4">
+                                    <td className="p-3 text-center">
                                         <div className="flex justify-center gap-2">
                                             <button
                                                 onClick={() =>
                                                     handleEditClick(admin)
                                                 }
-                                                className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                                                className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
                                             >
                                                 Editar
                                             </button>
@@ -229,7 +228,7 @@ const AdministratorsTable = () => {
                                                 onClick={() =>
                                                     handleDeleteClick(admin)
                                                 }
-                                                className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                                                className="px-4 py-2 text-black transition-all duration-300 border-2 border-black bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
                                             >
                                                 Eliminar
                                             </button>
@@ -241,17 +240,17 @@ const AdministratorsTable = () => {
                     </table>
                 </div>
 
-                <div className="h-16">
+                {/* Pagination */}
+                <div className="mt-4">
                     <Pagination
                         currentPage={currentPage}
-                        totalPages={Math.ceil(
-                            filteredAdmins.length / itemsPerPage
-                        )}
+                        totalPages={totalPages}
                         onPageChange={setCurrentPage}
                     />
                 </div>
             </div>
 
+            {/* Modal of confirmation */}
             <ConfirmationModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
@@ -282,7 +281,17 @@ const AdministratorsTable = () => {
                                     }
                                 )
                             }
-                            await fetchAdmins()
+                            setFilteredAdmins([
+                                ...filteredAdmins,
+                                ...(isEditing
+                                    ? [
+                                          {
+                                              ...selectedAdmin,
+                                              ...formData,
+                                          },
+                                      ]
+                                    : [formData]),
+                            ])
                             setShowModal(false)
                             return true
                         } catch (error) {

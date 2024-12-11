@@ -38,12 +38,10 @@ const DashboardPage = () => {
     }
 
     return (
-        <div className="flex flex-col min-h-screen laptop:flex-row bg-neutral-100">
+        <div className="flex min-h-screen ">
             <Sidebar />
-            <main className="flex-1 w-full laptop:w-auto">
-                <div className="h-full max-w-full overflow-x-hidden">
-                    {renderComponent()}
-                </div>
+            <main className="flex flex-col flex-1 overflow-x-hidden">
+                {renderComponent()}
             </main>
         </div>
     )
