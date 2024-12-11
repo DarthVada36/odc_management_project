@@ -9,6 +9,7 @@ import excelIcon from '../assets/icons/file-excel.svg';
 import ConfirmationModal from './ConfirmationModal';
 import EnrollmentForm from './EnrollmentForm';
 import { useAuth } from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 
 const EnrollmentsTableByCourse = ({ courseId }) => {
@@ -24,8 +25,8 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
   const [selectedEnrollment, setSelectedEnrollment] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [courseName, setCourseName] = useState(''); // Nuevo estado para el nombre del curso
-  const [selectedCourse, setSelectedCourse] = useState(''); // Nuevo estado para el curso seleccionado
   const { authRequest } = useAuth();
+  const navigate = useNavigate();
   const itemsPerPage = 4;
 
   const indexOfLastItem = currentPage * itemsPerPage
@@ -52,7 +53,7 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
   const fetchCourseName = async () => {
     try {
       const course = await getCourseById(courseId);
-      setCourseName(course.name);
+      setCourseName(course.title);
     } catch (error) {
       console.error('Error al obtener el nombre del curso:', error);
     }
@@ -60,6 +61,7 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
 
   useEffect(() => {
     fetchEnrollments();
+    fetchCourseName();
   }, []);
 
   const handleSearch = (searchTerm) => {
@@ -68,6 +70,10 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
       enrollment.fullname.toLowerCase().includes(lowerCaseSearch)
     )
     setFilteredEnrollments(filtered)
+  }
+
+  const handleRegisterClick = () => {
+    navigate(`/inscription/${courseId}`);
   }
 
   const handleExportPDF = async () => {
@@ -114,8 +120,6 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
     }
   }
 
-  // const { enrollment: currentEnrollment } = useAuth()
-
   const handleDeleteClick = (enrollment) => {
     setSelectedEnrollment(enrollment)
     setModalMessage(
@@ -158,15 +162,16 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
 
   return (
     <MainPanel
-      title="Gestión de inscripciones por curso"
+      title={`Gestion de inscripciones del curso ${courseName}`}
       totalItems={filteredEnrollments.length}
       onSearch={handleSearch}
     >
-    <div> </div>
+      <div> </div>
       {/* Export buttons */}
-      <div className="flex flex-col h-[calc(100vh-240px)]">{courseId}
+      <div className="flex flex-col h-[calc(100vh-240px)]">
         <div className="flex justify-between mb-3 space-x-4">
           <button
+            onClick={handleRegisterClick}
             className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
           >
             Registrar nueva inscripción
