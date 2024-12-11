@@ -1,5 +1,5 @@
 import Template from '../models/templateModel.js';
-
+import { validateTemplate } from '../utilss/validations/validateTemplate.js';
 // Obtener todas las plantillas
 export const getTemplates = async (req, res) => {
   try {
@@ -13,24 +13,18 @@ export const getTemplates = async (req, res) => {
   }
 };
 
-// Crear una nueva plantilla
+/// Crear una nueva plantilla
 export const saveTemplate = async (req, res) => {
   const { name, design } = req.body;
 
   if (!name || !design) {
     return res.status(400).json({ message: 'Faltan parámetros requeridos' });
   }
-  const validateTemplate = (design) => {
-    if (!design || typeof design !== 'object') {
-      return false;
-    }
-  
-    const requiredFields = ['counters', 'body', 'schemaVersion'];
-    return requiredFields.every((field) => field in design);
-  };
+
   // Validar la plantilla
-  if (!validateTemplate(design)) {
-    return res.status(400).json({ message: 'La plantilla no es válida' });
+  const { valid, message } = validateTemplate(design);
+  if (!valid) {
+    return res.status(400).json({ message });
   }
 
   try {
@@ -44,7 +38,6 @@ export const saveTemplate = async (req, res) => {
     res.status(500).json({ message: 'Error al guardar plantilla' });
   }
 };
-
 
 // Eliminar una plantilla
 export const deleteTemplate = async (req, res) => {
