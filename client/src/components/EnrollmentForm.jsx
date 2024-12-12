@@ -257,7 +257,10 @@ const EnrollmentForm = ({
                                             type="number"
                                             name="age"
                                             value={newMinor.age}
-                                            onChange={handleMinorChange}
+                                            onChange={(e) => {
+                                                const value = Math.max(0, Number(e.target.value)); // Asegura que no sea menor a 0
+                                                setNewMinor((prev) => ({ ...prev, age: value }));
+                                            }}
                                             placeholder="Edad"
                                             className="w-16 p-1 border border-gray-300"
                                         />
