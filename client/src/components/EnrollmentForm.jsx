@@ -239,38 +239,46 @@ const EnrollmentForm = ({
                                 </button>
                             </div>
                         ))}
-                        <div className='mb-2 text-dark'>
-                            <div className="flex items-center justify-between p-2 ">
-                                <input
-                                    type="text"
-                                    name="name"
-                                    value={newMinor.name}
-                                    onChange={handleMinorChange}
-                                    placeholder="Nombre del Menor"
-                                    className="w-1/2 p-1 border border-gray-300"
-                                />
 
-                                <div className="flex items-center">
+                        {formData.minors.length < 3 && (
+                            <div className='mb-2 text-dark'>
+                                <div className="flex items-center justify-between p-2 ">
                                     <input
-                                        type="number"
-                                        name="age"
-                                        value={newMinor.age}
+                                        type="text"
+                                        name="name"
+                                        value={newMinor.name}
                                         onChange={handleMinorChange}
-                                        placeholder="Edad"
-                                        className="w-16 p-1 border border-gray-300"
+                                        placeholder="Nombre del Menor"
+                                        className="w-1/2 p-1 border border-gray-300"
                                     />
-                                    <span className="ml-2 text-gray-500">años</span>
-                                </div>
 
-                                <button
-                                    type="button"
-                                    onClick={addMinor}
-                                    className="px-5 py-1 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
-                                >
-                                    Añadir
-                                </button>
+                                    <div className="flex items-center">
+                                        <input
+                                            type="number"
+                                            name="age"
+                                            value={newMinor.age}
+                                            onChange={handleMinorChange}
+                                            placeholder="Edad"
+                                            className="w-16 p-1 border border-gray-300"
+                                        />
+                                        <span className="ml-2 text-gray-500">años</span>
+                                    </div>
+
+                                    <button
+                                        type="button"
+                                        onClick={addMinor}
+                                        disabled={formData.minors.length >= 3}
+                                        className={`px-5 py-1 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold ${formData.minors.length >= 3
+                                            ? 'opacity-50 cursor-not-allowed'
+                                            : 'hover:bg-dark hover:text-white'
+                                            }`}
+                                    >
+                                        Añadir
+                                    </button>
+                                </div>
                             </div>
-                        </div>
+
+                        )}
                     </div>
 
                     {errorMessage && (
