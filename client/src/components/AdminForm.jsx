@@ -22,14 +22,34 @@ const AdminForm = ({
 
     useEffect(() => {
         if (isEditing && initialData) {
-            setFormData({
-                username: initialData.username || '',
-                password: initialData.password || '',
-                confirmPassword: initialData.password || '',
-                roleId: initialData.role_id?.toString() || '',
-            })
+            loadInitialData(initialData)
+        } else {
+            resetFormData()
         }
     }, [isEditing, initialData])
+
+    const resetFormData = () => {
+        setFormData({
+            username: '',
+            password: '',
+            confirmPassword: '',
+            roleId: '',
+        })
+    }
+
+    const loadInitialData = (data) => {
+        setFormData({
+            username: data.username || '',
+            password: '',
+            confirmPassword: '',
+            roleId: data.role_id?.toString() || '',
+        })
+    }
+
+    const handleClose = () => {
+        resetFormData()
+        onCancel()
+    }
 
     const handleChange = (e) => {
         e.stopPropagation()
@@ -62,21 +82,24 @@ const AdminForm = ({
 
         const success = await onSubmit(submitData)
         if (success) {
-            onCancel()
+            handleClose()
         }
     }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-black/50" onClick={onCancel} />
             <div
-                className="relative w-[500px] bg-white p-8"
+                className="absolute inset-0 bg-black/50"
+                onClick={handleClose}
+            />
+            <div
+                className="relative w-full max-w-md p-4 bg-white sm:p-8 md:p-12"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button
                     type="button"
-                    onClick={onCancel}
-                    className="absolute p-2 text-gray-500 hover:text-dark top-4 right-4"
+                    onClick={handleClose}
+                    className="absolute p-2 text-gray-500 transition-colors duration-300 hover:text-orange-500 top-4 right-4"
                 >
                     <svg
                         className="w-6 h-6"
@@ -92,7 +115,9 @@ const AdminForm = ({
                     </svg>
                 </button>
 
-                <h2 className="mb-8 text-2xl font-bold text-dark">{title}</h2>
+                <h2 className="mb-6 text-3xl font-bold text-orange-500 font-helvetica-w20-bold">
+                    {title}
+                </h2>
 
                 <form
                     onSubmit={handleSubmit}
@@ -109,9 +134,8 @@ const AdminForm = ({
                             value={formData.username}
                             onChange={handleChange}
                             required
-                            className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
+                            className="w-full p-3 transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary"
                             placeholder="Nombre de usuario"
-                            autoComplete="off"
                         />
                     </div>
 
@@ -126,16 +150,12 @@ const AdminForm = ({
                                 value={formData.password}
                                 onChange={handleChange}
                                 required
-                                className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
+                                className="w-full p-3 transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary"
                                 placeholder="Contraseña"
-                                autoComplete="new-password"
                             />
                             <button
                                 type="button"
-                                onClick={(e) => {
-                                    e.stopPropagation()
-                                    setShowPassword(!showPassword)
-                                }}
+                                onClick={() => setShowPassword(!showPassword)}
                                 className="absolute transform -translate-y-1/2 right-3 top-1/2"
                             >
                                 <img
@@ -158,16 +178,14 @@ const AdminForm = ({
                                 value={formData.confirmPassword}
                                 onChange={handleChange}
                                 required
-                                className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
+                                className="w-full p-3 transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary"
                                 placeholder="Confirmar contraseña"
-                                autoComplete="new-password"
                             />
                             <button
                                 type="button"
-                                onClick={(e) => {
-                                    e.stopPropagation()
+                                onClick={() =>
                                     setShowConfirmPassword(!showConfirmPassword)
-                                }}
+                                }
                                 className="absolute transform -translate-y-1/2 right-3 top-1/2"
                             >
                                 <img
@@ -190,7 +208,7 @@ const AdminForm = ({
                             value={formData.roleId}
                             onChange={handleChange}
                             required
-                            className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
+                            className="w-full p-3 transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary"
                         >
                             <option value="">Selecciona un rol</option>
                             <option value="1">Superadmin</option>
@@ -199,24 +217,23 @@ const AdminForm = ({
                         </select>
                     </div>
 
-                    {passwordError && (
-                        <p className="text-sm text-red-500">{passwordError}</p>
-                    )}
-                    {errorMessage && (
-                        <p className="text-sm text-red-500">{errorMessage}</p>
+                    {(passwordError || errorMessage) && (
+                        <p className="text-sm text-red-500">
+                            {passwordError || errorMessage}
+                        </p>
                     )}
 
-                    <div className="flex justify-end gap-4 mt-8">
+                    <div className="flex flex-col gap-4 mt-8">
                         <button
                             type="button"
-                            onClick={onCancel}
-                            className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                            onClick={handleClose}
+                            className="px-4 py-2 font-bold text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                            className="px-4 py-2 font-bold text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
                         >
                             {submitText}
                         </button>

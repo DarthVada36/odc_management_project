@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { removeCourseById } from '../services/coursesServices';
-import { updateCourseById } from "../services/coursesServices";
-
-
+import { removeCourseById } from '../services/coursesServices'
+import { updateCourseById } from '../services/coursesServices'
 
 const CourseForm = ({
     initialData = null,
@@ -25,10 +23,10 @@ const CourseForm = ({
 
     useEffect(() => {
         if (isEditing && initialData) {
-            const formattedDate = initialData.date 
-                ? new Date(initialData.date).toISOString().split('T')[0] 
+            const formattedDate = initialData.date
+                ? new Date(initialData.date).toISOString().split('T')[0]
                 : ''
-            
+
             setFormData({
                 title: initialData.title || '',
                 description: initialData.description || '',
@@ -51,36 +49,42 @@ const CourseForm = ({
 
     const handleDeleteCourse = async (courseId) => {
         try {
-            const response = await removeCourseById(courseId);
+            const response = await removeCourseById(courseId)
             if (response) {
-                alert("Curso eliminado correctamente");
+                alert('Curso eliminado correctamente')
                 // Puedes actualizar el estado local o hacer una llamada para refrescar la lista de cursos
             }
         } catch (error) {
-            console.error("Error al eliminar el curso:", error.message);
-            alert("Error al eliminar el curso");
+            console.error('Error al eliminar el curso:', error.message)
+            alert('Error al eliminar el curso')
         }
-    };
+    }
 
     const handleUpdateCourse = async (courseId, updatedCourseData) => {
         try {
-            const response = await updateCourseById(courseId, updatedCourseData);
+            const response = await updateCourseById(courseId, updatedCourseData)
             if (response) {
-                alert("Curso actualizado correctamente");
+                alert('Curso actualizado correctamente')
                 // Puedes redirigir o refrescar la lista de cursos
             }
         } catch (error) {
-            console.error("Error al actualizar el curso:", error.message);
-            alert("Error al actualizar el curso");
+            console.error('Error al actualizar el curso:', error.message)
+            alert('Error al actualizar el curso')
         }
-    };
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
         e.stopPropagation()
 
-        if (!formData.title || !formData.description || !formData.date || 
-            !formData.schedule || !formData.link || !formData.tickets) {
+        if (
+            !formData.title ||
+            !formData.description ||
+            !formData.date ||
+            !formData.schedule ||
+            !formData.link ||
+            !formData.tickets
+        ) {
             setErrorMessage('Por favor, completa todos los campos')
             return
         }
