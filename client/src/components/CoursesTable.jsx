@@ -12,7 +12,7 @@ import {
     createCourse,
 } from '../services/coursesServices'
 
-const CoursesTable = () => {
+const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
     const [courses, setCourses] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -104,7 +104,15 @@ const CoursesTable = () => {
 
     const handleExportPDF = () => {
         try {
-            const headers = ['Título', 'Descripción', 'Fecha', 'Schedule', 'Link', 'Tickets']
+            // Implement PDF export logic
+            const headers = [
+                'Título',
+                'Descripción',
+                'Fecha',
+                'Schedule',
+                'Link',
+                'Tickets',
+            ]
             const data = courses.map((course) => [
                 course.title,
                 course.description,
@@ -121,7 +129,15 @@ const CoursesTable = () => {
 
     const handleExportExcel = () => {
         try {
-            const headers = ['Title', 'Description', 'Date', 'Schedule', 'Link', 'Tickets']
+            // Implement Excel export logic
+            const headers = [
+                'Title',
+                'Description',
+                'Date',
+                'Schedule',
+                'Link',
+                'Tickets',
+            ]
             const data = courses.map((course) => [
                 course.title,
                 course.description,
@@ -211,7 +227,7 @@ const CoursesTable = () => {
                             <th className="px-4 py-3 text-left">Horario</th>
                             <th className="px-4 py-3 text-left">Enlace</th>
                             <th className="px-4 py-3 text-left">Tickets</th>
-                            <th className="p-2 text-black text-left sm:p-3 md:p-4">
+                            <th className="p-2 text-left text-black sm:p-3 md:p-4">
                                 Acciones
                             </th>
                         </tr>
@@ -222,13 +238,19 @@ const CoursesTable = () => {
                                 key={course.id}
                                 className="bg-white mb-8 hover:bg-gray-50 border-b border-gray-200"
                             >
-                                <td className="px-4 text-sm py-3 text-left">{course.title}</td>
-                                <td className="px-4 text-sm py-3 text-left">{course.description}</td>
-                                <td className="px-4 text-sm py-3 text-left">
+                                <td className="px-4 py-3 text-sm text-left">
+                                    {course.title}
+                                </td>
+                                <td className="px-4 py-3 text-sm text-left">
+                                    {course.description}
+                                </td>
+                                <td className="px-4 py-3 text-sm text-left">
                                     {new Date(course.date).toLocaleDateString()}
                                 </td>
-                                <td className="px-4 mb-16 text-sm py-3 text-left">{course.schedule}</td>
-                                <td className="px-4 text-sm py-3 text-left">
+                                <td className="px-4 py-3 mb-16 text-sm text-left">
+                                    {course.schedule}
+                                </td>
+                                <td className="px-4 py-3 text-sm text-left">
                                     <a
                                         href={course.link}
                                         className="text-blue-600 underline hover:text-blue-800"
@@ -252,6 +274,16 @@ const CoursesTable = () => {
                                             className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
                                         >
                                             Eliminar
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                onShowEnrollmentsByCourse(
+                                                    course.id
+                                                )
+                                            }
+                                            className="flex items-center px-2 py-2 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                                        >
+                                            Inscritos
                                         </button>
                                     </div>
 

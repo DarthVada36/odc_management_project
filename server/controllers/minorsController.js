@@ -23,29 +23,7 @@ export const getMinorByCourseId = async (req, res) => {
     }
 };
 
-export const createMinorByEnrollmentId = async (req, res) => {
-    try {
-        const { enrollment_id } = req.params;
-        const { name, age } = req.body;
 
-        // Verificar que la inscripción existe
-        const enrollmentExists = await Enrollment.findByPk(enrollment_id);
-        if (!enrollmentExists) {
-            return res.status(404).json({ message: "Inscripción no encontrada" });
-        }
-
-        // Crear el menor (permitimos campos vacíos si la lógica lo requiere)
-        const minor = await Minor.create({
-            name: name || null,
-            age: age || null,
-            enrollment_id,
-        });
-
-        res.status(201).json(minor);
-    } catch (error) {
-        res.status(500).json({ error: error.message });
-    }
-};
 
 export const getMinorsByEnrollmentId = async (req, res) => {
     try {
