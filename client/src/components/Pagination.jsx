@@ -8,19 +8,19 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
     }
 
     return (
-        <div className="flex items-center justify-center py-[4.5rem] space-x-2">
+        <div className="flex items-center justify-center h-full pb-5 space-x-4">
             {/* Previous button */}
             <button
-                className={`px-3 py-2 rounded transition-colors ${
+                className={`px-3 py-2 text-black transition-colors duration-300 rounded-none border-2 border-black font-helvetica-w20-bold ${
                     currentPage === 1
-                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        : 'bg-white text-black hover:bg-orange hover:text-white'
+                        ? 'bg-gray-200 text-gray-500 hover:bg-gray-300 cursor-not-allowed'
+                        : 'bg-white hover:bg-black hover:text-white'
                 }`}
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
             >
                 <svg
-                    className="w-5 h-5"
+                    className="w-6 h-6"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"
@@ -39,10 +39,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
             ).map((page) => (
                 <button
                     key={page}
-                    className={`px-3 py-1 rounded transition-colors font-helvetica-w20-bold ${
+                    className={`px-4 py-2 text-black transition-colors duration-300 font-helvetica-w20-bold rounded-none border-2 border-black ${
                         currentPage === page
                             ? 'bg-orange text-white'
-                            : 'bg-white text-black hover:bg-orange/20'
+                            : 'bg-white hover:bg-black hover:text-white'
                     }`}
                     onClick={() => handlePageChange(page)}
                 >
@@ -52,16 +52,16 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
 
             {/* Next button */}
             <button
-                className={`px-3 py-2 rounded transition-colors ${
+                className={`px-3 py-2 text-black transition-colors duration-300 rounded-none border-2 border-black font-helvetica-w20-bold ${
                     currentPage === totalPages
-                        ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                        : 'bg-white text-black hover:bg-orange hover:text-white'
+                        ? 'bg-gray-200 text-gray-500 hover:bg-gray-300 cursor-not-allowed'
+                        : 'bg-white hover:bg-black hover:text-white'
                 }`}
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
             >
                 <svg
-                    className="w-5 h-5"
+                    className="w-6 h-6"
                     viewBox="0 0 24 24"
                     fill="none"
                     stroke="currentColor"

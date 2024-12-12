@@ -1,7 +1,7 @@
 import express from 'express';
 import {
     getMinorByCourseId,
-    createMinorByEnrollmentId,
+    
     getMinorsByEnrollmentId,
     // getMinorById,
     updateMinorById,
@@ -16,8 +16,7 @@ minorRoutes.get('/course/:course_id', getMinorByCourseId);
 // Obtener menores por inscripción
 minorRoutes.get('/enrollment/:enrollment_id', getMinorsByEnrollmentId);
 
-// Crear un menor asociado a una inscripción
-minorRoutes.post('/enrollment/:enrollment_id', createMinorByEnrollmentId);
+
 
 // // Obtener un menor por ID
 // minorRoutes.get('/:id', getMinorById);

@@ -8,7 +8,7 @@ export default {
             },
             colors: {
                 // Colores principales
-                primary: '#ff6600',
+                primary: '#FF7900',
                 secondary: '#00a1e0',
                 inputBorder: '#CCCCCC',
                 paceHolderText: '#666666',

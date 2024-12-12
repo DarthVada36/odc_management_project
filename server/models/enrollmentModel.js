@@ -50,10 +50,10 @@ const Enrollment = connectionDb.define('Enrollment', {
         type: DataTypes.INTEGER,
         allowNull: false,
         references: {
-            model: 'courses', // Nombre de la tabla
-            key: 'id', // Clave primaria en la tabla de Cursos
+          model: 'courses', // Nombre de la tabla
+          key: 'id', // Clave primaria en la tabla de Cursos
+            },
         },
-    },
     group_id: {
         type: DataTypes.INTEGER,
         allowNull: true, // Opcional, asignado automáticamente para inscripciones en grupo
@@ -72,6 +72,6 @@ const Enrollment = connectionDb.define('Enrollment', {
         allowNull: false,
         defaultValue: DataTypes.NOW,
     },
-})
+});
 
 export default Enrollment
