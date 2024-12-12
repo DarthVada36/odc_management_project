@@ -12,15 +12,8 @@ import {
     ResponsiveContainer,
     LineChart,
     Line,
-    Legend,
 } from 'recharts'
-import {
-    Users,
-    BookOpen,
-    PercentIcon,
-    TrendingUp,
-    UserPlus,
-} from 'lucide-react'
+import { Users, BookOpen, PercentIcon, UserPlus } from 'lucide-react'
 import { getAllCourses } from '../services/coursesServices'
 import { getAllEnrollments } from '../services/enrollmentServices'
 
@@ -211,9 +204,13 @@ const AdminDashboard = () => {
                     coursesMetrics,
                     firstTimeRate,
                     dailyEnrollments: dailyEnrollmentsArray,
+                    enrollments,
                 })
             } catch (error) {
-                console.error('Error fetching dashboard data:', error)
+                console.error(
+                    'Error al obtener los datos del dashboard:',
+                    error
+                )
             } finally {
                 setLoading(false)
             }
@@ -251,6 +248,65 @@ const AdminDashboard = () => {
                         ? entry.total
                         : entry.byCourse[selectedCourse] || 0,
             }))
+    }
+
+    const getFilteredAgeGroups = () => {
+        if (selectedCourse === 'all') {
+            return metrics.ageGroups
+        }
+
+        const courseEnrollments = metrics.enrollments.filter(
+            (e) => e.id_course.toString() === selectedCourse
+        )
+
+        const ageGroups = [
+            { name: '< 14', value: 0 },
+            { name: '15-24', value: 0 },
+            { name: '25-54', value: 0 },
+            { name: '55+', value: 0 },
+            { name: 'NS/NC', value: 0 },
+        ]
+
+        courseEnrollments.forEach((enrollment) => {
+            if (enrollment.age === 0) {
+                ageGroups[4].value++
+            } else if (enrollment.age < 14) {
+                ageGroups[0].value++
+            } else if (enrollment.age < 25) {
+                ageGroups[1].value++
+            } else if (enrollment.age < 55) {
+                ageGroups[2].value++
+            } else {
+                ageGroups[3].value++
+            }
+        })
+
+        return ageGroups
+    }
+
+    const getFilteredGenderDistribution = () => {
+        if (selectedCourse === 'all') {
+            return metrics.genderDistribution
+        }
+
+        const courseEnrollments = metrics.enrollments.filter(
+            (e) => e.id_course.toString() === selectedCourse
+        )
+
+        const genderCounts = courseEnrollments.reduce((acc, curr) => {
+            acc[curr.gender] = (acc[curr.gender] || 0) + 1
+            return acc
+        }, {})
+
+        return [
+            { name: 'Mujer', value: genderCounts['mujer'] || 0 },
+            { name: 'Hombre', value: genderCounts['hombre'] || 0 },
+            {
+                name: 'Otros géneros',
+                value: genderCounts['otros generos'] || 0,
+            },
+            { name: 'NS/NC', value: genderCounts['NS/NC'] || 0 },
+        ]
     }
 
     const COLORS = ['#ff6600', '#00a1e0', '#28a745', '#6c757d']
@@ -299,76 +355,6 @@ const AdminDashboard = () => {
 
             {/* Graphs */}
             <div className="grid grid-cols-1 gap-4 laptop:grid-cols-2 tablet:gap-6">
-                {/* Distribution by Age */}
-                <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
-                    <h2 className="mb-4 text-base font-semibold tablet:text-lg">
-                        Distribución por Edad
-                    </h2>
-                    <div className="h-[250px] tablet:h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <BarChart
-                                data={metrics.ageGroups}
-                                margin={{
-                                    top: 20,
-                                    right: 30,
-                                    left: 20,
-                                    bottom: 20,
-                                }}
-                            >
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis
-                                    dataKey="name"
-                                    angle={-15}
-                                    textAnchor="end"
-                                />
-                                <YAxis />
-                                <Tooltip />
-                                <Bar dataKey="value" fill="#ff6600" />
-                            </BarChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-
-                {/* Distribution by Gender */}
-                <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
-                    <h2 className="mb-4 text-base font-semibold tablet:text-lg">
-                        Distribución por Género
-                    </h2>
-                    <div className="h-[250px] tablet:h-[300px] w-full">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={metrics.genderDistribution}
-                                    cx="50%"
-                                    cy="50%"
-                                    innerRadius={60}
-                                    outerRadius="80%"
-                                    fill="#8884d8"
-                                    paddingAngle={5}
-                                    dataKey="value"
-                                    label={({ name, percent }) =>
-                                        `${name} ${(percent * 100).toFixed(0)}%`
-                                    }
-                                >
-                                    {metrics.genderDistribution.map(
-                                        (entry, index) => (
-                                            <Cell
-                                                key={`cell-${index}`}
-                                                fill={
-                                                    COLORS[
-                                                        index % COLORS.length
-                                                    ]
-                                                }
-                                            />
-                                        )
-                                    )}
-                                </Pie>
-                                <Tooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
-
                 {/* Evolution of Enrollments */}
                 <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
                     <div className="flex flex-col gap-4 mb-4 tablet:flex-row tablet:items-center tablet:justify-between">
@@ -551,8 +537,79 @@ const AdminDashboard = () => {
                         </div>
                     )}
                 </div>
+
+                {/* Distribution by Age */}
+                <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
+                    <h2 className="mb-4 text-base font-semibold tablet:text-lg">
+                        Distribución por Edad
+                    </h2>
+                    <div className="h-[250px] tablet:h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <BarChart
+                                data={getFilteredAgeGroups()}
+                                margin={{
+                                    top: 20,
+                                    right: 30,
+                                    left: 20,
+                                    bottom: 20,
+                                }}
+                            >
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis
+                                    dataKey="name"
+                                    angle={-15}
+                                    textAnchor="end"
+                                />
+                                <YAxis />
+                                <Tooltip />
+                                <Bar dataKey="value" fill="#ff6600" />
+                            </BarChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
+
+                {/* Distribution by Gender */}
+                <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
+                    <h2 className="mb-4 text-base font-semibold tablet:text-lg">
+                        Distribución por Género
+                    </h2>
+                    <div className="h-[250px] tablet:h-[300px] w-full">
+                        <ResponsiveContainer width="100%" height="100%">
+                            <PieChart>
+                                <Pie
+                                    data={getFilteredGenderDistribution()}
+                                    cx="50%"
+                                    cy="50%"
+                                    innerRadius={60}
+                                    outerRadius="80%"
+                                    fill="#8884d8"
+                                    paddingAngle={5}
+                                    dataKey="value"
+                                    label={({ name, percent }) =>
+                                        `${name} ${(percent * 100).toFixed(0)}%`
+                                    }
+                                >
+                                    {getFilteredGenderDistribution().map(
+                                        (entry, index) => (
+                                            <Cell
+                                                key={`cell-${index}`}
+                                                fill={
+                                                    COLORS[
+                                                        index % COLORS.length
+                                                    ]
+                                                }
+                                            />
+                                        )
+                                    )}
+                                </Pie>
+                                <Tooltip />
+                            </PieChart>
+                        </ResponsiveContainer>
+                    </div>
+                </div>
             </div>
         </div>
     )
 }
+
 export default AdminDashboard
