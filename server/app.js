@@ -39,6 +39,8 @@ app.use('/api/minors', minorRoutes)
 app.use('/api/roles', roleRoutes)
 app.use('/api/admins', adminRoutes)
 
+
+
 const startServer = async () => {
     try {
         await initializeDb()
