@@ -26,14 +26,16 @@ const MetricCard = ({ icon: Icon, title, value, color, subtitle }) => (
                 <Icon className={`h-5 w-5 tablet:h-6 tablet:w-6 ${color}`} />
             </div>
             <div>
-                <p className="text-xs font-medium tablet:text-sm text-neutral-600">
+                <p className="text-xs font-medium font-helvetica-w20-bold tablet:text-sm text-neutral-600">
                     {title}
                 </p>
-                <h3 className="text-lg font-bold tablet:text-2xl text-neutral-900">
+                <h3 className="text-lg font-bold font-helvetica-w20-bold tablet:text-2xl text-neutral-900">
                     {value}
                 </h3>
                 {subtitle && (
-                    <p className="text-xs text-neutral-500">{subtitle}</p>
+                    <p className="text-xs font-helvetica-w20-bold text-neutral-500">
+                        {subtitle}
+                    </p>
                 )}
             </div>
         </div>
@@ -42,11 +44,15 @@ const MetricCard = ({ icon: Icon, title, value, color, subtitle }) => (
 
 const Select = ({ value, onChange, options, label }) => (
     <div className="flex flex-col gap-1">
-        {label && <label className="text-sm text-neutral-600">{label}</label>}
+        {label && (
+            <label className="text-sm font-helvetica-w20-bold text-neutral-600">
+                {label}
+            </label>
+        )}
         <select
             value={value}
             onChange={onChange}
-            className="px-3 py-2 text-sm border rounded-lg border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
+            className="px-3 py-2 text-sm border rounded-lg font-helvetica-w20-bold border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
         >
             {options.map((option) => (
                 <option key={option.value} value={option.value}>
@@ -321,7 +327,7 @@ const AdminDashboard = () => {
 
     return (
         <div className="flex-1 p-4 space-y-4 overflow-y-auto tablet:p-6 tablet:space-y-6 bg-neutral-100">
-            <h1 className="text-xl font-bold tablet:text-2xl text-neutral-900">
+            <h1 className="text-xl font-bold font-helvetica-w20-bold tablet:text-2xl text-neutral-900">
                 Dashboard
             </h1>
 
@@ -331,13 +337,13 @@ const AdminDashboard = () => {
                     icon={BookOpen}
                     title="Cursos Activos"
                     value={metrics.totalCourses}
-                    color="text-primary bg-primary"
+                    color="text-primary  font-helvetica-w20-bold bg-primary"
                 />
                 <MetricCard
                     icon={Users}
                     title="Inscripciones"
                     value={metrics.totalEnrollments}
-                    color="text-secondary bg-secondary"
+                    color="text-secondary font-helvetica-w20-bold bg-secondary"
                 />
                 <MetricCard
                     icon={PercentIcon}
@@ -358,7 +364,7 @@ const AdminDashboard = () => {
                 {/* Evolution of Enrollments */}
                 <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
                     <div className="flex flex-col gap-4 mb-4 tablet:flex-row tablet:items-center tablet:justify-between">
-                        <h2 className="text-base font-semibold tablet:text-lg">
+                        <h2 className="text-base font-semibold font-helvetica-w20-bold tablet:text-lg">
                             Evolución de Inscripciones
                         </h2>
                         <div className="flex flex-col gap-2 tablet:flex-row tablet:gap-4">
@@ -409,7 +415,7 @@ const AdminDashboard = () => {
                 {/* Occupancy by Course */}
                 <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
                     <div className="flex flex-col gap-4 mb-4 tablet:flex-row tablet:items-center tablet:justify-between">
-                        <h2 className="text-base font-semibold tablet:text-lg">
+                        <h2 className="text-base font-semibold font-helvetica-w20-bold tablet:text-lg">
                             Detalles del Curso
                         </h2>
                         <Select
@@ -429,18 +435,18 @@ const AdminDashboard = () => {
                         // View general of all courses
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm text-neutral-600">
+                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
                                     Total Cursos
                                 </p>
-                                <p className="text-2xl font-bold text-neutral-900">
+                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
                                     {metrics.coursesMetrics.length}
                                 </p>
                             </div>
                             <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm text-neutral-600">
+                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
                                     Capacidad Total
                                 </p>
-                                <p className="text-2xl font-bold text-neutral-900">
+                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
                                     {metrics.coursesMetrics.reduce(
                                         (sum, course) => sum + course.capacity,
                                         0
@@ -451,7 +457,7 @@ const AdminDashboard = () => {
                                 <p className="text-sm text-neutral-600">
                                     Total Inscritos
                                 </p>
-                                <p className="text-2xl font-bold text-neutral-900">
+                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
                                     {metrics.coursesMetrics.reduce(
                                         (sum, course) => sum + course.total,
                                         0
@@ -459,10 +465,10 @@ const AdminDashboard = () => {
                                 </p>
                             </div>
                             <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm text-neutral-600">
+                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
                                     Media Ocupación
                                 </p>
-                                <p className="text-2xl font-bold text-neutral-900">
+                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
                                     {`${(
                                         metrics.coursesMetrics.reduce(
                                             (sum, course) =>
@@ -477,10 +483,10 @@ const AdminDashboard = () => {
                         // Vista detallada de un curso específico
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm text-neutral-600">
+                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
                                     Capacidad Total
                                 </p>
-                                <p className="text-2xl font-bold text-neutral-900">
+                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
                                     {metrics.coursesMetrics.find(
                                         (c) =>
                                             c.id.toString() === selectedCourse
@@ -488,10 +494,10 @@ const AdminDashboard = () => {
                                 </p>
                             </div>
                             <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm text-neutral-600">
+                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
                                     Inscritos
                                 </p>
-                                <p className="text-2xl font-bold text-neutral-900">
+                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
                                     {metrics.coursesMetrics.find(
                                         (c) =>
                                             c.id.toString() === selectedCourse
@@ -499,10 +505,10 @@ const AdminDashboard = () => {
                                 </p>
                             </div>
                             <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm text-neutral-600">
+                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
                                     Ocupación
                                 </p>
-                                <p className="text-2xl font-bold text-neutral-900">
+                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
                                     {`${
                                         metrics.coursesMetrics
                                             .find(
@@ -515,10 +521,10 @@ const AdminDashboard = () => {
                                 </p>
                             </div>
                             <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm text-neutral-600">
+                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
                                     Primera Actividad
                                 </p>
-                                <p className="text-2xl font-bold text-neutral-900">
+                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
                                     {`${(
                                         ((metrics.coursesMetrics.find(
                                             (c) =>
@@ -540,7 +546,7 @@ const AdminDashboard = () => {
 
                 {/* Distribution by Age */}
                 <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
-                    <h2 className="mb-4 text-base font-semibold tablet:text-lg">
+                    <h2 className="mb-4 text-base font-semibold font-helvetica-w20-bold tablet:text-lg">
                         Distribución por Edad
                     </h2>
                     <div className="h-[250px] tablet:h-[300px] w-full">
@@ -570,7 +576,7 @@ const AdminDashboard = () => {
 
                 {/* Distribution by Gender */}
                 <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
-                    <h2 className="mb-4 text-base font-semibold tablet:text-lg">
+                    <h2 className="mb-4 text-base font-semibold font-helvetica-w20-bold tablet:text-lg">
                         Distribución por Género
                     </h2>
                     <div className="h-[250px] tablet:h-[300px] w-full">
