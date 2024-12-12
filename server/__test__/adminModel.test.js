@@ -34,5 +34,4 @@ describe ('Modelo Admin', () => {
             expect(admin.role_id).toBe(role.id);
         });
     })
-
 })
