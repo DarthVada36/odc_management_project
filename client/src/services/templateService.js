@@ -34,9 +34,11 @@ export const deleteTemplate = async (id) => {
   }
 };
 // Actualizar una plantilla
-export const updateTemplate = async (id, data) => {
+export const updateTemplate = async (id, design) => {
   try {
-    const response = await axios.put(`${API_URL}/${id}`, data);
+    const response = await axios.put(`${API_URL}/${id}`, {
+      design,
+    });
     return response.data;
   } catch (error) {
     console.error('Error al actualizar la plantilla:', error.message);
@@ -44,3 +46,13 @@ export const updateTemplate = async (id, data) => {
   }
 };
 
+// Obtener una plantilla por su ID
+export const getTemplateById = async (id) => {
+  try {
+    const response = await axios.get(`${API_URL}/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error al obtener la plantilla por ID:', error.message);
+    throw error;
+  }
+};

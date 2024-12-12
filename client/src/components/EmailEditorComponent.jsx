@@ -5,6 +5,7 @@ import {
   saveTemplate,
   deleteTemplate,
   updateTemplate,
+  getTemplateById,
 } from '../services/templateService'; // Servicios del backend
 
 const EmailEditorComponent = ({ onClose, onSendEmail, recipients }) => {
@@ -75,25 +76,22 @@ const EmailEditorComponent = ({ onClose, onSendEmail, recipients }) => {
   };
 
   // Cargar plantilla en el editor
-  const handleLoadTemplate = () => {
+  const handleLoadTemplate = async () => {
     if (!selectedTemplateId) {
       alert('Selecciona una plantilla para cargar.');
       return;
     }
 
-    const selectedTemplate = templates.find(
-      (template) => template.id === selectedTemplateId
-    );
+    try {
+      const selectedTemplate = await getTemplateById(selectedTemplateId);
+      console.log('Diseño seleccionado para cargar:', selectedTemplate.design);
 
-    if (!selectedTemplate) {
-      alert('Plantilla no encontrada.');
-      return;
+      editorRef.current.editor.loadDesign(selectedTemplate.design);
+    } catch (error) {
+      console.error('Error al cargar la plantilla:', error);
+      alert('Error al cargar la plantilla');
     }
-    console.log('Diseño seleccionado para cargar:', selectedTemplate.design);
-
-    editorRef.current.editor.loadDesign(selectedTemplate.design);
   };
-
   // Eliminar plantilla
   const handleDeleteTemplate = async () => {
     if (!selectedTemplateId) {
@@ -206,7 +204,8 @@ const EmailEditorComponent = ({ onClose, onSendEmail, recipients }) => {
                 onSendEmail(data.html, recipients);
               });
             }}
-            className='bg-orange-500 text-white px-4 py-2 rounded'
+            className='bg-orange-500 text-black
+             px-4 py-2 rounded'
           >
             Enviar correo
           </button>
