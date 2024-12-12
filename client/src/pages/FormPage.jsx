@@ -4,7 +4,7 @@ import { createEnrollment } from "../services/enrollmentServices";
 import { getCourseById } from "../services/coursesServices";
 import formImage from "../assets/img/imageform.svg";
 import { useParams } from "react-router-dom";
-
+import CoockieModal from "../components/CoockieModal";
 const FormPage = () => {
   const { id } = useParams(); // Capturar el ID del curso desde la URL
   const [includeMinor, setIncludeMinor] = useState(false);
@@ -142,6 +142,7 @@ const handleSendToBackend = async () => {
           </p>
         )}
       </div>
+      <CoockieModal />
     </div>
   );
 };

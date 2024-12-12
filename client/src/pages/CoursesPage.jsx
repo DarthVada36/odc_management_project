@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAllCourses } from '../services/coursesServices';
 import { useNavigate } from 'react-router-dom';
-
+import CookieModal from '../components/CoockieModal';
 const CoursesPage = () => {
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -64,6 +64,7 @@ const CoursesPage = () => {
         </div>
         ))}
       </div>
+      <CookieModal />
     </div>
   );
 };
