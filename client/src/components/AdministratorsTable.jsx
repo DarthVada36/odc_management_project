@@ -21,7 +21,7 @@ const AdministratorsTable = () => {
     const [selectedAdmin, setSelectedAdmin] = useState(null)
     const [isEditing, setIsEditing] = useState(false)
     const { authRequest } = useAuth()
-    const itemsPerPage = 6
+    const itemsPerPage = 8
     const totalPages = Math.ceil(filteredAdmins.length / itemsPerPage)
     const indexOfLastItem = currentPage * itemsPerPage
     const indexOfFirstItem = indexOfLastItem - itemsPerPage
