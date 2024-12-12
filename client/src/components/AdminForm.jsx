@@ -208,13 +208,13 @@ const AdminForm = ({
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
+                            className="px-4 py-2 font-bold text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 text-black transition-all duration-300 border-2 border-black bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
+                            className="px-4 py-2 font-bold text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
                         >
                             {isEditing
                                 ? 'Guardar Cambios'
