@@ -102,13 +102,13 @@ const EnrollmentForm = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={onCancel} />
             <div
-                className="relative w-[600px] bg-white p-8"
+                className="relative w-[600px] bg-white p-4 sm:p-8 md:p-12"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="absolute p-2 text-gray-500 hover:text-dark top-4 right-4"
+                    className="absolute p-2 text-gray-500 transition-colors duration-300 hover:text-orange-500 top-4 right-4"
                 >
                     <svg
                         className="w-6 h-6"
@@ -124,11 +124,13 @@ const EnrollmentForm = ({
                     </svg>
                 </button>
 
-                <h2 className="mb-8 text-2xl font-bold text-dark">{title}</h2>
+                <h2 className="mb-6 text-3xl font-bold text-orange-500 font-helvetica-w20-bold">
+                    {title}
+                </h2>
 
-                <form onSubmit={handleSubmit} className="space-y-3">
+                <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="flex flex-col">
-                        <label className="mb-1 font-bold text-dark">
+                        <label className="mb-2 font-bold text-dark">
                             Nombre Completo
                         </label>
                         <input
@@ -137,14 +139,14 @@ const EnrollmentForm = ({
                             value={formData.fullname}
                             onChange={handleChange}
                             required
-                            className="w-full p-2 border border-gray-300 focus:border-dark focus:outline-none"
+                            className="w-full p-3 transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary"
                             placeholder="Nombre Completo"
                         />
                     </div>
 
                     <div className="grid items-center grid-cols-2 gap-4">
                         <div className="flex flex-col">
-                            <label className="mb-1 font-bold text-dark">
+                            <label className="mb-2 font-bold text-dark">
                                 Email
                             </label>
                             <input
@@ -153,17 +155,18 @@ const EnrollmentForm = ({
                                 value={formData.email}
                                 onChange={handleChange}
                                 required
-                                className="w-full p-2 border border-gray-300 focus:border-dark focus:outline-none"
+                                className="w-full p-3 transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary"
                                 placeholder="Correo Electrónico"
                             />
                         </div>
 
-                        <div className="flex items-center gap-2 -mb-6">
+                        <div className="flex items-center gap-2">
                             <input
                                 type="checkbox"
                                 name="is_first_activity"
                                 checked={formData.is_first_activity}
                                 onChange={handleChange}
+                                className="w-5 h-5 border-2 border-black rounded"
                             />
                             <label className="font-bold text-dark">
                                 Primera Actividad en Orange
@@ -173,14 +176,14 @@ const EnrollmentForm = ({
 
                     <div className="grid items-center grid-cols-2 gap-4">
                         <div className="flex flex-col">
-                            <label className="mb-1 font-bold text-dark">
+                            <label className="mb-2 font-bold text-dark">
                                 Género
                             </label>
                             <select
                                 name="gender"
                                 value={formData.gender}
                                 onChange={handleChange}
-                                className="w-full p-2 border border-gray-300 focus:border-dark focus:outline-none"
+                                className="w-full p-3 transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary"
                             >
                                 <option value="NS/NC">NS/NC</option>
                                 <option value="mujer">Mujer</option>
@@ -192,7 +195,7 @@ const EnrollmentForm = ({
                         </div>
 
                         <div className="flex flex-col">
-                            <label className="mb-1 font-bold text-dark">
+                            <label className="mb-2 font-bold text-dark">
                                 Edad
                             </label>
                             <input
@@ -200,24 +203,23 @@ const EnrollmentForm = ({
                                 name="age"
                                 value={formData.age}
                                 onChange={handleChange}
-                                className="w-full p-2 border border-gray-300 focus:border-dark focus:outline-none"
+                                className="w-full p-3 transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary"
                                 placeholder="Edad"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <h3 className="mb-2 font-bold text-dark">
+                        <h3 className="mb-4 font-bold text-dark">
                             Menores Inscritos
                         </h3>
                         {formData.minors.map((minor, index) => (
                             <div
                                 key={index}
-                                className="flex items-center justify-between p-2"
+                                className="flex items-center justify-between p-3 mb-3 border-2 border-black"
                             >
                                 <input
                                     type="text"
-                                    name="name"
                                     value={minor.name}
                                     onChange={(e) =>
                                         handleMinorEdit(
@@ -226,13 +228,11 @@ const EnrollmentForm = ({
                                             e.target.value
                                         )
                                     }
-                                    className="w-1/2 p-1 border border-gray-300"
+                                    className="w-1/2 p-3 transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary"
                                 />
-
-                                <div className="flex items-center">
+                                <div className="flex items-center gap-2">
                                     <input
-                                        type="text"
-                                        name="age"
+                                        type="number"
                                         value={minor.age}
                                         onChange={(e) =>
                                             handleMinorEdit(
@@ -241,17 +241,14 @@ const EnrollmentForm = ({
                                                 e.target.value
                                             )
                                         }
-                                        className="w-16 p-1 border border-gray-300"
+                                        className="w-20 p-3 transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary"
                                     />
-                                    <span className="ml-2 text-gray-500">
-                                        años
-                                    </span>
+                                    <span className="text-gray-500">años</span>
                                 </div>
-
                                 <button
                                     type="button"
                                     onClick={() => removeMinor(index)}
-                                    className="px-4 py-1 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                                    className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
                                 >
                                     Eliminar
                                 </button>
@@ -259,53 +256,34 @@ const EnrollmentForm = ({
                         ))}
 
                         {formData.minors.length < 3 && (
-                            <div className="mb-2 text-dark">
-                                <div className="flex items-center justify-between p-2 ">
+                            <div className="flex items-center justify-between p-3 border-2 border-black">
+                                <input
+                                    type="text"
+                                    name="name"
+                                    value={newMinor.name}
+                                    onChange={handleMinorChange}
+                                    placeholder="Nombre del Menor"
+                                    className="w-1/2 p-3 transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary"
+                                />
+                                <div className="flex items-center gap-2">
                                     <input
-                                        type="text"
-                                        name="name"
-                                        value={newMinor.name}
+                                        type="number"
+                                        name="age"
+                                        value={newMinor.age}
                                         onChange={handleMinorChange}
-                                        placeholder="Nombre del Menor"
-                                        className="w-1/2 p-1 border border-gray-300"
+                                        placeholder="Edad"
+                                        className="w-20 p-3 transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary"
                                     />
-
-                                    <div className="flex items-center">
-                                        <input
-                                            type="number"
-                                            name="age"
-                                            value={newMinor.age}
-                                            onChange={(e) => {
-                                                const value = Math.max(
-                                                    0,
-                                                    Number(e.target.value)
-                                                ) // Asegura que no sea menor a 0
-                                                setNewMinor((prev) => ({
-                                                    ...prev,
-                                                    age: value,
-                                                }))
-                                            }}
-                                            placeholder="Edad"
-                                            className="w-16 p-1 border border-gray-300"
-                                        />
-                                        <span className="ml-2 text-gray-500">
-                                            años
-                                        </span>
-                                    </div>
-
-                                    <button
-                                        type="button"
-                                        onClick={addMinor}
-                                        disabled={formData.minors.length >= 3}
-                                        className={`px-5 py-1 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold ${
-                                            formData.minors.length >= 3
-                                                ? 'opacity-50 cursor-not-allowed'
-                                                : 'hover:bg-dark hover:text-white'
-                                        }`}
-                                    >
-                                        Añadir
-                                    </button>
+                                    <span className="text-gray-500">años</span>
                                 </div>
+                                <button
+                                    type="button"
+                                    onClick={addMinor}
+                                    disabled={formData.minors.length >= 3}
+                                    className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Añadir
+                                </button>
                             </div>
                         )}
                     </div>
@@ -314,17 +292,17 @@ const EnrollmentForm = ({
                         <p className="text-sm text-red-500">{errorMessage}</p>
                     )}
 
-                    <div className="flex justify-end gap-4 mt-8">
+                    <div className="flex flex-col items-center justify-end gap-4 pt-4 tablet:flex-row">
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="px-4 py-1 transition-all duration-300 bg-white border text-dark border-dark font-helvetica-w20-bold hover:bg-dark hover:text-white"
+                            className="px-4 py-2 font-bold text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-1 text-white bg-dark hover:bg-gray-700"
+                            className="px-4 py-2 font-bold text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
                         >
                             {submitText}
                         </button>

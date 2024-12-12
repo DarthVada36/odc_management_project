@@ -10,15 +10,16 @@ const CourseForm = ({
     title = 'Crear nuevo Curso',
     isEditing = false,
 }) => {
-    const [formData, setFormData] = useState({
+    const initialFormState = {
         title: '',
         description: '',
         date: '',
         schedule: '',
         link: '',
         tickets: '',
-    })
+    }
 
+    const [formData, setFormData] = useState(initialFormState)
     const [errorMessage, setErrorMessage] = useState('')
 
     useEffect(() => {
@@ -35,6 +36,9 @@ const CourseForm = ({
                 link: initialData.link || '',
                 tickets: initialData.tickets?.toString() || '',
             })
+        } else {
+            setFormData(initialFormState)
+            setErrorMessage('')
         }
     }, [isEditing, initialData])
 
@@ -45,32 +49,6 @@ const CourseForm = ({
             ...prev,
             [name]: value,
         }))
-    }
-
-    const handleDeleteCourse = async (courseId) => {
-        try {
-            const response = await removeCourseById(courseId)
-            if (response) {
-                alert('Curso eliminado correctamente')
-                // Puedes actualizar el estado local o hacer una llamada para refrescar la lista de cursos
-            }
-        } catch (error) {
-            console.error('Error al eliminar el curso:', error.message)
-            alert('Error al eliminar el curso')
-        }
-    }
-
-    const handleUpdateCourse = async (courseId, updatedCourseData) => {
-        try {
-            const response = await updateCourseById(courseId, updatedCourseData)
-            if (response) {
-                alert('Curso actualizado correctamente')
-                // Puedes redirigir o refrescar la lista de cursos
-            }
-        } catch (error) {
-            console.error('Error al actualizar el curso:', error.message)
-            alert('Error al actualizar el curso')
-        }
     }
 
     const handleSubmit = async (e) => {
@@ -101,16 +79,16 @@ const CourseForm = ({
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
             <div className="absolute inset-0 bg-black/50" onClick={onCancel} />
             <div
-                className="relative w-[500px] bg-white p-8"
+                className="relative w-full max-w-md p-4 bg-white sm:p-8 md:p-12"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button
                     type="button"
                     onClick={onCancel}
-                    className="absolute p-2 text-gray-500 hover:text-dark top-4 right-4"
+                    className="absolute p-2 text-gray-500 transition-colors duration-300 hover:text-orange-500 top-4 right-4"
                 >
                     <svg
                         className="w-6 h-6"
@@ -126,7 +104,9 @@ const CourseForm = ({
                     </svg>
                 </button>
 
-                <h2 className="mb-8 text-2xl font-bold text-dark">{title}</h2>
+                <h2 className="mb-6 text-3xl font-bold text-orange-500 font-helvetica-w20-bold">
+                    {title}
+                </h2>
 
                 <form
                     onSubmit={handleSubmit}
@@ -134,7 +114,7 @@ const CourseForm = ({
                     autoComplete="off"
                 >
                     <div className="flex flex-col">
-                        <label className="mb-2 font-bold text-dark">
+                        <label className="block text-sm font-semibold text-gray-600 font-helvetica-w20-bold">
                             Título
                         </label>
                         <input
@@ -143,7 +123,7 @@ const CourseForm = ({
                             value={formData.title}
                             onChange={handleChange}
                             required
-                            className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
+                            className="w-full p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
                             placeholder="Título del curso"
                             minLength={5}
                             maxLength={255}
@@ -151,7 +131,7 @@ const CourseForm = ({
                     </div>
 
                     <div className="flex flex-col">
-                        <label className="mb-2 font-bold text-dark">
+                        <label className="block text-sm font-semibold text-gray-600 font-helvetica-w20-bold">
                             Descripción
                         </label>
                         <textarea
@@ -159,86 +139,92 @@ const CourseForm = ({
                             value={formData.description}
                             onChange={handleChange}
                             required
-                            className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
+                            className="w-full p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
                             placeholder="Descripción del curso"
-                            rows={4}
+                            rows={3}
                         />
                     </div>
 
-                    <div className="flex flex-col">
-                        <label className="mb-2 font-bold text-dark">
-                            Fecha
-                        </label>
-                        <input
-                            type="date"
-                            name="date"
-                            value={formData.date}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
-                        />
+                    {/* Date and Schedule*/}
+                    <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2">
+                        <div className="flex flex-col">
+                            <label className="block text-sm font-semibold text-gray-600 font-helvetica-w20-bold">
+                                Fecha
+                            </label>
+                            <input
+                                type="date"
+                                name="date"
+                                value={formData.date}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
+                            />
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="block text-sm font-semibold text-gray-600 font-helvetica-w20-bold">
+                                Horario
+                            </label>
+                            <input
+                                type="time"
+                                name="schedule"
+                                value={formData.schedule}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
+                            />
+                        </div>
                     </div>
 
-                    <div className="flex flex-col">
-                        <label className="mb-2 font-bold text-dark">
-                            Horario
-                        </label>
-                        <input
-                            type="time"
-                            name="schedule"
-                            value={formData.schedule}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
-                        />
-                    </div>
-
-                    <div className="flex flex-col">
-                        <label className="mb-2 font-bold text-dark">
-                            Enlace
-                        </label>
-                        <input
-                            type="url"
-                            name="link"
-                            value={formData.link}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
-                            placeholder="https://ejemplo.com"
-                        />
-                    </div>
-
-                    <div className="flex flex-col">
-                        <label className="mb-2 font-bold text-dark">
-                            Tickets
-                        </label>
-                        <input
-                            type="number"
-                            name="tickets"
-                            value={formData.tickets}
-                            onChange={handleChange}
-                            required
-                            min="0"
-                            className="w-full p-3 border border-gray-300 focus:border-dark focus:outline-none"
-                            placeholder="Número de tickets disponibles"
-                        />
+                    {/* Link and tickets */}
+                    <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2">
+                        <div className="flex flex-col">
+                            <label className="block text-sm font-semibold text-gray-600 font-helvetica-w20-bold">
+                                Enlace
+                            </label>
+                            <input
+                                type="url"
+                                name="link"
+                                value={formData.link}
+                                onChange={handleChange}
+                                required
+                                className="w-full p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
+                                placeholder="https://ejemplo.com"
+                            />
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="block text-sm font-semibold text-gray-600 font-helvetica-w20-bold">
+                                Tickets
+                            </label>
+                            <input
+                                type="number"
+                                name="tickets"
+                                value={formData.tickets}
+                                onChange={handleChange}
+                                required
+                                min="0"
+                                className="w-full p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
+                                placeholder="Número de tickets"
+                            />
+                        </div>
                     </div>
 
                     {errorMessage && (
-                        <p className="text-sm text-red-500">{errorMessage}</p>
+                        <p className="text-sm text-red-500 font-helvetica-w20-bold">
+                            {errorMessage}
+                        </p>
                     )}
 
-                    <div className="flex justify-end gap-4 mt-8">
+                    <div className="flex flex-col items-center justify-end gap-4 pt-4 tablet:flex-row">
                         <button
                             type="button"
                             onClick={onCancel}
-                            className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark hover:bg-dark hover:text-white"
+                            className="px-4 py-2 font-bold text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 transition-all duration-300 bg-white border text-dark border-dark hover:bg-dark hover:text-white"
+                            className="px-4 py-2 font-bold text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
                         >
                             {submitText}
                         </button>

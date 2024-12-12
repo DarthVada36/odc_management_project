@@ -4,17 +4,17 @@ const AdminForm = ({
     initialData = null,
     onSubmit,
     onCancel,
-    submitText = 'Crear Administrador',
     title = 'Crear nuevo Administrador',
     isEditing = false,
 }) => {
-    const [formData, setFormData] = useState({
+    const initialFormState = {
         username: '',
         password: '',
         confirmPassword: '',
         roleId: '',
-    })
+    }
 
+    const [formData, setFormData] = useState(initialFormState)
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [passwordError, setPasswordError] = useState('')
@@ -22,34 +22,18 @@ const AdminForm = ({
 
     useEffect(() => {
         if (isEditing && initialData) {
-            loadInitialData(initialData)
+            setFormData({
+                username: initialData.username || '',
+                password: initialData.password || '',
+                confirmPassword: initialData.password || '',
+                roleId: initialData.role_id?.toString() || '',
+            })
         } else {
-            resetFormData()
+            setFormData(initialFormState)
+            setPasswordError('')
+            setErrorMessage('')
         }
     }, [isEditing, initialData])
-
-    const resetFormData = () => {
-        setFormData({
-            username: '',
-            password: '',
-            confirmPassword: '',
-            roleId: '',
-        })
-    }
-
-    const loadInitialData = (data) => {
-        setFormData({
-            username: data.username || '',
-            password: '',
-            confirmPassword: '',
-            roleId: data.role_id?.toString() || '',
-        })
-    }
-
-    const handleClose = () => {
-        resetFormData()
-        onCancel()
-    }
 
     const handleChange = (e) => {
         e.stopPropagation()
@@ -82,23 +66,20 @@ const AdminForm = ({
 
         const success = await onSubmit(submitData)
         if (success) {
-            handleClose()
+            onCancel()
         }
     }
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div
-                className="absolute inset-0 bg-black/50"
-                onClick={handleClose}
-            />
+            <div className="absolute inset-0 bg-black/50" onClick={onCancel} />
             <div
                 className="relative w-full max-w-md p-4 bg-white sm:p-8 md:p-12"
                 onClick={(e) => e.stopPropagation()}
             >
                 <button
                     type="button"
-                    onClick={handleClose}
+                    onClick={onCancel}
                     className="absolute p-2 text-gray-500 transition-colors duration-300 hover:text-orange-500 top-4 right-4"
                 >
                     <svg
@@ -226,16 +207,18 @@ const AdminForm = ({
                     <div className="flex flex-col gap-4 mt-8">
                         <button
                             type="button"
-                            onClick={handleClose}
-                            className="px-4 py-2 font-bold text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
+                            onClick={onCancel}
+                            className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
                         >
                             Cancelar
                         </button>
                         <button
                             type="submit"
-                            className="px-4 py-2 font-bold text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
+                            className="px-4 py-2 text-black transition-all duration-300 border-2 border-black bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
                         >
-                            {submitText}
+                            {isEditing
+                                ? 'Guardar Cambios'
+                                : 'Crear Administrador'}
                         </button>
                     </div>
                 </form>
