@@ -174,29 +174,12 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
             totalItems={filteredCourses.length}
             onSearch={handleSearch}
         >
-<<<<<<< HEAD
-            {/* <div className="p-2 bg-white rounded-lg shadow-md sm:p-6 md:p-8"> */}
-            {/* Botones de exportación */}
-            <div className="flex justify-end mb-6 space-x-4">
-                <button
-                    onClick={handleExportPDF}
-                    className="p-2 hover:bg-orange-600"
-                    
-                    aria-label="Exportar a PDF"
-                >
-                    <svg
-                        width="35"
-                        height="35"
-                        viewBox="0 0 100 100"
-                        xmlns="http://www.w3.org/2000/svg"
-=======
             <div className="flex justify-end mb-6">
                 <div className="flex space-x-4">
                     <button
                         onClick={handleExportPDF}
                         className="p-2 hover:bg-orange-600"
                         aria-label="Exportar a PDF"
->>>>>>> 8d77e8a823c0d26930ccb81f800271d58c681b60
                     >
                         <svg
                             width="35"
