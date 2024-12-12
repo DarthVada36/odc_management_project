@@ -1,25 +1,29 @@
 //TEST BACKEND
+//importar la conexión a la base de datos y los modelos
 import connectionDb from '../database/connectionDb.js'; 
 import { Role, syncModels } from '../models/indexModels.js';
 
+//Bloque para el modelo 'Role'
 describe('Modelo Role', () => {
     //Configuración inicial antes de ejecutar las pruebas
-    beforeAll(async () => {
-        await syncModels(); // Sincronizar modelos
+    beforeAll(async () => { //Hook que se ejecuta una vez antes de todos los tests
+        await syncModels(); // Sincronizar modelos de la bbdd, esto asegura que las tablas estén creadas antes de comenzar las pruebas
     });
 
-//Limpieza después de la pruebas
+//Hook. Limpieza después de la pruebas
 afterAll(async () => {
     await connectionDb.close(); //Cerramos conexión
 
 });
 
+//Bloque para verificar la creación de roles
 describe('Creación de Roles', () => {
-    // afterEach se ejecuta después de cada test en este bloque
+    //Hook se ejecuta después de cada test en este bloque
     afterEach(async () => {
+        //Limpiamos los datos de la tabla 'Role' después de cada test
       await Role.destroy({ where: {} });
     });
-// Tests individuales usando it o test
+// Tests 
 it('Debe crear un rol válido', async () => {
     const role = await Role.create({ 
         name: 'Admin' //Nombre único del rol
