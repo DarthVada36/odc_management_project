@@ -2,13 +2,14 @@ import Pagination from './Pagination';
 import React, { useEffect, useState } from 'react';
 import { exportToPDF, exportToExcel } from '../utils/exportUtils';
 import { getAllEnrollments, deleteEnrollmentById } from '../services/enrollmentServices.js';
-import TemplateManager from './TemplateManager';
+import { sendEmail } from '../services/emailService'; // Importa el servicio para enviar correos
+import EmailEditorComponent from './EmailEditorComponent.jsx';
 
 const UserTable = () => {
   const [enrollments, setEnrollments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showTemplateManager, setShowTemplateManager] = useState(false);
+  const [showEmailEditor, setShowEmailEditor] = useState(false);
   const [selectedRecipients, setSelectedRecipients] = useState([]);
 
   // Paginación
@@ -60,13 +61,24 @@ const UserTable = () => {
     exportToExcel('Inscripciones', headers, data, 'inscripciones.xlsx');
   };
 
-  const handleOpenTemplateManager = (recipients) => {
+  const handleOpenEmailEditor = (recipients) => {
     setSelectedRecipients(recipients);
-    setShowTemplateManager(true);
+    setShowEmailEditor(true);
   };
 
-  const handleCloseTemplateManager = () => {
-    setShowTemplateManager(false);
+  const handleSendEmail = async (html, recipients) => {
+    try {
+      await sendEmail(recipients, 'Inscripciones', html); // Usa el servicio aquí
+      alert('Correo enviado con éxito.');
+    } catch (error) {
+      alert('Error al enviar el correo. Por favor, inténtalo de nuevo.');
+    } finally {
+      setShowEmailEditor(false);
+    }
+  };
+
+  const handleCloseEmailEditor = () => {
+    setShowEmailEditor(false);
   };
 
   if (loading) {
@@ -77,76 +89,76 @@ const UserTable = () => {
   }
 
   return (
-    <div className="bg-white shadow-md p-2 sm:p-6 md:p-8">
+    <div className='bg-white shadow-md p-2 sm:p-6 md:p-8'>
       {/* Botones de exportación */}
-      <div className="flex justify-end space-x-4 mb-4">
+      <div className='flex justify-end space-x-4 mb-4'>
         <button
           onClick={handleExportPDF}
-          className="bg-orange text-black px-4 py-2 rounded border border-black"
+          className='bg-orange text-black px-4 py-2 rounded border border-black'
         >
           Descargar PDF
         </button>
         <button
           onClick={handleExportExcel}
-          className="bg-orange text-black px-4 py-2 rounded border border-black"
+          className='bg-orange text-black px-4 py-2 rounded border border-black'
         >
           Descargar Excel
         </button>
         <button
-          onClick={() => handleOpenTemplateManager(enrollments.map((e) => e.email))}
-          className="bg-orange text-black px-4 py-2 rounded border border-black flex items-center"
+          onClick={() => handleOpenEmailEditor(enrollments.map((e) => e.email))}
+          className='bg-orange text-black px-4 py-2 rounded border border-black flex items-center'
         >
           <img
             src={'src/assets/email.png'}
-            className="w-5 h-5 mr-2"
-            alt="Email Icon"
+            className='w-5 h-5 mr-2'
+            alt='Email Icon'
           />
           <span>Email a todos</span>
         </button>
       </div>
 
       {/* Contenedor de la tabla */}
-      <div className="overflow-x-auto">
-        <table className="table-auto w-full border border-orange">
-          <thead className="bg-orange text-white">
+      <div className='overflow-x-auto'>
+        <table className='table-auto w-full border border-orange'>
+          <thead className='bg-orange text-white'>
             <tr>
-              <th className="text-black p-2 sm:p-3 md:p-4">Nombre</th>
-              <th className="text-black p-2 sm:p-3 md:p-4">Email</th>
-              <th className="text-black p-2 sm:p-3 md:p-4">Acciones</th>
-              <th className="text-black p-2 sm:p-3 md:p-4">Contacto</th>
+              <th className='text-black p-2 sm:p-3 md:p-4'>Nombre</th>
+              <th className='text-black p-2 sm:p-3 md:p-4'>Email</th>
+              <th className='text-black p-2 sm:p-3 md:p-4'>Acciones</th>
+              <th className='text-black p-2 sm:p-3 md:p-4'>Contacto</th>
             </tr>
           </thead>
           <tbody>
             {currentEnrollments.map((enrollment, index) => (
-              <tr key={index} className="text-center border-b border-orange">
-                <td className="p-2 sm:p-3 md:p-4">
-                  <span className="block">{enrollment.fullname}</span>
+              <tr key={index} className='text-center border-b border-orange'>
+                <td className='p-2 sm:p-3 md:p-4'>
+                  <span className='block'>{enrollment.fullname}</span>
                 </td>
-                <td className="p-2 sm:p-3 md:p-4">
-                  <span className="block text-center">{enrollment.email}</span>
+                <td className='p-2 sm:p-3 md:p-4'>
+                  <span className='block text-center'>{enrollment.email}</span>
                 </td>
-                <td className="p-2 sm:p-3 md:p-4">
-                  <div className="flex flex-col sm:flex-row sm:justify-center sm:space-x-2 items-center space-y-2 sm:space-y-0">
-                    <button className="bg-orange text-black px-4 py-1 rounded border border-black flex-grow w-full sm:flex-grow-0">
+                <td className='p-2 sm:p-3 md:p-4'>
+                  <div className='flex flex-col sm:flex-row sm:justify-center sm:space-x-2 items-center space-y-2 sm:space-y-0'>
+                    <button className='bg-orange text-black px-4 py-1 rounded border border-black flex-grow w-full sm:flex-grow-0'>
                       Editar
                     </button>
                     <button
                       onClick={() => handleDelete(enrollment.id)}
-                      className="bg-white text-black px-2 py-1 rounded border border-black flex-grow w-full sm:flex-grow-0"
+                      className='bg-white text-black px-2 py-1 rounded border border-black flex-grow w-full sm:flex-grow-0'
                     >
                       Eliminar
                     </button>
                   </div>
                 </td>
-                <td className="p-2 sm:p-3 md:p-4 flex justify-center">
+                <td className='p-2 sm:p-3 md:p-4 flex justify-center'>
                   <button
-                    onClick={() => handleOpenTemplateManager([enrollment.email])}
-                    className="bg-orange text-black px-4 py-1 rounded border border-black w-full sm:w-auto flex items-center space-x-2"
+                    onClick={() => handleOpenEmailEditor([enrollment.email])}
+                    className='bg-orange text-black px-4 py-1 rounded border border-black w-full sm:w-auto flex items-center space-x-2'
                   >
                     <img
                       src={'src/assets/email.png'}
-                      className="w-5 h-5"
-                      alt="Email Icon"
+                      className='w-5 h-5'
+                      alt='Email Icon'
                     />
                     <span>Email</span>
                   </button>
@@ -164,11 +176,12 @@ const UserTable = () => {
         onPageChange={setCurrentPage}
       />
 
-      {/* Gestor de plantillas y editor */}
-      {showTemplateManager && (
-        <TemplateManager
+      {/* Editor de correos */}
+      {showEmailEditor && (
+        <EmailEditorComponent
+          onSendEmail={(html) => handleSendEmail(html, selectedRecipients)}
+          onClose={handleCloseEmailEditor}
           recipients={selectedRecipients}
-          onClose={handleCloseTemplateManager}
         />
       )}
     </div>

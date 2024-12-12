@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+/* import React, { useState, useRef, useEffect } from 'react';
 import EmailEditor from 'react-email-editor'; // Importamos el editor
 import TemplateList from './TemplateList';
 import { getTemplates, saveTemplate, updateTemplate, deleteTemplate } from '../services/templateService';
@@ -122,3 +122,4 @@ const TemplateManager = ({ recipients, onClose }) => {
 };
 
 export default TemplateManager;
+ */

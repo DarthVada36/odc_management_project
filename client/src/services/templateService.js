@@ -43,3 +43,4 @@ export const updateTemplate = async (id, data) => {
     throw error;
   }
 };
+

@@ -1,5 +1,6 @@
 import Template from '../models/templateModel.js';
 import { validateTemplate } from '../utils/validations/validateTemplate.js';
+
 // Obtener todas las plantillas
 export const getTemplates = async (req, res) => {
   try {
@@ -13,7 +14,7 @@ export const getTemplates = async (req, res) => {
   }
 };
 
-/// Crear una nueva plantilla
+// Crear una nueva plantilla
 export const saveTemplate = async (req, res) => {
   const { name, design } = req.body;
 
@@ -57,7 +58,7 @@ export const deleteTemplate = async (req, res) => {
     res.status(500).json({ message: 'Error al eliminar plantilla' });
   }
 };
-// Actualizar una plantilla
+
 // Actualizar una plantilla
 export const updateTemplate = async (req, res) => {
   const { id } = req.params;
@@ -91,5 +92,23 @@ export const updateTemplate = async (req, res) => {
   } catch (error) {
     console.error('Error al actualizar la plantilla:', error.message);
     res.status(500).json({ message: 'Error al actualizar la plantilla.' });
+  }
+};
+
+// Obtener una plantilla por su ID
+export const getTemplateById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const template = await Template.findByPk(id);
+
+    if (!template) {
+      return res.status(404).json({ message: 'Plantilla no encontrada' });
+    }
+
+    res.status(200).json(template);
+  } catch (error) {
+    console.error('Error al obtener la plantilla:', error.message);
+    res.status(500).json({ message: 'Error al obtener la plantilla' });
   }
 };

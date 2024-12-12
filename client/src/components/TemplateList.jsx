@@ -1,4 +1,4 @@
-import React from 'react';
+/* import React from 'react';
 
 const TemplateList = ({ templates, onEdit, onDelete }) => {
   return (
@@ -30,3 +30,4 @@ const TemplateList = ({ templates, onEdit, onDelete }) => {
 };
 
 export default TemplateList;
+ */
