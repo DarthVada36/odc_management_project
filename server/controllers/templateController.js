@@ -19,7 +19,7 @@ export const saveTemplate = async (req, res) => {
   const { name, design } = req.body;
 
   if (!name || !design) {
-    return res.status(400).json({ message: 'Faltan parámetros requeridos' });
+    return res.status(400).json({ message: "Faltan parámetros requeridos: 'name' y 'design'." });
   }
 
   // Validar la plantilla
@@ -29,16 +29,18 @@ export const saveTemplate = async (req, res) => {
   }
 
   try {
+    // Guardar la plantilla
     const newTemplate = await Template.create({
       name,
       design,
     });
     res.status(201).json(newTemplate);
   } catch (error) {
-    console.error('Error al guardar plantilla:', error.message);
-    res.status(500).json({ message: 'Error al guardar plantilla' });
+    console.error("Error al guardar plantilla:", error.message);
+    res.status(500).json({ message: "Error al guardar plantilla." });
   }
 };
+
 
 // Eliminar una plantilla
 export const deleteTemplate = async (req, res) => {
