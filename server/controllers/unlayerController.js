@@ -59,6 +59,77 @@ export const saveTemplate = async (req, res) => {
   }
 };
 
+// Obtener una plantilla por ID desde Unlayer
+export const getTemplateById = async (req, res) => {
+  const { templateId } = req.params;
+  console.log('templateId recibido:', templateId);
+
+  if (!templateId) {
+    return res
+      .status(400)
+      .json({ message: 'El ID de la plantilla es obligatorio.' });
+  }
+
+  try {
+    const response = await apiClient.get(`/templates/${templateId}`);
+    return res.status(200).json(response.data);
+  } catch (error) {
+    console.error(`Error al obtener la plantilla ${templateId}:`, error.message);
+    return res.status(error.response?.status || 500).json({
+      message: 'Error al obtener la plantilla',
+      details: error.response?.data || error.message,
+    });
+  }
+};
+
+// Actualizar una plantilla en Unlayer
+export const updateTemplate = async (req, res) => {
+  const { templateId } = req.params;
+  const { name, design } = req.body;
+
+  if (!templateId || !name || !design) {
+    return res
+      .status(400)
+      .json({ message: 'Faltan parámetros requeridos para la actualización.' });
+  }
+
+  try {
+    const response = await apiClient.put(`/templates/${templateId}`, { name, design });
+    console.log('Plantilla actualizada:', response.data);
+    res.status(200).json(response.data);
+  } catch (error) {
+    console.error(`Error al actualizar la plantilla ${templateId}:`, error.message);
+    res.status(error.response?.status || 500).json({
+      message: 'Error al actualizar la plantilla',
+      details: error.response?.data || error.message,
+    });
+  }
+};
+
+// Eliminar una plantilla de Unlayer
+export const deleteTemplate = async (req, res) => {
+  const { templateId } = req.params;
+
+  if (!templateId) {
+    return res
+      .status(400)
+      .json({ message: 'El ID de la plantilla es obligatorio para eliminarla.' });
+  }
+
+  try {
+    const response = await apiClient.delete(`/templates/${templateId}`);
+    console.log('Plantilla eliminada:', response.data);
+    res.status(200).json({ message: 'Plantilla eliminada correctamente.' });
+  } catch (error) {
+    console.error(`Error al eliminar la plantilla ${templateId}:`, error.message);
+    res.status(error.response?.status || 500).json({
+      message: 'Error al eliminar la plantilla',
+      details: error.response?.data || error.message,
+    });
+  }
+};
+
+
 /**
  * Genera una firma HMAC-SHA256 para un usuario.
  * @param {string} userId - ID único del usuario.
