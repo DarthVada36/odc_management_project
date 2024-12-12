@@ -189,6 +189,7 @@ export const updateEnrollmentById = async (req, res) => {
       return res.status(404).json({ message: "Inscripción no encontrada" });
     }
 
+    // Actualizar los datos de la inscripción
     await enrollment.update(
       {
         fullname,
@@ -204,35 +205,62 @@ export const updateEnrollmentById = async (req, res) => {
       { transaction }
     );
 
-    if (minors && minors.length > 0) {
-      for (const minor of minors) {
-        if (minor.id) {
-          const [updatedRows] = await Minor.update(
-            { name: minor.name, age: minor.age },
-            {
-              where: { id: minor.id, enrollment_id: id },
-              transaction,
-            }
-          );
+    // Obtener menores actuales relacionados con la inscripción
+    const existingMinors = await Minor.findAll({
+      where: { enrollment_id: id },
+      transaction,
+    });
 
-          if (updatedRows === 0) {
-            throw new Error(
-              `Minor with id ${minor.id} not found for this enrollment`
-            );
+    const existingIds = existingMinors.map((minor) => minor.id);
+    const newIds = minors.map((minor) => minor.id).filter(Boolean);
+
+    // Eliminar menores que ya no están en la lista enviada
+    const idsToRemove = existingIds.filter((id) => !newIds.includes(id));
+    if (idsToRemove.length > 0) {
+      await Minor.destroy({
+        where: { id: idsToRemove },
+        transaction,
+      });
+    }
+
+    // Actualizar o crear menores nuevos
+    for (const minor of minors) {
+      if (minor.id) {
+        // Actualizar menor existente
+        const [updatedRows] = await Minor.update(
+          { name: minor.name, age: minor.age },
+          {
+            where: { id: minor.id, enrollment_id: id },
+            transaction,
           }
+        );
+
+        if (updatedRows === 0) {
+          throw new Error(
+            `Minor with id ${minor.id} not found for this enrollment`
+          );
         }
+      } else {
+        // Crear nuevo menor
+        await Minor.create(
+          { name: minor.name, age: minor.age, enrollment_id: id },
+          { transaction }
+        );
       }
     }
 
     await transaction.commit();
 
+    // Obtener y devolver la inscripción actualizada con los menores
     const updatedEnrollment = await getEnrollmentWithMinors(id);
     res.status(200).json(updatedEnrollment);
   } catch (error) {
     await transaction.rollback();
+    console.error(error);
     res.status(500).json({ message: error.message });
   }
 };
+      
 
 // DELETE ENROLLMENT BY ID
 export const deleteEnrollmentById = async (req, res) => {
