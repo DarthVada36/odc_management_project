@@ -2,19 +2,6 @@ import axios from "axios";
 
 const API_URL = 'http://localhost:3000/api/courses';
 
-// Función auxiliar para obtener el token y las cabeceras
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token'); // O donde almacenes tu token
-  if (!token) {
-    throw new Error('Token no encontrado. Por favor, inicia sesión.');
-  }
-  return {
-    headers: {
-      'Authorization': `Bearer ${token}`,
-    },
-  };
-};
-
 // Obtener todos los cursos -- GET
 export const getAllCourses = async () => {
   try {
@@ -29,7 +16,7 @@ export const getAllCourses = async () => {
 // Obtener un curso por ID -- GET
 export const getCourseById = async (id) => {
   try {
-    const response = await axios.get(`${API_URL}/${id}`, getAuthHeaders());
+    const response = await axios.get(`${API_URL}/${id}`);
     return response.data;
   } catch (error) {
     console.error("No se pudo obtener el curso indicado:", error.message);
