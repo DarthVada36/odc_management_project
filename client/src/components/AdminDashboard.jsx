@@ -88,16 +88,34 @@ const AdminDashboard = () => {
     )
     const [startDate, setStartDate] = useState('2024-12-10')
 
-    // Function to export metrics to PDF
+    // export metrics to PDF
     const exportMetricsToPDF = () => {
         let exportData = []
         let exportHeaders = []
-        let title = 'Métricas de Cursos'
+        let title = ''
+        let fileName = ''
+        let totalEnrollments = 0
+
+        // Get the current date
+        const currentDate = new Date().toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        })
+
+        // Converse the date strings to Date objects
+        const formattedStartDate = new Date(startDate).toLocaleDateString(
+            'es-ES'
+        )
+        const formattedEndDate = new Date(endDate).toLocaleDateString('es-ES')
 
         if (selectedCourse === 'all') {
             // Export overall metrics
             exportHeaders = ['Métrica', 'Valor']
+            totalEnrollments = metrics.totalEnrollments
+            title = 'Métricas: Todos los Cursos'
             exportData = [
+                ['Fecha del Informe', currentDate],
                 ['Total de Cursos', metrics.totalCourses],
                 ['Total de Inscripciones', metrics.totalEnrollments],
                 [
@@ -123,13 +141,6 @@ const AdminDashboard = () => {
                     ),
                 ],
                 [
-                    'Total Inscritos',
-                    metrics.coursesMetrics.reduce(
-                        (sum, course) => sum + course.total,
-                        0
-                    ),
-                ],
-                [
                     'Media Ocupación',
                     `${(
                         metrics.coursesMetrics.reduce(
@@ -140,6 +151,7 @@ const AdminDashboard = () => {
                 ],
                 ['Media de Edad', `${getAverageAge(metrics.enrollments)} años`],
             ]
+            fileName = `metricas_todos_los_cursos_${formattedStartDate}_${formattedEndDate}_${totalEnrollments}_inscripciones.pdf`
         } else {
             // Export specific course metrics
             const selectedCourseMetric = metrics.coursesMetrics.find(
@@ -149,15 +161,18 @@ const AdminDashboard = () => {
                 (e) => e.id_course.toString() === selectedCourse
             )
 
-            title = ` ${selectedCourseMetric?.name || 'Curso Seleccionado'}`
+            totalEnrollments = courseEnrollments.length
+            title = `Métricas: ${
+                selectedCourseMetric?.name || 'Curso Desconocido'
+            }`
             exportHeaders = ['Métrica', 'Valor']
             exportData = [
+                ['Fecha del Informe', currentDate],
                 ['Capacidad Total', selectedCourseMetric?.capacity || 0],
-                ['Total Inscritos', selectedCourseMetric?.total || 0],
+                ['Total Inscritos', totalEnrollments],
                 [
                     'Tickets Disponibles',
-                    (selectedCourseMetric?.capacity || 0) -
-                        (selectedCourseMetric?.total || 0),
+                    (selectedCourseMetric?.capacity || 0) - totalEnrollments,
                 ],
                 [
                     'Ocupación',
@@ -167,21 +182,23 @@ const AdminDashboard = () => {
                     'Tasa Primera Actividad',
                     `${(
                         ((selectedCourseMetric?.firstTime || 0) /
-                            (selectedCourseMetric?.total || 1)) *
+                            (totalEnrollments || 1)) *
                         100
                     ).toFixed(1)}%`,
                 ],
                 ['Media de Edad', `${getAverageAge(courseEnrollments)} años`],
             ]
+            fileName = `metricas_${selectedCourseMetric?.name.replace(
+                /\s+/g,
+                '_'
+            )}_${formattedStartDate}_${formattedEndDate}_${totalEnrollments}_inscripciones.pdf`
         }
 
+        // Add date range to the title
+        title += `\n(${formattedStartDate} - ${formattedEndDate})`
+
         // Call export function
-        exportToPDF(
-            title,
-            exportHeaders,
-            exportData,
-            `metricas_${selectedCourse}.pdf`
-        )
+        exportToPDF(title, exportHeaders, exportData, fileName)
     }
 
     useEffect(() => {
@@ -324,7 +341,10 @@ const AdminDashboard = () => {
         if (!metrics.dailyEnrollments.length) return []
 
         return metrics.dailyEnrollments
-            .filter((entry) => entry.date >= startDate && entry.date <= endDate)
+            .filter((entry) => {
+                const entryDate = entry.date
+                return entryDate >= startDate && entryDate <= endDate
+            })
             .map((entry) => ({
                 date: entry.date,
                 inscripciones:
@@ -334,14 +354,94 @@ const AdminDashboard = () => {
             }))
     }
 
-    const getFilteredAgeGroups = () => {
-        if (selectedCourse === 'all') {
-            return metrics.ageGroups
-        }
+    const getFilteredDetailsMetrics = () => {
+        // Primero filtramos los enrollments por fecha
+        const filteredEnrollments = metrics.enrollments.filter((enrollment) => {
+            const enrollmentDate = new Date(enrollment.createdAt)
+                .toISOString()
+                .slice(0, 10)
+            return enrollmentDate >= startDate && enrollmentDate <= endDate
+        })
 
-        const courseEnrollments = metrics.enrollments.filter(
-            (e) => e.id_course.toString() === selectedCourse
-        )
+        if (selectedCourse === 'all') {
+            // Para la vista general
+            const courseTotals = metrics.coursesMetrics.map((course) => {
+                const courseEnrollments = filteredEnrollments.filter(
+                    (e) => e.id_course === course.id
+                )
+                return {
+                    ...course,
+                    filteredTotal: courseEnrollments.length,
+                    filteredOccupancyRate:
+                        (courseEnrollments.length / course.capacity) * 100,
+                }
+            })
+
+            return {
+                totalCourses: metrics.coursesMetrics.length,
+                capacidadTotal: courseTotals.reduce(
+                    (sum, course) => sum + course.capacity,
+                    0
+                ),
+                ticketsDisponibles: courseTotals.reduce(
+                    (sum, course) =>
+                        sum + (course.capacity - course.filteredTotal),
+                    0
+                ),
+                totalInscritos: courseTotals.reduce(
+                    (sum, course) => sum + course.filteredTotal,
+                    0
+                ),
+                mediaOcupacion:
+                    courseTotals.reduce(
+                        (sum, course) => sum + course.filteredOccupancyRate,
+                        0
+                    ) / courseTotals.length,
+                mediaEdad: getAverageAge(filteredEnrollments),
+            }
+        } else {
+            // Para un curso específico
+            const courseEnrollments = filteredEnrollments.filter(
+                (e) => e.id_course.toString() === selectedCourse
+            )
+            const selectedCourseMetric = metrics.coursesMetrics.find(
+                (c) => c.id.toString() === selectedCourse
+            )
+
+            const firstTimeCount = courseEnrollments.filter(
+                (e) => e.is_first_activity
+            ).length
+
+            return {
+                capacidadTotal: selectedCourseMetric?.capacity || 0,
+                totalInscritos: courseEnrollments.length,
+                ticketsDisponibles:
+                    (selectedCourseMetric?.capacity || 0) -
+                    courseEnrollments.length,
+                ocupacion:
+                    (courseEnrollments.length /
+                        (selectedCourseMetric?.capacity || 1)) *
+                    100,
+                primeraActividad:
+                    (firstTimeCount / courseEnrollments.length) * 100,
+                mediaEdad: getAverageAge(courseEnrollments),
+            }
+        }
+    }
+
+    const getFilteredAgeGroups = () => {
+        let relevantEnrollments = metrics.enrollments.filter((enrollment) => {
+            const enrollmentDate = new Date(enrollment.createdAt)
+                .toISOString()
+                .slice(0, 10)
+            return enrollmentDate >= startDate && enrollmentDate <= endDate
+        })
+
+        if (selectedCourse !== 'all') {
+            relevantEnrollments = relevantEnrollments.filter(
+                (e) => e.id_course.toString() === selectedCourse
+            )
+        }
 
         const ageGroups = [
             { name: '< 14', value: 0 },
@@ -351,7 +451,7 @@ const AdminDashboard = () => {
             { name: 'NS/NC', value: 0 },
         ]
 
-        courseEnrollments.forEach((enrollment) => {
+        relevantEnrollments.forEach((enrollment) => {
             if (enrollment.age === 0) {
                 ageGroups[4].value++
             } else if (enrollment.age < 14) {
@@ -369,15 +469,20 @@ const AdminDashboard = () => {
     }
 
     const getFilteredGenderDistribution = () => {
-        if (selectedCourse === 'all') {
-            return metrics.genderDistribution
+        let relevantEnrollments = metrics.enrollments.filter((enrollment) => {
+            const enrollmentDate = new Date(enrollment.createdAt)
+                .toISOString()
+                .slice(0, 10)
+            return enrollmentDate >= startDate && enrollmentDate <= endDate
+        })
+
+        if (selectedCourse !== 'all') {
+            relevantEnrollments = relevantEnrollments.filter(
+                (e) => e.id_course.toString() === selectedCourse
+            )
         }
 
-        const courseEnrollments = metrics.enrollments.filter(
-            (e) => e.id_course.toString() === selectedCourse
-        )
-
-        const genderCounts = courseEnrollments.reduce((acc, curr) => {
+        const genderCounts = relevantEnrollments.reduce((acc, curr) => {
             acc[curr.gender] = (acc[curr.gender] || 0) + 1
             return acc
         }, {})
@@ -551,175 +656,138 @@ const AdminDashboard = () => {
                 </div>
 
                 {/* Occupancy by Course */}
-                <div className="flex flex-col p-4 bg-white shadow-sm tablet:p-6">
-                    {/* Contenedor para el título, alineado al margen izquierdo */}
-                    <div className="mb-4">
-                        <h2 className="text-base font-semibold font-helvetica-w20-bold tablet:text-lg">
-                            Detalles
-                        </h2>
-                    </div>
-                    {selectedCourse === 'all' ? (
-                        // View general of all courses
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
-                                    Total Cursos
-                                </p>
-                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
-                                    {metrics.coursesMetrics.length}
-                                </p>
-                            </div>
-                            <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
-                                    Capacidad Total
-                                </p>
-                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
-                                    {metrics.coursesMetrics.reduce(
-                                        (sum, course) => sum + course.capacity,
-                                        0
-                                    )}
-                                </p>
-                            </div>
-                            <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
-                                    Tickets Disponibles
-                                </p>
-                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
-                                    {metrics.coursesMetrics.reduce(
-                                        (sum, course) =>
-                                            sum +
-                                            (course.capacity - course.total),
-                                        0
-                                    )}
-                                </p>
-                            </div>
-                            <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm text-neutral-600">
-                                    Total Inscritos
-                                </p>
-                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
-                                    {metrics.coursesMetrics.reduce(
-                                        (sum, course) => sum + course.total,
-                                        0
-                                    )}
-                                </p>
-                            </div>
-                            <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
-                                    Media Ocupación
-                                </p>
-                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
-                                    {`${(
-                                        metrics.coursesMetrics.reduce(
-                                            (sum, course) =>
-                                                sum + course.occupancyRate,
-                                            0
-                                        ) / metrics.coursesMetrics.length
-                                    ).toFixed(1)}%`}
-                                </p>
-                            </div>
-                            <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm font-bold font-helvetica-w20-bold text-neutral-600">
-                                    Media de Edad
-                                </p>
-                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
-                                    {getAverageAge(metrics.enrollments)}
-                                </p>
-                            </div>
-                        </div>
-                    ) : (
-                        // Details of a specific course
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
-                                    Capacidad Total
-                                </p>
-                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
-                                    {metrics.coursesMetrics.find(
-                                        (c) =>
-                                            c.id.toString() === selectedCourse
-                                    )?.capacity || 0}
-                                </p>
-                            </div>
-                            <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
-                                    Inscritos
-                                </p>
-                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
-                                    {metrics.coursesMetrics.find(
-                                        (c) =>
-                                            c.id.toString() === selectedCourse
-                                    )?.total || 0}
-                                </p>
-                            </div>
-                            <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
-                                    Tickets Disponibles
-                                </p>
-                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
-                                    {(metrics.coursesMetrics.find(
-                                        (c) =>
-                                            c.id.toString() === selectedCourse
-                                    )?.capacity || 0) -
-                                        (metrics.coursesMetrics.find(
-                                            (c) =>
-                                                c.id.toString() ===
-                                                selectedCourse
-                                        )?.total || 0)}
-                                </p>
-                            </div>
-                            <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
-                                    Ocupación
-                                </p>
-                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
-                                    {`${
-                                        metrics.coursesMetrics
-                                            .find(
-                                                (c) =>
-                                                    c.id.toString() ===
-                                                    selectedCourse
-                                            )
-                                            ?.occupancyRate.toFixed(1) || 0
-                                    }%`}
-                                </p>
-                            </div>
-                            <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
-                                    Primera Actividad
-                                </p>
-                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
-                                    {`${(
-                                        ((metrics.coursesMetrics.find(
-                                            (c) =>
-                                                c.id.toString() ===
-                                                selectedCourse
-                                        )?.firstTime || 0) /
-                                            (metrics.coursesMetrics.find(
-                                                (c) =>
-                                                    c.id.toString() ===
-                                                    selectedCourse
-                                            )?.total || 1)) *
-                                        100
-                                    ).toFixed(1)}%`}
-                                </p>
-                            </div>
-                            <div className="p-4 rounded-lg bg-neutral-50">
-                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
-                                    Media de Edad
-                                </p>
-                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
-                                    {getAverageAge(
-                                        metrics.enrollments.filter(
-                                            (e) =>
-                                                e.id_course.toString() ===
-                                                selectedCourse
-                                        )
-                                    )}
-                                </p>
-                            </div>
-                        </div>
-                    )}
+                <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
+                    <h2 className="mb-4 text-base font-semibold font-helvetica-w20-bold tablet:text-lg">
+                        Detalles
+                    </h2>
+                    {selectedCourse === 'all'
+                        ? (() => {
+                              const detailsMetrics = getFilteredDetailsMetrics()
+                              return detailsMetrics ? (
+                                  <div className="grid grid-cols-2 gap-4">
+                                      <div className="p-4 rounded-lg bg-neutral-50">
+                                          <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                              Total Cursos
+                                          </p>
+                                          <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                              {detailsMetrics.totalCourses}
+                                          </p>
+                                      </div>
+                                      <div className="p-4 rounded-lg bg-neutral-50">
+                                          <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                              Capacidad Total
+                                          </p>
+                                          <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                              {detailsMetrics.capacidadTotal}
+                                          </p>
+                                      </div>
+                                      <div className="p-4 rounded-lg bg-neutral-50">
+                                          <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                              Tickets Disponibles
+                                          </p>
+                                          <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                              {
+                                                  detailsMetrics.ticketsDisponibles
+                                              }
+                                          </p>
+                                      </div>
+                                      <div className="p-4 rounded-lg bg-neutral-50">
+                                          <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                              Total Inscritos
+                                          </p>
+                                          <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                              {detailsMetrics.totalInscritos}
+                                          </p>
+                                      </div>
+                                      <div className="p-4 rounded-lg bg-neutral-50">
+                                          <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                              Media Ocupación
+                                          </p>
+                                          <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                              {detailsMetrics.mediaOcupacion.toFixed(
+                                                  1
+                                              )}
+                                              %
+                                          </p>
+                                      </div>
+                                      <div className="p-4 rounded-lg bg-neutral-50">
+                                          <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                              Media de Edad
+                                          </p>
+                                          <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                              {detailsMetrics.mediaEdad}
+                                          </p>
+                                      </div>
+                                  </div>
+                              ) : (
+                                  <p>No hay datos para mostrar.</p>
+                              )
+                          })()
+                        : (() => {
+                              const detailsMetrics = getFilteredDetailsMetrics()
+                              return detailsMetrics ? (
+                                  <div className="grid grid-cols-2 gap-4">
+                                      <div className="p-4 rounded-lg bg-neutral-50">
+                                          <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                              Capacidad Total
+                                          </p>
+                                          <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                              {detailsMetrics.capacidadTotal}
+                                          </p>
+                                      </div>
+                                      <div className="p-4 rounded-lg bg-neutral-50">
+                                          <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                              Inscritos
+                                          </p>
+                                          <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                              {detailsMetrics.totalInscritos}
+                                          </p>
+                                      </div>
+                                      <div className="p-4 rounded-lg bg-neutral-50">
+                                          <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                              Tickets Disponibles
+                                          </p>
+                                          <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                              {
+                                                  detailsMetrics.ticketsDisponibles
+                                              }
+                                          </p>
+                                      </div>
+                                      <div className="p-4 rounded-lg bg-neutral-50">
+                                          <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                              Ocupación
+                                          </p>
+                                          <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                              {detailsMetrics.ocupacion.toFixed(
+                                                  1
+                                              )}
+                                              %
+                                          </p>
+                                      </div>
+                                      <div className="p-4 rounded-lg bg-neutral-50">
+                                          <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                              Primera Actividad
+                                          </p>
+                                          <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                              {detailsMetrics.primeraActividad.toFixed(
+                                                  1
+                                              )}
+                                              %
+                                          </p>
+                                      </div>
+                                      <div className="p-4 rounded-lg bg-neutral-50">
+                                          <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                              Media de Edad
+                                          </p>
+                                          <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                              {detailsMetrics.mediaEdad}
+                                          </p>
+                                      </div>
+                                  </div>
+                              ) : (
+                                  <p>No hay datos para mostrar.</p>
+                              )
+                          })()}
                 </div>
 
                 {/* Distribution by Age */}
