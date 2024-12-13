@@ -126,14 +126,19 @@ const EmailEditorComponent = ({ onClose, recipients = [], subject = '' }) => {
 
   const handleSendFromModal = async ({ subject, recipients, useBcc }) => {
     try {
+      console.log('Contenido del correo enviado:', emailContent);
+      console.log('Datos del modal enviados:', { subject, recipients, useBcc });
+  
       await sendEmail(recipients, subject, emailContent, useBcc);
       alert('Correo enviado con éxito.');
     } catch (error) {
+      console.error('Error al enviar el correo:', error.response?.data || error.message);
       alert('Error al enviar el correo. Por favor, inténtalo de nuevo.');
     } finally {
       setShowEmailModal(false);
     }
   };
+  
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

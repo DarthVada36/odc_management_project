@@ -1,35 +1,34 @@
 import nodemailer from 'nodemailer';
 
-// Configuración del transportador de nodemailer
-const transporter = nodemailer.createTransport({
-  service: 'gmail', // Cambia esto si usas otro proveedor (como Outlook)
-  auth: {
-    user: process.env.EMAIL_USER, // Correo remitente
-    pass: process.env.EMAIL_PASS, // Contraseña o token
-  },
-});
-
 /**
  * Servicio para enviar correos.
- * @param {string[]} recipients - Lista de destinatarios.
- * @param {string} subject - Asunto del correo.
- * @param {string} htmlContent - Contenido HTML del correo.
- * @returns {Promise<void>}
+ * @param {Object} options - Opciones de configuración del correo.
+ * @param {string} options.subject - Asunto del correo.
+ * @param {string} options.htmlContent - Contenido HTML del correo.
+ * @param {Array<string>} [options.to] - Lista de destinatarios normales.
+ * @param {Array<string>} [options.bcc] - Lista de destinatarios en copia oculta.
  */
-export const sendEmail = async (recipients, subject, htmlContent) => {
-  try {
-    const mailOptions = {
-      from: process.env.EMAIL_USER, // Remitente
-      to: recipients.join(', '), // Destinatarios (separados por comas)
-      subject, // Asunto
-      html: htmlContent, // Contenido en formato HTML
-    };
+export const sendEmail = async ({ subject, htmlContent, to, bcc }) => {
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
 
-    // Enviar el correo
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    subject,
+    html: htmlContent,
+    ...(to && { to }),
+    ...(bcc && { bcc }),
+  };
+
+  try {
     await transporter.sendMail(mailOptions);
-    console.log('Correo enviado exitosamente');
   } catch (error) {
-    console.error('Error al enviar el correo:', error.message);
+    console.error('Error al enviar el correo:', error);
     throw new Error('No se pudo enviar el correo');
   }
 };

@@ -23,9 +23,17 @@ const EmailSendModal = ({
       alert('Debe haber al menos un destinatario.');
       return;
     }
-    // Pasar los datos al UserTable
-    onSend({ subject, recipients, useBcc });
+  
+    // Verifica los datos enviados
+    console.log('Datos enviados desde el modal:', {
+      subject,
+      recipients,
+      useBcc,
+    });
+  
+    onSend({ subject, recipients, useBcc }); // Pasa todos los datos al controlador
   };
+  
 
   return (
     <div
@@ -83,7 +91,7 @@ const EmailSendModal = ({
             type='checkbox'
             id='bccToggle'
             checked={useBcc}
-            onChange={() => setUseBcc(!useBcc)}
+            onChange={(e) => setUseBcc(e.target.checked)}
           />
           <label htmlFor='bccToggle' className='text-gray-700'>
             Enviar como copia oculta (CCO)
