@@ -83,12 +83,12 @@ export const createEnrollment = async (req, res) => {
       minors = [],
     } = req.body;
 
-    // Validación de campos obligatorios
-    if (!fullname || !email || !id_course) {
-      return res.status(400).json({
-        message: "Faltan datos obligatorios: fullname, email, o id_course.",
-      });
-    }
+    // // Validación de campos obligatorios
+    // if (!fullname || !email || !id_course) {
+    //   return res.status(400).json({
+    //     message: "Faltan datos obligatorios: fullname, email, o id_course.",
+    //   });
+    // }
 
     // Validación del límite de menores
     if (Array.isArray(minors) && minors.length > 3) {
