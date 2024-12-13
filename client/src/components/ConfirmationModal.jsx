@@ -50,13 +50,13 @@ const ConfirmationModal = ({
               className='border-2 border-black text-black px-4 py-2 font-bold hover:bg-gray-100'
               onClick={onClose}
             >
-              Cancel
+              Cancelar
             </button>
             <button
               className='bg-primary text-black px-4 py-2 font-bold hover:bg-orange-600'
               onClick={onConfirm}
             >
-              Confirm
+              Confirmar
             </button>
           </div>
         )}
