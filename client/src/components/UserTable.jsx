@@ -11,6 +11,7 @@ const UserTable = () => {
   const [error, setError] = useState(null);
   const [showEmailEditor, setShowEmailEditor] = useState(false);
   const [selectedRecipients, setSelectedRecipients] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState(''); // Asunto del correo
 
   // Paginación
   const [currentPage, setCurrentPage] = useState(1);
@@ -21,6 +22,7 @@ const UserTable = () => {
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentEnrollments = enrollments.slice(indexOfFirstItem, indexOfLastItem);
 
+  // Cargar inscripciones al iniciar el componente
   useEffect(() => {
     const fetchEnrollments = async () => {
       try {
@@ -61,14 +63,25 @@ const UserTable = () => {
     exportToExcel('Inscripciones', headers, data, 'inscripciones.xlsx');
   };
 
-  const handleOpenEmailEditor = (recipients) => {
+  const handleOpenEmailEditor = (recipients, subject) => {
     setSelectedRecipients(recipients);
+    setSelectedSubject(subject);
     setShowEmailEditor(true);
   };
 
-  const handleSendEmail = async (html, recipients) => {
+  const handleSendEmail = async (html) => {
+    const customSubject = prompt(
+      'Escribe el asunto del correo:',
+      selectedSubject || 'Asunto por defecto'
+    );
+
+    if (!customSubject) {
+      alert('El asunto no puede estar vacío.');
+      return;
+    }
+
     try {
-      await sendEmail(recipients, 'Inscripciones', html); // Usa el servicio aquí
+      await sendEmail(selectedRecipients, customSubject, html);
       alert('Correo enviado con éxito.');
     } catch (error) {
       alert('Error al enviar el correo. Por favor, inténtalo de nuevo.');
@@ -105,7 +118,7 @@ const UserTable = () => {
           Descargar Excel
         </button>
         <button
-          onClick={() => handleOpenEmailEditor(enrollments.map((e) => e.email))}
+          onClick={() => handleOpenEmailEditor(enrollments.map((e) => e.email), 'Inscripciones Generales')}
           className='bg-orange text-black px-4 py-2 rounded border border-black flex items-center'
         >
           <img
@@ -152,7 +165,7 @@ const UserTable = () => {
                 </td>
                 <td className='p-2 sm:p-3 md:p-4 flex justify-center'>
                   <button
-                    onClick={() => handleOpenEmailEditor([enrollment.email])}
+                    onClick={() => handleOpenEmailEditor([enrollment.email], `Contacto con ${enrollment.fullname}`)}
                     className='bg-orange text-black px-4 py-1 rounded border border-black w-full sm:w-auto flex items-center space-x-2'
                   >
                     <img
@@ -179,8 +192,9 @@ const UserTable = () => {
       {/* Editor de correos */}
       {showEmailEditor && (
         <EmailEditorComponent
-          onSendEmail={(html) => handleSendEmail(html, selectedRecipients)}
+          onSendEmail={handleSendEmail}
           onClose={handleCloseEmailEditor}
+          subject={selectedSubject}
           recipients={selectedRecipients}
         />
       )}

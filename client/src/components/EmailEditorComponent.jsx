@@ -8,7 +8,7 @@ import {
   getTemplateById,
 } from '../services/templateService'; // Servicios del backend
 
-const EmailEditorComponent = ({ onClose, onSendEmail, recipients }) => {
+const EmailEditorComponent = ({ onClose, onSendEmail, subject, recipients }) => {
   const editorRef = useRef(null);
   const [templates, setTemplates] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -35,7 +35,6 @@ const EmailEditorComponent = ({ onClose, onSendEmail, recipients }) => {
   // Guardar nueva plantilla
   const handleSaveTemplate = () => {
     editorRef.current.editor.saveDesign(async (design) => {
-      console.log('Diseño guardado:', design);
       const templateName = prompt('Ingresa el nombre de la nueva plantilla:');
       if (!templateName) return;
 
@@ -47,7 +46,6 @@ const EmailEditorComponent = ({ onClose, onSendEmail, recipients }) => {
         setTemplates(updatedTemplates);
       } catch (error) {
         console.error('Error al guardar la plantilla:', error);
-        alert('Error al guardar la plantilla');
       } finally {
         setIsSaving(false);
       }
@@ -62,7 +60,6 @@ const EmailEditorComponent = ({ onClose, onSendEmail, recipients }) => {
     }
 
     editorRef.current.editor.saveDesign(async (design) => {
-      console.log('Diseño para actualizar:', design);
       try {
         await updateTemplate(selectedTemplateId, design);
         alert('Plantilla actualizada exitosamente');
@@ -70,7 +67,6 @@ const EmailEditorComponent = ({ onClose, onSendEmail, recipients }) => {
         setTemplates(updatedTemplates);
       } catch (error) {
         console.error('Error al actualizar la plantilla:', error);
-        alert('Error al actualizar la plantilla');
       }
     });
   };
@@ -84,14 +80,12 @@ const EmailEditorComponent = ({ onClose, onSendEmail, recipients }) => {
 
     try {
       const selectedTemplate = await getTemplateById(selectedTemplateId);
-      console.log('Diseño seleccionado para cargar:', selectedTemplate.design);
-
       editorRef.current.editor.loadDesign(selectedTemplate.design);
     } catch (error) {
       console.error('Error al cargar la plantilla:', error);
-      alert('Error al cargar la plantilla');
     }
   };
+
   // Eliminar plantilla
   const handleDeleteTemplate = async () => {
     if (!selectedTemplateId) {
@@ -110,83 +104,65 @@ const EmailEditorComponent = ({ onClose, onSendEmail, recipients }) => {
       alert('Plantilla eliminada exitosamente');
       const updatedTemplates = await getTemplates();
       setTemplates(updatedTemplates);
-      setSelectedTemplateId(null); // Deseleccionar plantilla
+      setSelectedTemplateId(null);
     } catch (error) {
       console.error('Error al eliminar la plantilla:', error);
-      alert('Error al eliminar la plantilla');
     }
   };
 
+  // Manejar envío de correo
+  const handleSendEmail = () => {
+    editorRef.current.editor.exportHtml((data) => {
+      const { html } = data;
+      if (!subject || recipients.length === 0) {
+        alert('El asunto o los destinatarios no pueden estar vacíos.');
+        return;
+      }
+
+      onSendEmail(html); // Enviar el HTML generado
+    });
+  };
+
   return (
-    <div className='fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50'>
-      <div className='bg-white w-full max-w-6xl p-6 rounded-md shadow-lg'>
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white w-full max-w-6xl p-6 rounded-md shadow-lg">
         {/* Título y botón de cierre */}
-        <div className='flex justify-between items-center mb-4'>
-          <h2 className='text-lg font-bold text-orange'>
-            Editor de Plantillas
-          </h2>
-          <button
-            onClick={onClose}
-            className='text-black font-bold text-lg'
-            aria-label='Cerrar editor'
-          >
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-bold text-orange">Editor de Plantillas</h2>
+          <button onClick={onClose} className="text-black font-bold text-lg">
             ✕
           </button>
         </div>
 
         {/* Email Editor */}
-        <div className='border border-gray-300 rounded-md'>
-          <EmailEditor
-            id='email-editor'
-            ref={editorRef}
-            options={{
-              features: { preview: true },
-              designTags: { logo: 'https://example.com/logo.png' },
-            }}
-            style={{ height: '500px', width: '100%' }}
-          />
+        <div className="border border-gray-300 rounded-md">
+          <EmailEditor ref={editorRef} style={{ height: '500px', width: '100%' }} />
         </div>
 
         {/* Opciones de CRUD */}
-        <div className='flex flex-col md:flex-row md:justify-between space-y-4 md:space-y-0 md:space-x-4 mt-4'>
-          <button
-            onClick={handleSaveTemplate}
-            disabled={isSaving}
-            className='bg-green-500 text-black px-4 py-2 rounded'
-          >
+        <div className="flex flex-col md:flex-row md:justify-between space-y-4 md:space-y-0 md:space-x-4 mt-4">
+          <button onClick={handleSaveTemplate} disabled={isSaving} className="bg-green-500 text-black px-4 py-2 rounded">
             {isSaving ? 'Guardando...' : 'Guardar nueva plantilla'}
           </button>
-
-          <button
-            onClick={handleUpdateTemplate}
-            className='bg-blue-500 text-black px-4 py-2 rounded'
-          >
+          <button onClick={handleUpdateTemplate} className="bg-blue-500 text-black px-4 py-2 rounded">
             Actualizar plantilla
           </button>
-
-          <button
-            onClick={handleDeleteTemplate}
-            className='bg-red-500 text-black px-4 py-2 rounded'
-          >
+          <button onClick={handleDeleteTemplate} className="bg-red-500 text-black px-4 py-2 rounded">
             Eliminar plantilla
           </button>
-
-          <button
-            onClick={handleLoadTemplate}
-            className='bg-yellow-500 text-black px-4 py-2 rounded'
-          >
+          <button onClick={handleLoadTemplate} className="bg-yellow-500 text-black px-4 py-2 rounded">
             Cargar plantilla
           </button>
         </div>
 
         {/* Selector de plantillas */}
-        <div className='mt-4'>
+        <div className="mt-4">
           <select
             value={selectedTemplateId || ''}
             onChange={(e) => setSelectedTemplateId(e.target.value)}
-            className='w-full px-4 py-2 border rounded'
+            className="w-full px-4 py-2 border rounded"
           >
-            <option value=''>Selecciona una plantilla...</option>
+            <option value="">Selecciona una plantilla...</option>
             {templates.map((template) => (
               <option key={template.id} value={template.id}>
                 {template.name}
@@ -196,23 +172,8 @@ const EmailEditorComponent = ({ onClose, onSendEmail, recipients }) => {
         </div>
 
         {/* Botón para enviar correo */}
-        <div className='mt-4'>
-          <button
-            onClick={() => {
-              editorRef.current.editor.exportHtml((data) => {
-                const { html } = data;
-                const subject = prompt('Ingresa el asunto del correo:');
-                if (!subject) {
-                  alert('El asunto del correo no puede estar vacío.');
-                  return;
-                }
-                console.log('HTML exportado:', html);
-                console.log('Asunto:', subject);
-                onSendEmail(html, recipients, subject);
-              });
-            }}
-            className='bg-orange-500 text-black px-4 py-2 rounded'
-          >
+        <div className="mt-4 flex justify-end">
+          <button onClick={handleSendEmail} className="bg-orange-500 text-black px-4 py-2 rounded">
             Enviar correo
           </button>
         </div>
