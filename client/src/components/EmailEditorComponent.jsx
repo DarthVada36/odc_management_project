@@ -1,21 +1,28 @@
 import React, { useRef, useEffect, useState } from 'react';
 import EmailEditor from 'react-email-editor';
+import EmailSendModal from './EmailSendModal';
 import {
   getTemplates,
   saveTemplate,
   deleteTemplate,
   updateTemplate,
   getTemplateById,
-} from '../services/templateService'; // Servicios del backend
+} from '../services/templateService';
+import { sendEmail } from '../services/emailService';
 
-const EmailEditorComponent = ({ onClose, onSendEmail, subject, recipients }) => {
+const EmailEditorComponent = ({ onClose, recipients = [], subject = '' }) => {
   const editorRef = useRef(null);
   const [templates, setTemplates] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedTemplateId, setSelectedTemplateId] = useState(null);
 
-  // Obtener plantillas al cargar el componente
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [emailContent, setEmailContent] = useState('');
+  const [emailSubject, setEmailSubject] = useState(subject);
+  const [emailRecipients, setEmailRecipients] = useState(recipients);
+  const [useBcc, setUseBcc] = useState(false);
+
   useEffect(() => {
     const fetchTemplates = async () => {
       try {
@@ -32,7 +39,6 @@ const EmailEditorComponent = ({ onClose, onSendEmail, subject, recipients }) => 
     fetchTemplates();
   }, []);
 
-  // Guardar nueva plantilla
   const handleSaveTemplate = () => {
     editorRef.current.editor.saveDesign(async (design) => {
       const templateName = prompt('Ingresa el nombre de la nueva plantilla:');
@@ -52,7 +58,6 @@ const EmailEditorComponent = ({ onClose, onSendEmail, subject, recipients }) => 
     });
   };
 
-  // Actualizar plantilla existente
   const handleUpdateTemplate = () => {
     if (!selectedTemplateId) {
       alert('Selecciona una plantilla para actualizar.');
@@ -71,7 +76,6 @@ const EmailEditorComponent = ({ onClose, onSendEmail, subject, recipients }) => 
     });
   };
 
-  // Cargar plantilla en el editor
   const handleLoadTemplate = async () => {
     if (!selectedTemplateId) {
       alert('Selecciona una plantilla para cargar.');
@@ -86,7 +90,6 @@ const EmailEditorComponent = ({ onClose, onSendEmail, subject, recipients }) => 
     }
   };
 
-  // Eliminar plantilla
   const handleDeleteTemplate = async () => {
     if (!selectedTemplateId) {
       alert('Selecciona una plantilla para eliminar.');
@@ -110,23 +113,31 @@ const EmailEditorComponent = ({ onClose, onSendEmail, subject, recipients }) => 
     }
   };
 
-  // Manejar envío de correo
   const handleSendEmail = () => {
-    editorRef.current.editor.exportHtml((data) => {
-      const { html } = data;
-      if (!subject || recipients.length === 0) {
-        alert('El asunto o los destinatarios no pueden estar vacíos.');
+    editorRef.current.editor.exportHtml(({ html }) => {
+      if (!html) {
+        alert('La plantilla no puede estar vacía.');
         return;
       }
-
-      onSendEmail(html); // Enviar el HTML generado
+      setEmailContent(html);
+      setShowEmailModal(true);
     });
+  };
+
+  const handleSendFromModal = async ({ subject, recipients, useBcc }) => {
+    try {
+      await sendEmail(recipients, subject, emailContent, useBcc);
+      alert('Correo enviado con éxito.');
+    } catch (error) {
+      alert('Error al enviar el correo. Por favor, inténtalo de nuevo.');
+    } finally {
+      setShowEmailModal(false);
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white w-full max-w-6xl p-6 rounded-md shadow-lg">
-        {/* Título y botón de cierre */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-lg font-bold text-orange">Editor de Plantillas</h2>
           <button onClick={onClose} className="text-black font-bold text-lg">
@@ -134,15 +145,13 @@ const EmailEditorComponent = ({ onClose, onSendEmail, subject, recipients }) => 
           </button>
         </div>
 
-        {/* Email Editor */}
         <div className="border border-gray-300 rounded-md">
           <EmailEditor ref={editorRef} style={{ height: '500px', width: '100%' }} />
         </div>
 
-        {/* Opciones de CRUD */}
         <div className="flex flex-col md:flex-row md:justify-between space-y-4 md:space-y-0 md:space-x-4 mt-4">
-          <button onClick={handleSaveTemplate} disabled={isSaving} className="bg-green-500 text-black px-4 py-2 rounded">
-            {isSaving ? 'Guardando...' : 'Guardar nueva plantilla'}
+          <button onClick={handleSaveTemplate} className="bg-green-500 text-black px-4 py-2 rounded">
+            Guardar nueva plantilla
           </button>
           <button onClick={handleUpdateTemplate} className="bg-blue-500 text-black px-4 py-2 rounded">
             Actualizar plantilla
@@ -155,7 +164,6 @@ const EmailEditorComponent = ({ onClose, onSendEmail, subject, recipients }) => 
           </button>
         </div>
 
-        {/* Selector de plantillas */}
         <div className="mt-4">
           <select
             value={selectedTemplateId || ''}
@@ -171,12 +179,22 @@ const EmailEditorComponent = ({ onClose, onSendEmail, subject, recipients }) => 
           </select>
         </div>
 
-        {/* Botón para enviar correo */}
-        <div className="mt-4 flex justify-end">
+        <div className="flex justify-end space-x-4 mt-4">
           <button onClick={handleSendEmail} className="bg-orange-500 text-black px-4 py-2 rounded">
             Enviar correo
           </button>
         </div>
+
+        {showEmailModal && (
+          <EmailSendModal
+            isOpen={showEmailModal}
+            onClose={() => setShowEmailModal(false)}
+            onSend={handleSendFromModal}
+            initialRecipients={emailRecipients}
+            initialSubject={emailSubject}
+            initialUseBcc={useBcc}
+          />
+        )}
       </div>
     </div>
   );
