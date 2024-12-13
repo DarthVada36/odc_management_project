@@ -200,12 +200,18 @@ const EmailEditorComponent = ({ onClose, onSendEmail, recipients }) => {
           <button
             onClick={() => {
               editorRef.current.editor.exportHtml((data) => {
-                console.log('HTML exportado:', data.html); // Debug del HTML generado
-                onSendEmail(data.html, recipients);
+                const { html } = data;
+                const subject = prompt('Ingresa el asunto del correo:');
+                if (!subject) {
+                  alert('El asunto del correo no puede estar vacío.');
+                  return;
+                }
+                console.log('HTML exportado:', html);
+                console.log('Asunto:', subject);
+                onSendEmail(html, recipients, subject);
               });
             }}
-            className='bg-orange-500 text-black
-             px-4 py-2 rounded'
+            className='bg-orange-500 text-black px-4 py-2 rounded'
           >
             Enviar correo
           </button>
