@@ -16,6 +16,11 @@ import {
 import { Users, BookOpen, PercentIcon, UserPlus } from 'lucide-react'
 import { getAllCourses } from '../services/coursesServices'
 import { getAllEnrollments } from '../services/enrollmentServices'
+import { exportToPDF } from '../utils/exportUtils'
+import fileDownIcon from '../assets/icons/file-pdf.svg'
+
+const commonInputStyles =
+    'px-3 py-2 text-sm border-2 border-black font-helvetica-w20-bold transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary h-10'
 
 const MetricCard = ({ icon: Icon, title, value, color, subtitle }) => (
     <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
@@ -42,18 +47,14 @@ const MetricCard = ({ icon: Icon, title, value, color, subtitle }) => (
     </div>
 )
 
-const Select = ({ value, onChange, options, label }) => (
+const Select = ({ value, onChange, options, label, className }) => (
     <div className="flex flex-col gap-1">
         {label && (
-            <label className="text-sm font-helvetica-w20-bold text-neutral-600">
+            <label className="text-xs font-helvetica-w20-bold text-neutral-600">
                 {label}
             </label>
         )}
-        <select
-            value={value}
-            onChange={onChange}
-            className="px-3 py-2 text-sm border rounded-lg font-helvetica-w20-bold border-neutral-200 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-        >
+        <select value={value} onChange={onChange} className={className}>
             {options.map((option) => (
                 <option key={option.value} value={option.value}>
                     {option.label}
@@ -80,14 +81,108 @@ const AdminDashboard = () => {
     })
 
     const [selectedCourse, setSelectedCourse] = useState('all')
-    const [dateRange, setDateRange] = useState('month')
     const [loading, setLoading] = useState(true)
 
-    const dateRangeOptions = [
-        { value: 'week', label: 'Última semana' },
-        { value: 'month', label: 'Último mes' },
-        { value: '6_months', label: 'Últimos 6 meses' },
-    ]
+    const [endDate, setEndDate] = useState(
+        new Date().toISOString().slice(0, 10)
+    )
+    const [startDate, setStartDate] = useState('2024-12-10')
+
+    // Function to export metrics to PDF
+    const exportMetricsToPDF = () => {
+        let exportData = []
+        let exportHeaders = []
+        let title = 'Métricas de Cursos'
+
+        if (selectedCourse === 'all') {
+            // Export overall metrics
+            exportHeaders = ['Métrica', 'Valor']
+            exportData = [
+                ['Total de Cursos', metrics.totalCourses],
+                ['Total de Inscripciones', metrics.totalEnrollments],
+                [
+                    'Tasa de Inscripción',
+                    `${metrics.enrollmentRate.toFixed(1)}%`,
+                ],
+                [
+                    'Tasa de Primera Actividad',
+                    `${metrics.firstTimeRate.toFixed(1)}%`,
+                ],
+                [
+                    'Capacidad Total',
+                    metrics.coursesMetrics.reduce(
+                        (sum, course) => sum + course.capacity,
+                        0
+                    ),
+                ],
+                [
+                    'Tickets Disponibles',
+                    metrics.coursesMetrics.reduce(
+                        (sum, course) => sum + (course.capacity - course.total),
+                        0
+                    ),
+                ],
+                [
+                    'Total Inscritos',
+                    metrics.coursesMetrics.reduce(
+                        (sum, course) => sum + course.total,
+                        0
+                    ),
+                ],
+                [
+                    'Media Ocupación',
+                    `${(
+                        metrics.coursesMetrics.reduce(
+                            (sum, course) => sum + course.occupancyRate,
+                            0
+                        ) / metrics.coursesMetrics.length
+                    ).toFixed(1)}%`,
+                ],
+                ['Media de Edad', `${getAverageAge(metrics.enrollments)} años`],
+            ]
+        } else {
+            // Export specific course metrics
+            const selectedCourseMetric = metrics.coursesMetrics.find(
+                (c) => c.id.toString() === selectedCourse
+            )
+            const courseEnrollments = metrics.enrollments.filter(
+                (e) => e.id_course.toString() === selectedCourse
+            )
+
+            title = ` ${selectedCourseMetric?.name || 'Curso Seleccionado'}`
+            exportHeaders = ['Métrica', 'Valor']
+            exportData = [
+                ['Capacidad Total', selectedCourseMetric?.capacity || 0],
+                ['Total Inscritos', selectedCourseMetric?.total || 0],
+                [
+                    'Tickets Disponibles',
+                    (selectedCourseMetric?.capacity || 0) -
+                        (selectedCourseMetric?.total || 0),
+                ],
+                [
+                    'Ocupación',
+                    `${selectedCourseMetric?.occupancyRate.toFixed(1) || 0}%`,
+                ],
+                [
+                    'Tasa Primera Actividad',
+                    `${(
+                        ((selectedCourseMetric?.firstTime || 0) /
+                            (selectedCourseMetric?.total || 1)) *
+                        100
+                    ).toFixed(1)}%`,
+                ],
+                ['Media de Edad', `${getAverageAge(courseEnrollments)} años`],
+            ]
+        }
+
+        // Call export function
+        exportToPDF(
+            title,
+            exportHeaders,
+            exportData,
+            `metricas_${selectedCourse}.pdf`
+        )
+    }
 
     useEffect(() => {
         const fetchData = async () => {
@@ -228,25 +323,8 @@ const AdminDashboard = () => {
     const getFilteredEnrollments = () => {
         if (!metrics.dailyEnrollments.length) return []
 
-        const now = new Date()
-        let startDate = new Date()
-
-        switch (dateRange) {
-            case 'week':
-                startDate.setDate(now.getDate() - 7)
-                break
-            case 'month':
-                startDate.setMonth(now.getMonth() - 1)
-                break
-            case '6_months':
-                startDate.setMonth(now.getMonth() - 6)
-                break
-            default:
-                startDate.setMonth(now.getMonth() - 1)
-        }
-
         return metrics.dailyEnrollments
-            .filter((entry) => new Date(entry.date) >= startDate)
+            .filter((entry) => entry.date >= startDate && entry.date <= endDate)
             .map((entry) => ({
                 date: entry.date,
                 inscripciones:
@@ -325,8 +403,16 @@ const AdminDashboard = () => {
         )
     }
 
+    const getAverageAge = (enrollments) => {
+        const validAges = enrollments.filter((e) => e.age !== 0)
+        if (validAges.length === 0) return 0
+        const sum = validAges.reduce((acc, curr) => acc + curr.age, 0)
+        return (sum / validAges.length).toFixed(1)
+    }
+
     return (
         <div className="flex-1 p-4 space-y-4 overflow-y-auto tablet:p-6 tablet:space-y-6 bg-neutral-100">
+            {/* Header con título Dashboard */}
             <h1 className="text-xl font-bold font-helvetica-w20-bold tablet:text-2xl text-neutral-900">
                 Dashboard
             </h1>
@@ -337,7 +423,7 @@ const AdminDashboard = () => {
                     icon={BookOpen}
                     title="Cursos Activos"
                     value={metrics.totalCourses}
-                    color="text-primary  font-helvetica-w20-bold bg-primary"
+                    color="text-primary font-helvetica-w20-bold bg-primary"
                 />
                 <MetricCard
                     icon={Users}
@@ -359,15 +445,12 @@ const AdminDashboard = () => {
                 />
             </div>
 
-            {/* Graphs */}
-            <div className="grid grid-cols-1 gap-4 laptop:grid-cols-2 tablet:gap-6">
-                {/* Evolution of Enrollments */}
-                <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
-                    <div className="flex flex-col gap-4 mb-4 tablet:flex-row tablet:items-center tablet:justify-between">
-                        <h2 className="text-base font-semibold font-helvetica-w20-bold tablet:text-lg">
-                            Evolución de Inscripciones
-                        </h2>
-                        <div className="flex flex-col gap-2 tablet:flex-row tablet:gap-4">
+            {/* Controls Section */}
+            <div>
+                <div className="flex flex-col gap-4 desktop:flex-row tablet:flex-col tablet:items-start tablet:justify-between">
+                    {/* Select y Fechas */}
+                    <div className="flex flex-col gap-4 tablet:flex-row tablet:items-center mobile:flex-row">
+                        <div className="w-64">
                             <Select
                                 value={selectedCourse}
                                 onChange={(e) =>
@@ -376,20 +459,74 @@ const AdminDashboard = () => {
                                 options={[
                                     { value: 'all', label: 'Todos los cursos' },
                                     ...metrics.coursesMetrics.map((course) => ({
-                                        value: course.id,
+                                        value: course.id.toString(),
                                         label: course.name,
                                     })),
                                 ]}
-                                label="Curso"
-                            />
-                            <Select
-                                value={dateRange}
-                                onChange={(e) => setDateRange(e.target.value)}
-                                options={dateRangeOptions}
-                                label="Periodo"
+                                label="Filtrar por curso"
+                                className={commonInputStyles}
                             />
                         </div>
+
+                        <div className="flex items-center gap-4 ">
+                            <div>
+                                <label className="block pb-[0.195rem] text-xs font-helvetica-w20-bold text-neutral-600">
+                                    Fecha Inicio
+                                </label>
+                                <input
+                                    type="date"
+                                    value={startDate}
+                                    onChange={(e) =>
+                                        setStartDate(e.target.value)
+                                    }
+                                    className={commonInputStyles}
+                                />
+                            </div>
+                            <div>
+                                <label className="block pb-[0.195rem] text-xs font-helvetica-w20-bold text-neutral-600">
+                                    Fecha Fin
+                                </label>
+                                <input
+                                    type="date"
+                                    value={endDate}
+                                    onChange={(e) => setEndDate(e.target.value)}
+                                    className={commonInputStyles}
+                                />
+                            </div>
+                        </div>
                     </div>
+
+                    {/* Course Tittle and PDF icon*/}
+                    <div className="flex items-center gap-4 desktop:mt-2">
+                        <h2 className="text-xl font-bold font-helvetica-w20-bold text-neutral-900">
+                            {selectedCourse === 'all'
+                                ? 'Todos los cursos'
+                                : metrics.coursesMetrics.find(
+                                      (c) => c.id.toString() === selectedCourse
+                                  )?.name || ''}
+                        </h2>
+                        <button
+                            onClick={exportMetricsToPDF}
+                            className="p-2 transition-opacity duration-300 cursor-pointer opacity-70 hover:opacity-100"
+                            title="Exportar métricas a PDF"
+                        >
+                            <img
+                                src={fileDownIcon}
+                                alt="Exportar a PDF"
+                                className="w-10 h-10 text-neutral-600"
+                            />
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Graphs */}
+            <div className="grid grid-cols-1 gap-4 laptop:grid-cols-2 tablet:gap-6">
+                {/* Evolution of Enrollments */}
+                <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
+                    <h2 className="mb-4 text-base font-semibold font-helvetica-w20-bold tablet:text-lg">
+                        Evolución de Inscripciones
+                    </h2>
                     <div className="h-[250px] tablet:h-[300px] w-full">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={getFilteredEnrollments()}>
@@ -412,24 +549,14 @@ const AdminDashboard = () => {
                         </ResponsiveContainer>
                     </div>
                 </div>
+
                 {/* Occupancy by Course */}
-                <div className="p-4 bg-white rounded-lg shadow-sm tablet:p-6">
-                    <div className="flex flex-col gap-4 mb-4 tablet:flex-row tablet:items-center tablet:justify-between">
+                <div className="flex flex-col p-4 bg-white shadow-sm tablet:p-6">
+                    {/* Contenedor para el título, alineado al margen izquierdo */}
+                    <div className="mb-4">
                         <h2 className="text-base font-semibold font-helvetica-w20-bold tablet:text-lg">
-                            Detalles del Curso
+                            Detalles
                         </h2>
-                        <Select
-                            value={selectedCourse}
-                            onChange={(e) => setSelectedCourse(e.target.value)}
-                            options={[
-                                { value: 'all', label: 'Todos los cursos' },
-                                ...metrics.coursesMetrics.map((course) => ({
-                                    value: course.id.toString(),
-                                    label: course.name,
-                                })),
-                            ]}
-                            label="Seleccionar curso"
-                        />
                     </div>
                     {selectedCourse === 'all' ? (
                         // View general of all courses
@@ -449,6 +576,19 @@ const AdminDashboard = () => {
                                 <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
                                     {metrics.coursesMetrics.reduce(
                                         (sum, course) => sum + course.capacity,
+                                        0
+                                    )}
+                                </p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-neutral-50">
+                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                    Tickets Disponibles
+                                </p>
+                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                    {metrics.coursesMetrics.reduce(
+                                        (sum, course) =>
+                                            sum +
+                                            (course.capacity - course.total),
                                         0
                                     )}
                                 </p>
@@ -478,9 +618,17 @@ const AdminDashboard = () => {
                                     ).toFixed(1)}%`}
                                 </p>
                             </div>
+                            <div className="p-4 rounded-lg bg-neutral-50">
+                                <p className="text-sm font-bold font-helvetica-w20-bold text-neutral-600">
+                                    Media de Edad
+                                </p>
+                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                    {getAverageAge(metrics.enrollments)}
+                                </p>
+                            </div>
                         </div>
                     ) : (
-                        // Vista detallada de un curso específico
+                        // Details of a specific course
                         <div className="grid grid-cols-2 gap-4">
                             <div className="p-4 rounded-lg bg-neutral-50">
                                 <p className="text-sm font-helvetica-w20-bold text-neutral-600">
@@ -502,6 +650,22 @@ const AdminDashboard = () => {
                                         (c) =>
                                             c.id.toString() === selectedCourse
                                     )?.total || 0}
+                                </p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-neutral-50">
+                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                    Tickets Disponibles
+                                </p>
+                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                    {(metrics.coursesMetrics.find(
+                                        (c) =>
+                                            c.id.toString() === selectedCourse
+                                    )?.capacity || 0) -
+                                        (metrics.coursesMetrics.find(
+                                            (c) =>
+                                                c.id.toString() ===
+                                                selectedCourse
+                                        )?.total || 0)}
                                 </p>
                             </div>
                             <div className="p-4 rounded-lg bg-neutral-50">
@@ -538,6 +702,20 @@ const AdminDashboard = () => {
                                             )?.total || 1)) *
                                         100
                                     ).toFixed(1)}%`}
+                                </p>
+                            </div>
+                            <div className="p-4 rounded-lg bg-neutral-50">
+                                <p className="text-sm font-helvetica-w20-bold text-neutral-600">
+                                    Media de Edad
+                                </p>
+                                <p className="text-2xl font-bold font-helvetica-w20-bold text-neutral-900">
+                                    {getAverageAge(
+                                        metrics.enrollments.filter(
+                                            (e) =>
+                                                e.id_course.toString() ===
+                                                selectedCourse
+                                        )
+                                    )}
                                 </p>
                             </div>
                         </div>
@@ -591,8 +769,50 @@ const AdminDashboard = () => {
                                     fill="#8884d8"
                                     paddingAngle={5}
                                     dataKey="value"
-                                    label={({ name, percent }) =>
-                                        `${name} ${(percent * 100).toFixed(0)}%`
+                                    labelLine={({
+                                        cx,
+                                        cy,
+                                        midAngle,
+                                        innerRadius,
+                                        outerRadius,
+                                        percent,
+                                    }) =>
+                                        percent === 0 ? null : (
+                                            <polyline
+                                                points={`
+                    ${
+                        cx +
+                        (outerRadius + 10) *
+                            Math.cos(-midAngle * (Math.PI / 180))
+                    },
+                    ${
+                        cy +
+                        (outerRadius + 10) *
+                            Math.sin(-midAngle * (Math.PI / 180))
+                    }
+                    ${
+                        cx +
+                        (outerRadius + 20) *
+                            Math.cos(-midAngle * (Math.PI / 180))
+                    },
+                    ${
+                        cy +
+                        (outerRadius + 20) *
+                            Math.sin(-midAngle * (Math.PI / 180))
+                    }
+                `}
+                                                stroke="#999"
+                                                fill="none"
+                                                strokeWidth={1}
+                                            />
+                                        )
+                                    }
+                                    label={({ name, value, percent }) =>
+                                        percent !== 0
+                                            ? `${name} ${(
+                                                  percent * 100
+                                              ).toFixed(0)}%`
+                                            : null
                                     }
                                 >
                                     {getFilteredGenderDistribution().map(

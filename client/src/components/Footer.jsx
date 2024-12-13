@@ -83,6 +83,7 @@ const Footer = () => {
                             </span>
                             <a
                                 href="https://fundacionorange.es/aviso-legal/"
+                                target="_blank"
                                 className="font-helvetica-w20-bold text-white desktop:text-[15px] laptop:text-[14px] tablet:text-[13px] mobile:text-[12px] hover:text-primary transition-colors duration-300 focus:outline-none mobile:mb-2"
                             >
                                 Términos y condiciones
@@ -92,6 +93,7 @@ const Footer = () => {
                             </span>
                             <a
                                 href="https://fundacionorange.es/politica-de-privacidad/?_gl=1*5e4trs*_ga*OTA2MTAxOTM5LjE3MzE5MjAxMTM.*_ga_YJMC24W9CP*MTczNDAzMjcxMy4yNi4xLjE3MzQwMzI3MzAuMC4wLjA."
+                                target="_blank"
                                 className="font-helvetica-w20-bold text-white desktop:text-[15px] laptop:text-[14px] tablet:text-[13px] mobile:text-[12px] hover:text-primary transition-colors duration-300 focus:outline-none mobile:mb-2"
                             >
                                 Política de privacidad
@@ -101,6 +103,7 @@ const Footer = () => {
                             </span>
                             <a
                                 href="https://fundacionorange.es/funciones-accesibilidad/"
+                                target="_blank"
                                 className="font-helvetica-w20-bold text-white desktop:text-[15px] laptop:text-[14px] tablet:text-[13px] mobile:text-[12px] hover:text-primary transition-colors duration-300 focus:outline-none mobile:mb-2"
                             >
                                 Accesibilidad
@@ -110,6 +113,7 @@ const Footer = () => {
                             </span>
                             <a
                                 href="https://fundacionorange.es/politica-de-cookies/?_gl=1*aqjqvz*_ga*OTA2MTAxOTM5LjE3MzE5MjAxMTM.*_ga_YJMC24W9CP*MTczNDAzMjcxMy4yNi4xLjE3MzQwMzI3NzguMC4wLjA."
+                                target="_blank"
                                 className="font-helvetica-w20-bold text-white desktop:text-[15px] laptop:text-[14px] tablet:text-[13px] mobile:text-[12px] hover:text-primary transition-colors duration-300 focus:outline-none mobile:mb-2"
                             >
                                 Política de cookies

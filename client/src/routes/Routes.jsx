@@ -15,18 +15,14 @@ export const router = createBrowserRouter([
         element: <Layout />,
         children: [
             {
+                index: true,
+                element: <CoursesPage />,
+            },
+            {
                 path: 'inscription/:id',
                 element: (
                     <PublicRoute>
                         <FormPage />
-                    </PublicRoute>
-                ),
-            },
-            {
-                path: 'courses',
-                element: (
-                    <PublicRoute>
-                        <CoursesPage />
                     </PublicRoute>
                 ),
             },

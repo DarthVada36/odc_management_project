@@ -17,7 +17,8 @@ const Nav = () => {
     const location = useLocation()
     const navigate = useNavigate()
     const isDashboardRoute = location.pathname.includes('/dashboard')
-    const isCoursesRoute = location.pathname === '/courses'
+    const isCoursesPage =
+        location.pathname === '/' || location.pathname === '/courses'
 
     // Solo usamos el dashboard context si estamos en la ruta correcta
     let dashboardContext = { setActiveComponent: () => {} }
@@ -39,20 +40,14 @@ const Nav = () => {
 
     // Determine the menu items based on the current route
     const getMenuItems = () => {
-        if (location.pathname === '/access-admin') {
+        if (location.pathname === '/access-admin' || isCoursesPage) {
             return []
         }
 
-        const isHome = location.pathname === '/'
         const isDashboardRoute = ['/dashboard', '/new-admin'].includes(
             location.pathname
         )
-        const isCoursesRoute = location.pathname === '/courses'
         const isInscriptionRoute = location.pathname.startsWith('/inscription/')
-
-        if (isHome) {
-            return ['Inscripción', 'Cursos', 'Contacto']
-        }
 
         if (isDashboardRoute) {
             const dashboardItems = [
@@ -76,12 +71,8 @@ const Nav = () => {
                 .map((item) => item.label)
         }
 
-        if (isCoursesRoute) {
-            return []
-        }
-
         if (isInscriptionRoute) {
-            return ['Cursos']
+            return []
         }
 
         return ['Panel de administrador']
@@ -225,9 +216,6 @@ const Nav = () => {
             navigate('/dashboard')
         } else {
             switch (item) {
-                case 'Cursos':
-                    navigate('/courses')
-                    break
                 case 'Inscripción':
                     navigate('/inscription')
                     break
@@ -253,7 +241,7 @@ const Nav = () => {
         return (
             <>
                 {/* Navbar */}
-                <nav className="flex items-center justify-between w-full h-[6.2rem] tablet:h-[6.31rem] mobile:h-[3.13rem] bg-transparent">
+                <nav className="flex items-center justify-between desktop:w-full h-[6.2rem] tablet:h-[6.31rem] mobile:h-[3.13rem] bg-transparent">
                     {/* Left section with logo and menu */}
                     <motion.div
                         className="flex items-center gap-4 desktop:pl-36 laptop:pl-24 tablet:pl-12 mobile:pl-4"
@@ -348,7 +336,7 @@ const Nav = () => {
                         ) : null}
 
                         {/* Menu button - mobile only */}
-                        {location.pathname !== '/courses' && (
+                        {!isCoursesPage && (
                             <button
                                 className="p-2 mt-[1.9rem] mobile:-mr-[0.8rem] text-white laptop:hidden"
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}
