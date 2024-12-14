@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react'
+import Select from 'react-select'
 
 const AdminForm = ({
     initialData = null,
@@ -19,6 +20,13 @@ const AdminForm = ({
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [passwordError, setPasswordError] = useState('')
     const [errorMessage, setErrorMessage] = useState('')
+
+    // Definición de opciones para el select
+    const roleOptions = [
+        { value: '1', label: 'Superadmin' },
+        { value: '2', label: 'Admin' },
+        { value: '3', label: 'Facilitator' },
+    ]
 
     useEffect(() => {
         if (isEditing && initialData) {
@@ -41,6 +49,14 @@ const AdminForm = ({
         setFormData((prev) => ({
             ...prev,
             [name]: value,
+        }))
+    }
+
+    // Manejador para cambios en el select de roles
+    const handleRoleChange = (selectedOption) => {
+        setFormData((prev) => ({
+            ...prev,
+            roleId: selectedOption ? selectedOption.value : '',
         }))
     }
 
@@ -68,6 +84,33 @@ const AdminForm = ({
         if (success) {
             onCancel()
         }
+    }
+
+    // Personalizated styles for react-select
+    const customStyles = {
+        control: (provided, state) => ({
+            ...provided,
+            border: '2px solid black',
+            borderColor: state.isFocused ? '#ff7b00' : 'black',
+            boxShadow: 'none',
+            '&:hover': {
+                borderColor: '#ff7b00',
+            },
+            padding: '6px',
+            borderRadius: '0',
+        }),
+        option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isSelected ? '#212529' : 'white',
+            color: state.isSelected ? 'white' : 'black',
+            '&:hover': {
+                backgroundColor: state.isSelected ? '#212529' : '#f0f0f0',
+            },
+        }),
+        singleValue: (provided) => ({
+            ...provided,
+            color: 'black',
+        }),
     }
 
     return (
@@ -184,18 +227,19 @@ const AdminForm = ({
 
                     <div className="flex flex-col">
                         <label className="mb-2 font-bold text-dark">Rol</label>
-                        <select
-                            name="roleId"
-                            value={formData.roleId}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-3 transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary"
-                        >
-                            <option value="">Selecciona un rol</option>
-                            <option value="1">Superadmin</option>
-                            <option value="2">Admin</option>
-                            <option value="3">Facilitator</option>
-                        </select>
+                        <Select
+                            value={roleOptions.find(
+                                (option) => option.value === formData.roleId
+                            )}
+                            onChange={handleRoleChange}
+                            options={roleOptions}
+                            placeholder="Selecciona un rol"
+                            styles={customStyles}
+                            theme={(theme) => ({
+                                ...theme,
+                                borderRadius: 0,
+                            })}
+                        />
                     </div>
 
                     {(passwordError || errorMessage) && (

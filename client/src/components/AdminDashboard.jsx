@@ -18,6 +18,7 @@ import { getAllCourses } from '../services/coursesServices'
 import { getAllEnrollments } from '../services/enrollmentServices'
 import { exportToPDF } from '../utils/exportUtils'
 import fileDownIcon from '../assets/icons/file-pdf.svg'
+import Select from 'react-select'
 
 const commonInputStyles =
     'px-3 py-2 text-sm border-2 border-black font-helvetica-w20-bold transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary h-10'
@@ -44,23 +45,6 @@ const MetricCard = ({ icon: Icon, title, value, color, subtitle }) => (
                 )}
             </div>
         </div>
-    </div>
-)
-
-const Select = ({ value, onChange, options, label, className }) => (
-    <div className="flex flex-col gap-1">
-        {label && (
-            <label className="text-xs font-helvetica-w20-bold text-neutral-600">
-                {label}
-            </label>
-        )}
-        <select value={value} onChange={onChange} className={className}>
-            {options.map((option) => (
-                <option key={option.value} value={option.value}>
-                    {option.label}
-                </option>
-            ))}
-        </select>
     </div>
 )
 
@@ -515,6 +499,53 @@ const AdminDashboard = () => {
         return (sum / validAges.length).toFixed(1)
     }
 
+    // Function to handle date change
+    const handleCourseChange = (selectedOption) => {
+        setSelectedCourse(selectedOption.value)
+    }
+
+    // Personalizated styles for react-select
+    const customStyles = {
+        control: (provided, state) => ({
+            ...provided,
+            border: '2px solid black',
+            borderColor: state.isFocused ? '#ff7b00' : 'black',
+            boxShadow: 'none',
+            '&:hover': {
+                borderColor: '#ff7b00',
+            },
+            padding: '0 6px', // Ajustamos el padding vertical
+            borderRadius: '0',
+            minHeight: '40px', // height-10 de Tailwind es equivalente a 40px
+            height: '40px', // Forzamos la altura exacta
+        }),
+        option: (provided, state) => ({
+            ...provided,
+            backgroundColor: state.isSelected ? '#212529' : 'white',
+            color: state.isSelected ? 'white' : 'black',
+            '&:hover': {
+                backgroundColor: state.isSelected ? '#212529' : '#f0f0f0',
+            },
+        }),
+        singleValue: (provided) => ({
+            ...provided,
+            color: 'black',
+        }),
+        valueContainer: (provided) => ({
+            ...provided,
+            height: '38px',
+            padding: '0 2px',
+        }),
+        input: (provided) => ({
+            ...provided,
+            margin: '0px',
+        }),
+        indicatorsContainer: (provided) => ({
+            ...provided,
+            height: '38px',
+        }),
+    }
+
     return (
         <div className="flex-1 p-4 space-y-4 overflow-y-auto tablet:p-6 tablet:space-y-6 bg-neutral-100">
             {/* Header con título Dashboard */}
@@ -556,11 +587,20 @@ const AdminDashboard = () => {
                     {/* Select y Fechas */}
                     <div className="flex flex-col gap-4 tablet:flex-row tablet:items-center mobile:flex-row">
                         <div className="w-64">
+                            <label className="block pb-[0.195rem] text-xs font-helvetica-w20-bold text-neutral-600">
+                                Filtrar por curso
+                            </label>
                             <Select
-                                value={selectedCourse}
-                                onChange={(e) =>
-                                    setSelectedCourse(e.target.value)
-                                }
+                                value={[
+                                    { value: 'all', label: 'Todos los cursos' },
+                                    ...metrics.coursesMetrics.map((course) => ({
+                                        value: course.id.toString(),
+                                        label: course.name,
+                                    })),
+                                ].find(
+                                    (option) => option.value === selectedCourse
+                                )}
+                                onChange={handleCourseChange}
                                 options={[
                                     { value: 'all', label: 'Todos los cursos' },
                                     ...metrics.coursesMetrics.map((course) => ({
@@ -568,8 +608,38 @@ const AdminDashboard = () => {
                                         label: course.name,
                                     })),
                                 ]}
-                                label="Filtrar por curso"
-                                className={commonInputStyles}
+                                placeholder="Filtrar por curso"
+                                styles={{
+                                    ...customStyles,
+                                    menuList: (base) => ({
+                                        ...base,
+                                        maxHeight: '200px',
+                                        '::-webkit-scrollbar': {
+                                            width: '8px',
+                                            height: '0px',
+                                        },
+                                        '::-webkit-scrollbar-track': {
+                                            background: '#f1f1f1',
+                                        },
+                                        '::-webkit-scrollbar-thumb': {
+                                            background: '#888',
+                                            borderRadius: '4px',
+                                        },
+                                        '::-webkit-scrollbar-thumb:hover': {
+                                            background: '#555',
+                                        },
+                                    }),
+                                    menu: (base) => ({
+                                        ...base,
+                                        marginTop: '0',
+                                    }),
+                                }}
+                                theme={(theme) => ({
+                                    ...theme,
+                                    borderRadius: 0,
+                                })}
+                                isSearchable={false}
+                                maxMenuHeight={200}
                             />
                         </div>
 
