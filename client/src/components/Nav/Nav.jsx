@@ -3,11 +3,10 @@ import { motion } from 'framer-motion'
 import { IoMenuOutline } from 'react-icons/io5'
 import { HiX } from 'react-icons/hi'
 import sessionLeaveIcon from '../../assets/icons/session-leave.svg'
-// import loginAdministratoIcon from '../../assets/icons/login-administrator.svg'
 import { useAuth } from '../../context/AuthContext'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useDashboard } from '../../context/DashboardContext'
 
-// Main navigation component with floating navbar functionality
 const Nav = () => {
     const [isInitialMenuOpen, setIsInitialMenuOpen] = useState(false)
     const [isFloatingMenuOpen, setIsFloatingMenuOpen] = useState(false)
@@ -15,9 +14,20 @@ const Nav = () => {
     const [activeLang, setActiveLang] = useState('ES')
     const [showFloating, setShowFloating] = useState(false)
     const [hasAnimated, setHasAnimated] = useState(false)
-    const { isAuthenticated, logout } = useAuth()
+    const { isAuthenticated, logout, admin } = useAuth()
     const location = useLocation()
     const navigate = useNavigate()
+    const isDashboardRoute = location.pathname.includes('/dashboard')
+
+    // Solo usamos el dashboard context si estamos en la ruta correcta
+    let dashboardContext = { setActiveComponent: () => {} }
+    try {
+        if (isDashboardRoute) {
+            dashboardContext = useDashboard()
+        }
+    } catch (error) {
+        console.log('No estamos en la ruta del dashboard')
+    }
 
     useEffect(() => {
         if (location.pathname === '/dashboard') {
@@ -41,10 +51,36 @@ const Nav = () => {
         if (isHome) {
             return ['Inscripción', 'Cursos', 'Contacto']
         }
+
         if (isDashboardRoute) {
-            return ['Panel de administrador']
+            const dashboardItems = [
+                { id: 'dashboard', label: 'Dashboard' },
+                {
+                    id: 'administrators',
+                    label: 'Administradores',
+                    requiredRole: 1,
+                },
+                { id: 'enrollments', label: 'Inscripciones' },
+                { id: 'enrollmentsByCourse', label: 'Inscripciones por Curso' },
+                { id: 'courses', label: 'Cursos' },
+            ]
+
+            return dashboardItems
+                .filter(
+                    (item) =>
+                        !item.requiredRole ||
+                        admin?.role_id === item.requiredRole
+                )
+                .map((item) => item.label)
         }
+
         return ['Panel de administrador']
+    }
+
+    const handleLanguageChange = (lang) => {
+        setActiveLang(lang)
+        setIsFloatingMenuOpen(false)
+        setIsInitialMenuOpen(false)
     }
 
     const currentMenuItems = getMenuItems()
@@ -170,19 +206,37 @@ const Nav = () => {
 
     // Event handlers for menu interactions
     const handleLabelClick = (item) => {
-        if (item === 'Panel de administrador') {
+        if (isDashboardRoute) {
+            const dashboardOptions = {
+                Dashboard: 'dashboard',
+                Administradores: 'administrators',
+                Inscripciones: 'enrollments',
+                'Inscripciones por Curso': 'enrollmentsByCourse',
+                Cursos: 'courses',
+            }
+            if (dashboardOptions[item]) {
+                dashboardContext.setActiveComponent(dashboardOptions[item])
+            }
+        } else if (item === 'Panel de administrador') {
             navigate('/dashboard')
+        } else {
+            switch (item) {
+                case 'Cursos':
+                    navigate('/courses')
+                    break
+                case 'Inscripción':
+                    navigate('/inscription')
+                    break
+                case 'Contacto':
+                    // Manejar contacto
+                    break
+                default:
+                    break
+            }
         }
         setActiveLabel(item)
         setIsFloatingMenuOpen(false)
         setIsInitialMenuOpen(false)
-    }
-
-    const handleLanguageChange = (lang) => {
-        setActiveLang(lang)
-        setIsFloatingMenuOpen(false)
-        setIsInitialMenuOpen(false)
-        setIsMenuOpen(false)
     }
 
     // Reusable navbar content component
@@ -271,8 +325,13 @@ const Nav = () => {
                         </div>
 
                         {/* Desktop menu */}
+                        {/* Desktop menu */}
                         <motion.div
-                            className="items-center hidden gap-8 ml-[1.2rem] laptop:flex"
+                            className={`items-center hidden gap-8 ml-[1.2rem] ${
+                                location.pathname.includes('/dashboard')
+                                    ? 'laptop:hidden'
+                                    : 'laptop:flex'
+                            }`}
                             variants={shouldAnimate ? blockVariants : {}}
                         >
                             {currentMenuItems.map((item) => (
@@ -283,13 +342,13 @@ const Nav = () => {
                                     }
                                     href="#"
                                     onClick={() => handleLabelClick(item)}
-                                    className={`relative text-base font-bold font-helvetica-w20-bold transition-colors duration-300 ease-in-out  hover:text-primary mt-[3.4rem] pb-[1.4rem] 
-                                    after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[0.3rem] after:transition-colors after:duration-300
-                                    ${
-                                        activeLabel === item
-                                            ? 'text-primary after:bg-primary'
-                                            : 'text-white after:bg-transparent'
-                                    }`}
+                                    className={`relative text-base font-bold font-helvetica-w20-bold transition-colors duration-300 ease-in-out hover:text-primary mt-[3.4rem] pb-[1.4rem] 
+            after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[0.3rem] after:transition-colors after:duration-300
+            ${
+                activeLabel === item
+                    ? 'text-primary after:bg-primary'
+                    : 'text-white after:bg-transparent'
+            }`}
                                 >
                                     {item}
                                 </motion.a>
@@ -377,13 +436,13 @@ const Nav = () => {
                                 href="#"
                                 onClick={() => handleLabelClick(item)}
                                 className={`border-b py-[0.825rem] border-neutral-600 transition-colors duration-300 ease-in-out
-                                    ${
-                                        activeLabel === item
-                                            ? 'text-primary'
-                                            : 'text-white hover:text-primary'
-                                    }`}
+                    ${
+                        activeLabel === item
+                            ? 'text-primary'
+                            : 'text-white hover:text-primary'
+                    }`}
                             >
-                                {item}
+                                {typeof item === 'string' ? item : item.label}
                             </a>
                         ))}
                     </div>
