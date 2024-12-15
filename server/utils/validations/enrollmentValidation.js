@@ -11,3 +11,15 @@ export const validateCreateEnrollment = [
         .notEmpty()
         .withMessage("El campo edad es obligatorio"),
 ]
+
+export const validateUpdateEnrollment = [
+    check("fullName")
+        .notEmpty()
+        .withMessage("El nombre es obligatorio"),
+    check("email")
+        .notEmpty()
+        .withMessage("El email es un campo obligatorio"),
+    check("age")
+        .notEmpty()
+        .withMessage("El campo edad es obligatorio"),
+]
