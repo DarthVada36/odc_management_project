@@ -20,7 +20,7 @@ const AdminForm = ({
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [errors, setErrors] = useState({})
-    const [errorMessage, setErrorMessage] = useState(null) // Estado para el banner
+    const [errorMessage, setErrorMessage] = useState(null)
 
     const roleOptions = [
         { value: '1', label: 'Superadmin' },

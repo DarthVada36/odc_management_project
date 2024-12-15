@@ -38,12 +38,12 @@ const EnrollmentForm = ({
     const validateForm = () => {
         const newErrors = {}
 
-        // Validación para adultos
+        // Validation for adult
         if (formData.age < 15) {
             newErrors.age = 'La edad debe ser 15 años o más para un adulto.'
         }
 
-        // Validación para menores
+        // Validation for minors
         if (formData.minors.length > 0) {
             formData.minors.forEach((minor, index) => {
                 if (minor.age > 14) {
@@ -53,7 +53,7 @@ const EnrollmentForm = ({
             })
         }
 
-        // Validación para nombre completo
+        // Validation for fullname
         if (!formData.fullname) {
             newErrors.fullname = 'El nombre completo es obligatorio'
         }
@@ -139,7 +139,7 @@ const EnrollmentForm = ({
                 onCancel()
             }
         } else {
-            setErrorMessage(Object.values(formErrors)[0]) // Mostrar el primer error
+            setErrorMessage(Object.values(formErrors)[0])
         }
     }
 
@@ -226,7 +226,7 @@ const EnrollmentForm = ({
                             )}
                         </div>
 
-                        {/* Menores */}
+                        {/* Minors */}
                         <div>
                             <h3 className="mb-4 font-bold text-dark">
                                 Menores Inscritos

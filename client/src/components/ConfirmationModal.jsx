@@ -48,22 +48,33 @@ const ConfirmationModal = ({
                 </p>
 
                 {/* Botones */}
-                {showButtons && (
-                    <div className="flex justify-end gap-4">
-                        <button
-                            className="px-4 py-2 font-bold text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
-                            onClick={onClose}
-                        >
-                            Cancel
-                        </button>
+                <div className="flex justify-end gap-4">
+                    {showButtons && (
+                        <>
+                            <button
+                                className="px-4 py-2 font-bold text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
+                                onClick={onClose}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="px-4 py-2 font-bold text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
+                                onClick={onConfirm}
+                            >
+                                Confirm
+                            </button>
+                        </>
+                    )}
+
+                    {!showButtons && (
                         <button
                             className="px-4 py-2 font-bold text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
                             onClick={onConfirm}
                         >
                             Confirm
                         </button>
-                    </div>
-                )}
+                    )}
+                </div>
             </div>
         </div>
     )
