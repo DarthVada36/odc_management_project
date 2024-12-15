@@ -170,7 +170,8 @@ const FormPage = () => {
       </div>
 
       {/* Renderizar el resumen condicionalmente */}
-      {showSummary && <Summary formData={formData} minors={minors} adult={adult} />}
+      {showSummary && <Summary formData={formData} minors={minors} adult={adult} courseTitle={courseTitle}
+  handleSubmit={handleSendToBackend} />}
     </div>
   );
 };
