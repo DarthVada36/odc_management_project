@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { removeCourseById } from '../services/coursesServices'
 import { updateCourseById } from '../services/coursesServices'
+import MessageBanner from './MessageBanner'
 
 const CourseForm = ({
     initialData = null,
@@ -20,7 +21,7 @@ const CourseForm = ({
     }
 
     const [formData, setFormData] = useState(initialFormState)
-    const [errorMessage, setErrorMessage] = useState('')
+    const [bannerMessage, setBannerMessage] = useState('')
 
     useEffect(() => {
         if (isEditing && initialData) {
@@ -38,32 +39,73 @@ const CourseForm = ({
             })
         } else {
             setFormData(initialFormState)
-            setErrorMessage('')
+            setBannerMessage('')
         }
     }, [isEditing, initialData])
 
+    const validateForm = () => {
+        if (!formData.title) {
+            setBannerMessage('Por favor, introduce un título')
+            return false
+        }
+        if (formData.title.length < 5) {
+            setBannerMessage('El título debe tener al menos 5 caracteres')
+            return false
+        }
+        if (formData.title.length > 25) {
+            setBannerMessage('El título debe tener máximo 25 caracteres')
+            return false
+        }
+
+        if (!formData.description) {
+            setBannerMessage('Por favor, introduce una descripción')
+            return false
+        }
+        if (formData.description.length < 100) {
+            setBannerMessage(
+                'La descripción debe tener al menos 100 caracteres'
+            )
+            return false
+        }
+        if (formData.description.length > 200) {
+            setBannerMessage('La descripción debe tener máximo 200 caracteres')
+            return false
+        }
+
+        if (!formData.date) {
+            setBannerMessage('Por favor, selecciona una fecha')
+            return false
+        }
+        if (!formData.schedule) {
+            setBannerMessage('Por favor, selecciona un horario')
+            return false
+        }
+        if (!formData.link) {
+            setBannerMessage('Por favor, introduce un enlace')
+            return false
+        }
+        if (!formData.tickets) {
+            setBannerMessage('Por favor, introduce el número de tickets')
+            return false
+        }
+
+        return true
+    }
+
     const handleChange = (e) => {
-        e.stopPropagation()
+        e.preventDefault()
         const { name, value } = e.target
         setFormData((prev) => ({
             ...prev,
             [name]: value,
         }))
+        setBannerMessage('')
     }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
-        e.stopPropagation()
 
-        if (
-            !formData.title ||
-            !formData.description ||
-            !formData.date ||
-            !formData.schedule ||
-            !formData.link ||
-            !formData.tickets
-        ) {
-            setErrorMessage('Por favor, completa todos los campos')
+        if (!validateForm()) {
             return
         }
 
@@ -72,164 +114,150 @@ const CourseForm = ({
             tickets: parseInt(formData.tickets),
         }
 
-        const success = await onSubmit(submitData)
-        if (success) {
-            onCancel()
+        try {
+            const success = await onSubmit(submitData)
+            if (success) {
+                onCancel()
+            } else {
+                setBannerMessage('Error al guardar el curso')
+            }
+        } catch (error) {
+            setBannerMessage('Error al guardar el curso')
         }
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto">
             <div className="absolute inset-0 bg-black/50" onClick={onCancel} />
             <div
-                className="relative w-full max-w-md p-4 bg-white sm:p-8 md:p-12"
-                onClick={(e) => e.stopPropagation()}
+                className={`relative w-full max-w-md bg-white ${
+                    bannerMessage ? 'mt-16' : 'mt-4'
+                } mx-4 transition-all duration-300`}
             >
-                <button
-                    type="button"
-                    onClick={onCancel}
-                    className="absolute p-2 text-gray-500 transition-colors duration-300 hover:text-orange-500 top-4 right-4"
-                >
-                    <svg
-                        className="w-6 h-6"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
+                {bannerMessage && (
+                    <div className="absolute top-0 left-0 right-0 -translate-y-full">
+                        <MessageBanner
+                            message={bannerMessage}
+                            onClose={() => setBannerMessage('')}
+                        />
+                    </div>
+                )}
+
+                <div className="p-8">
+                    <h2 className="mb-6 text-2xl font-bold text-orange-500 font-helvetica-w20-bold">
+                        {title}
+                    </h2>
+
+                    <form
+                        onSubmit={handleSubmit}
+                        className="space-y-6"
+                        noValidate
                     >
-                        <path
-                            d="M6 18L18 6M6 6l12 12"
-                            strokeWidth="2"
-                            strokeLinecap="round"
-                        />
-                    </svg>
-                </button>
-
-                <h2 className="mb-6 text-3xl font-bold text-orange-500 font-helvetica-w20-bold">
-                    {title}
-                </h2>
-
-                <form
-                    onSubmit={handleSubmit}
-                    className="space-y-6"
-                    autoComplete="off"
-                >
-                    <div className="flex flex-col">
-                        <label className="block text-sm font-semibold text-gray-600 font-helvetica-w20-bold">
-                            Título
-                        </label>
-                        <input
-                            type="text"
-                            name="title"
-                            value={formData.title}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
-                            placeholder="Título del curso"
-                            minLength={5}
-                            maxLength={255}
-                        />
-                    </div>
-
-                    <div className="flex flex-col">
-                        <label className="block text-sm font-semibold text-gray-600 font-helvetica-w20-bold">
-                            Descripción
-                        </label>
-                        <textarea
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                            required
-                            className="w-full p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
-                            placeholder="Descripción del curso"
-                            rows={3}
-                        />
-                    </div>
-
-                    {/* Date and Schedule*/}
-                    <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2">
                         <div className="flex flex-col">
-                            <label className="block text-sm font-semibold text-gray-600 font-helvetica-w20-bold">
-                                Fecha
+                            <label className="block mb-1 text-xs font-semibold text-neutral-600 font-helvetica-w20-bold">
+                                Título
                             </label>
                             <input
-                                type="date"
-                                name="date"
-                                value={formData.date}
+                                type="text"
+                                name="title"
+                                value={formData.title}
                                 onChange={handleChange}
-                                required
-                                className="w-full p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
+                                className="w-full p-2 text-sm transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
+                                placeholder="Título del curso"
                             />
                         </div>
-                        <div className="flex flex-col">
-                            <label className="block text-sm font-semibold text-gray-600 font-helvetica-w20-bold">
-                                Horario
-                            </label>
-                            <input
-                                type="time"
-                                name="schedule"
-                                value={formData.schedule}
-                                onChange={handleChange}
-                                required
-                                className="w-full p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
-                            />
-                        </div>
-                    </div>
 
-                    {/* Link and tickets */}
-                    <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2">
                         <div className="flex flex-col">
-                            <label className="block text-sm font-semibold text-gray-600 font-helvetica-w20-bold">
-                                Enlace
+                            <label className="block mb-1 text-xs font-semibold text-neutral-600 font-helvetica-w20-bold">
+                                Descripción
                             </label>
-                            <input
-                                type="url"
-                                name="link"
-                                value={formData.link}
+                            <textarea
+                                name="description"
+                                value={formData.description}
                                 onChange={handleChange}
-                                required
-                                className="w-full p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
-                                placeholder="https://ejemplo.com"
+                                className="w-full p-2 text-sm transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
+                                placeholder="Descripción del curso"
+                                rows={3}
                             />
+                            <span className="mt-1 text-xs text-neutral-500">
+                                {formData.description.length}/200 caracteres
+                            </span>
                         </div>
-                        <div className="flex flex-col">
-                            <label className="block text-sm font-semibold text-gray-600 font-helvetica-w20-bold">
-                                Tickets
-                            </label>
-                            <input
-                                type="number"
-                                name="tickets"
-                                value={formData.tickets}
-                                onChange={handleChange}
-                                required
-                                min="0"
-                                className="w-full p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
-                                placeholder="Número de tickets"
-                            />
+
+                        <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2">
+                            <div className="flex flex-col">
+                                <label className="block mb-1 text-xs font-semibold text-neutral-600 font-helvetica-w20-bold">
+                                    Fecha
+                                </label>
+                                <input
+                                    type="date"
+                                    name="date"
+                                    value={formData.date}
+                                    onChange={handleChange}
+                                    className="w-full p-2 text-sm transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
+                                />
+                            </div>
+                            <div className="flex flex-col">
+                                <label className="block mb-1 text-xs font-semibold text-neutral-600 font-helvetica-w20-bold">
+                                    Horario
+                                </label>
+                                <input
+                                    type="time"
+                                    name="schedule"
+                                    value={formData.schedule}
+                                    onChange={handleChange}
+                                    className="w-full p-2 text-sm transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    {errorMessage && (
-                        <p className="text-sm text-red-500 font-helvetica-w20-bold">
-                            {errorMessage}
-                        </p>
-                    )}
+                        <div className="grid grid-cols-1 gap-4 tablet:grid-cols-2">
+                            <div className="flex flex-col">
+                                <label className="block mb-1 text-xs font-semibold text-neutral-600 font-helvetica-w20-bold">
+                                    Enlace
+                                </label>
+                                <input
+                                    type="url"
+                                    name="link"
+                                    value={formData.link}
+                                    onChange={handleChange}
+                                    className="w-full p-2 text-sm transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
+                                    placeholder="https://ejemplo.com"
+                                />
+                            </div>
+                            <div className="flex flex-col">
+                                <label className="block mb-1 text-xs font-semibold text-neutral-600 font-helvetica-w20-bold">
+                                    Tickets
+                                </label>
+                                <input
+                                    type="number"
+                                    name="tickets"
+                                    value={formData.tickets}
+                                    onChange={handleChange}
+                                    min="0"
+                                    className="w-full p-2 text-sm transition-colors duration-300 border-2 border-black outline-none mobile:p-3 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
+                                    placeholder="Número de tickets"
+                                />
+                            </div>
+                        </div>
 
-                    <div className="flex flex-col items-center justify-end gap-4 pt-4 tablet:flex-row">
-                        <button
-                            type="button"
-                            onClick={onCancel}
-                            className="px-4 py-2 font-bold text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
-                        >
-                            Cancelar
-                        </button>
-                        <button
-                            type="submit"
-                            className="px-4 py-2 font-bold text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
-                        >
-                            {submitText}
-                        </button>
-                    </div>
-                </form>
+                        <div className="flex flex-col items-center justify-end gap-4 pt-4 tablet:flex-row">
+                            <button
+                                type="button"
+                                onClick={onCancel}
+                                className="px-4 py-2 text-sm font-bold text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                type="submit"
+                                className="px-4 py-2 text-sm font-bold text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
+                            >
+                                {submitText}
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     )

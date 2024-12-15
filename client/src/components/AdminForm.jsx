@@ -20,6 +20,7 @@ const AdminForm = ({
     const [showPassword, setShowPassword] = useState(false)
     const [showConfirmPassword, setShowConfirmPassword] = useState(false)
     const [errors, setErrors] = useState({})
+    const [errorMessage, setErrorMessage] = useState(null) // Estado para el banner
 
     const roleOptions = [
         { value: '1', label: 'Superadmin' },
@@ -76,7 +77,6 @@ const AdminForm = ({
             ...prev,
             [name]: value,
         }))
-        // Al cambiar un campo, eliminamos su error si existe
         setErrors((prev) => {
             const newErrors = { ...prev }
             delete newErrors[name]
@@ -90,7 +90,6 @@ const AdminForm = ({
             ...prev,
             roleId: value,
         }))
-        // Eliminamos el error del rol si existe
         setErrors((prev) => {
             const newErrors = { ...prev }
             delete newErrors.roleId
@@ -115,6 +114,9 @@ const AdminForm = ({
             if (success) {
                 onCancel()
             }
+        } else {
+            // Mostrar el primer error en el banner
+            setErrorMessage(Object.values(formErrors)[0])
         }
     }
 
@@ -152,15 +154,14 @@ const AdminForm = ({
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={onCancel} />
             <div
-                className="relative w-full max-w-md bg-white"
+                className={`relative w-full max-w-md bg-white ${
+                    errorMessage ? 'mt-16' : 'mt-4'
+                } mx-4 transition-all duration-300`}
                 onClick={(e) => e.stopPropagation()}
             >
                 <MessageBanner
-                    message={
-                        Object.keys(errors).length > 0
-                            ? Object.values(errors)[0]
-                            : null
-                    }
+                    message={errorMessage}
+                    onClose={() => setErrorMessage(null)}
                 />
 
                 <div className="p-6">
