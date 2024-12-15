@@ -8,8 +8,10 @@ import { useParams } from "react-router-dom";
 const FormPage = () => {
   const { id } = useParams(); // Capturar el ID del curso desde la URL
   const [includeMinor, setIncludeMinor] = useState(false);
+  const [includeAdult, setIncludeAdult] = useState(false);
   const [formData, setFormData] = useState({});
   const [minors, setMinors] = useState([]);
+  const [adult, setAdult] = useState(null);
   const [courseTitle, setCourseTitle] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Estado de carga
   const [responseMessage, setResponseMessage] = useState(null); // Mensajes de respuesta
@@ -45,54 +47,55 @@ const FormPage = () => {
     return true;
   };
 
- const handleAddMinor = (minorData) => {
-  setMinors((prev) => [...prev, minorData]);
-};
+  const handleAddMinor = (minorData) => {
+    setMinors((prev) => [...prev, minorData]);
+  };
 
-const handleSendToBackend = async () => {
-  if (!validateFormData()) return;
+  const handleAddAdult = (adultData) => {
+    setAdult(adultData); // Solo se permite un adulto
+  };
 
-  setIsLoading(true);
-  setResponseMessage(null);
+  const handleRemoveAdult = () => {
+    setAdult(null); // Eliminar al adulto
+  };
 
-  try {
-    const mainEnrollment = await createEnrollment(formData);
+  const handleSendToBackend = async () => {
+    if (!validateFormData()) return;
 
-    // Obtener el enrollment_id de la respuesta del servidor
-    const enrollmentId = mainEnrollment?.enrollment_id; // Cambia "enrollment_id" si el campo tiene otro nombre
-    if (!enrollmentId) {
-      throw new Error('No se pudo obtener el enrollment_id del servidor.');
-    }
+    setIsLoading(true);
+    setResponseMessage(null);
 
-    // Crear menores asociados al enrollment_id
-    const minorRequests = minors.map((minor) =>
-      createMinor({ ...minor, enrollment_id: enrollmentId })
-    );
-  
-    await Promise.all([...minorRequests]);
+    try {
+      const payload = {
+        ...formData,
+        minors,
+        adults: adult ? [adult] : [], // Incluir adulto si existe
+      };
 
-    setResponseMessage({
-      type: 'success',
-      text: 'Inscripción realizada con éxito.',
-    });
+      const response = await createEnrollment(payload);
 
-    setFormData({});
-    setMinors([]);
-    
-  } catch (error) {
-    const errorMessage =
-      error.response?.data?.message ||
-      error.message ||
-      'Ha ocurrido un error inesperado.';
       setResponseMessage({
-        type: 'success',
-        text: 'Inscripción realizada con éxito.',
+        type: "success",
+        text: "Inscripción realizada con éxito.",
       });
-  } finally {
-    setIsLoading(false);
-  }
-};
 
+      // Reiniciar formulario
+      setFormData({});
+      setMinors([]);
+      setAdult(null);
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Ha ocurrido un error inesperado.";
+      setResponseMessage({
+        type: "error",
+        text: errorMessage,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex font flex-col items-center justify-center px-4">
@@ -102,16 +105,20 @@ const handleSendToBackend = async () => {
       <div className="flex p-8 m-10 border border-orange flex-col gap-6 lg:flex-col lg:gap-4 px-4">
         <div className="flex flex-col-reverse lg:flex-row lg:justify-between items-center gap-6">
           <div>
-          <MainForm
-        courseId={id}
-        setIncludeMinor={setIncludeMinor}
-        includeMinor={includeMinor}
-        formData={formData}
-        setFormData={setFormData}
-        onAddMinor={handleAddMinor}
-        minors={minors}
-      />
-          
+            <MainForm
+              courseId={id}
+              setIncludeMinor={setIncludeMinor}
+              includeMinor={includeMinor}
+              setIncludeAdult={setIncludeAdult}
+              includeAdult={includeAdult}
+              formData={formData}
+              setFormData={setFormData}
+              onAddMinor={handleAddMinor}
+              minors={minors}
+              onAddAdult={handleAddAdult}
+              adult={adult}
+              onRemoveAdult={handleRemoveAdult}
+            />
           </div>
           <div className="flex-1">
             <img
@@ -133,7 +140,7 @@ const handleSendToBackend = async () => {
         {responseMessage && (
           <p
             className={`text-center mt-4 ${
-              responseMessage.type === "tas bien wey y algo esta mal del front"
+              responseMessage.type === "error"
                 ? "text-red-500"
                 : "text-green-500"
             }`}
