@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import { getCourseById } from "../services/coursesServices";
+import React, { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { getCourseById } from '../services/coursesServices';
 
 const MainForm = ({
   setIncludeMinor,
@@ -22,16 +22,18 @@ const MainForm = ({
   } = useForm({ defaultValues: formData });
 
   const [courseData, setCourseData] = useState(null);
-  const [courseError, setCourseError] = useState("");
-  const [minor, setMinor] = useState({ name: "", age: "" });
-  const [minorError, setMinorError] = useState("");
+  const [courseError, setCourseError] = useState('');
+  const [minor, setMinor] = useState({ name: '', age: '' });
+  const [minorError, setMinorError] = useState('');
   const [adultData, setAdultData] = useState({
-    fullname: "",
-    age: "",
-    gender: "",
-    email: "",
+    fullname: '',
+    age: '',
+    gender: '',
+    email: '',
   });
-  const [adultError, setAdultError] = useState("");
+  const [adultError, setAdultError] = useState('');
+  const [showSummary, setShowSummary] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -43,7 +45,7 @@ const MainForm = ({
           courseId: course.id,
           minors: prevData.minors || [],
         }));
-        setCourseError("");
+        setCourseError('');
       } catch (error) {
         setCourseError(error.message);
       }
@@ -55,7 +57,7 @@ const MainForm = ({
     const { name, value, type, checked } = e.target;
     setFormData({
       ...formData,
-      [name]: type === "checkbox" ? checked : value,
+      [name]: type === 'checkbox' ? checked : value,
     });
   };
 
@@ -71,10 +73,10 @@ const MainForm = ({
 
   const validateMinor = () => {
     if (!minor.name || !minor.age) {
-      setMinorError("Todos los campos de menores son obligatorios.");
+      setMinorError('Todos los campos de menores son obligatorios.');
       return false;
     }
-    setMinorError("");
+    setMinorError('');
     return true;
   };
 
@@ -85,10 +87,12 @@ const MainForm = ({
       !adultData.gender ||
       !adultData.email
     ) {
-      setAdultError("Todos los campos del adulto acompañante son obligatorios.");
+      setAdultError(
+        'Todos los campos del adulto acompañante son obligatorios.'
+      );
       return false;
     }
-    setAdultError("");
+    setAdultError('');
     return true;
   };
 
@@ -98,24 +102,36 @@ const MainForm = ({
       const updatedMinors = [...(formData.minors || []), minor];
       setFormData({ ...formData, minors: updatedMinors });
       onAddMinor(minor);
-      setMinor({ name: "", age: "" });
+      setMinor({ name: '', age: '' });
     }
   };
 
   const addAdult = () => {
     if (validateAdult()) {
       onAddAdult(adultData);
-      setAdultData({ fullname: "", age: "", gender: "", email: "" });
+      setAdultData({ fullname: '', age: '', gender: '', email: '' });
     }
   };
 
+  const handleNext = () => {
+    setShowSummary(true);
+  };
+
+  const handleSubmit = () => {
+    setSuccessMessage('Inscripción realizada con éxito.');
+    setFormData({});
+    setShowSummary(false);
+  };
+
   return (
-    <div className="p-6 border border-orange bg-light shadow-md w-full max-w-screen">
-      <h2 className="font-semibold text-lg mb-4 text-orange">Datos Personales</h2>
-      {courseError && <p className="text-red-500">{courseError}</p>}
+    <div className='p-6 border border-orange bg-light shadow-md w-full max-w-screen'>
+      <h2 className='font-semibold text-lg mb-4 text-orange'>
+        Datos Personales
+      </h2>
+      {courseError && <p className='text-red-500'>{courseError}</p>}
       {courseData && (
-        <div className="mb-4 p-4 border rounded-md bg-gray-100">
-          <h3 className="font-bold text-lg">{courseData.title}</h3>
+        <div className='mb-4 p-4 border rounded-md bg-gray-100'>
+          <h3 className='font-bold text-lg'>{courseData.title}</h3>
           <p>{courseData.description}</p>
           <p>
             <strong>Fecha:</strong> {courseData.date}
@@ -125,97 +141,99 @@ const MainForm = ({
           </p>
         </div>
       )}
-      <form className="flex flex-col gap-4">
+      <form className='flex flex-col gap-4'>
         {/* Nombre Completo */}
         <div>
-          <label className="block font-medium mb-1">Nombre Completo:</label>
+          <label className='block font-medium mb-1'>Nombre Completo:</label>
           <input
-            className="w-full border border-dark px-3 py-2"
-            {...register("fullname", { required: "Este campo es obligatorio" })}
+            className='w-full border border-dark px-3 py-2'
+            {...register('fullname', { required: 'Este campo es obligatorio' })}
             onChange={handleChange}
+            value={formData.fullname || ''}
           />
           {errors.fullname && (
-            <p className="text-red-500">{errors.fullname.message}</p>
+            <p className='text-red-500'>{errors.fullname.message}</p>
           )}
         </div>
 
         {/* Email */}
         <div>
-          <label className="block font-medium mb-1">Email:</label>
+          <label className='block font-medium mb-1'>Email:</label>
           <input
-            className="w-full border border-dark px-3 py-2"
-            type="email"
-            {...register("email", {
-              required: "Este campo es obligatorio",
+            className='w-full border border-dark px-3 py-2'
+            type='email'
+            {...register('email', {
+              required: 'Este campo es obligatorio',
               pattern: {
                 value: /^[^@]+@[^@]+\.[^@]+$/,
-                message: "Por favor, ingresa un email válido",
+                message: 'Por favor, ingresa un email válido',
               },
             })}
             onChange={handleChange}
+            value={formData.email || ''}
           />
           {errors.email && (
-            <p className="text-red-500">{errors.email.message}</p>
+            <p className='text-red-500'>{errors.email.message}</p>
           )}
         </div>
 
-        {/* Género y edad */}
-        <div className="flex justify-between items-center gap-4">
-          <label htmlFor="gender">Género:</label>
+        {/* Género y Edad */}
+        <div className='flex justify-between items-center gap-4 '>
+          <label htmlFor='gender'>Género:</label>
           <select
-            id="gender"
-            name="gender"
-            className="flex-1 border border-dark"
-            {...register("gender")}
+            id='gender'
+            name='gender'
+            value={formData.gender || ''}
             onChange={handleChange}
+            className='flex-1 border border-dark px-3 py-2'
           >
-            <option value="">Seleccionar</option>
-            <option value="mujer">Mujer</option>
-            <option value="hombre">Hombre</option>
-            <option value="otros generos">Otro</option>
+            <option value=''>Seleccionar</option>
+            <option value='mujer'>Mujer</option>
+            <option value='hombre'>Hombre</option>
+            <option value='otros generos'>Otro</option>
           </select>
-          <label htmlFor="age">Edad:</label>
+          <label htmlFor='age'>Edad:</label>
           <input
-            id="age"
-            name="age"
-            type="number"
-            className="flex-1 border border-dark px-3 py-2"
-            {...register("age")}
+            id='age'
+            name='age'
+            type='number'
+            value={formData.age || ''}
             onChange={handleChange}
+            className='flex-1 border border-dark px-3 py-2'
           />
         </div>
 
         {/* Checkboxes */}
         <div>
-          <label className="flex items-center gap-2">
+          <label className='flex items-center gap-2'>
             <input
-              type="checkbox"
+              type='checkbox'
               checked={formData.is_first_activity || false}
               onChange={handleChange}
-              name="is_first_activity"
+              name='is_first_activity'
             />
             ¿Es tu primera actividad en el ODC?
           </label>
-          <label className="flex items-center gap-2">
+          <label className='flex items-center gap-2'>
             <input
-              type="checkbox"
+              type='checkbox'
               checked={formData.accepts_newsletter || false}
               onChange={handleChange}
-              name="accepts_newsletter"
+              name='accepts_newsletter'
             />
             Quiero recibir información sobre nuevos cursos periódicamente
           </label>
-          <label className="flex items-center gap-2">
+          <label className='flex items-center gap-2'>
             <input
-              type="checkbox"
+              type='checkbox'
               checked={includeMinor}
               onChange={() => setIncludeMinor(!includeMinor)}
             />
             Con uno o más menores de 14 años
           </label>
-          <label className="flex items-center gap-2">
+          <label className='flex items-center gap-2'>
             <input
-              type="checkbox"
+              type='checkbox'
               checked={includeAdult}
               onChange={() => setIncludeAdult(!includeAdult)}
             />
@@ -225,44 +243,58 @@ const MainForm = ({
 
         {/* Formulario para menores */}
         {includeMinor && (
-          <div className="mt-4">
-            <h3 className="font-bold text-lg mb-2">Menores</h3>
+          <div className='mt-4'>
+            <h3 className='font-bold text-lg mb-2'>Menores</h3>
             {(formData.minors || []).length < 3 ? (
-              <div className="flex gap-2">
+              <div className='flex gap-2'>
                 <input
-                  type="text"
-                  name="name"
-                  placeholder="Nombre del menor"
+                  type='text'
+                  name='name'
+                  placeholder='Nombre del menor'
                   value={minor.name}
                   onChange={handleMinorChange}
-                  className="border p-2 rounded-md"
+                  className='border p-2 rounded-md'
                 />
                 <input
-                  type="number"
-                  name="age"
-                  placeholder="Edad"
+                  type='number'
+                  name='age'
+                  placeholder='Edad'
                   value={minor.age}
                   onChange={handleMinorChange}
-                  className="border p-2 rounded-md"
+                  className='border p-2 rounded-md'
                 />
                 <button
-                  type="button"
+                  type='button'
                   onClick={addMinor}
-                  className="bg-orange text-white px-4 py-2 rounded-md"
+                  className='bg-orange text-white px-4 py-2 rounded-md'
                 >
                   Agregar
                 </button>
               </div>
             ) : (
-              <p className="text-red-500 mt-4">
+              <p className='text-red-500 mt-4'>
                 Límite máximo de menores inscritos alcanzado.
               </p>
             )}
-            {minorError && <p className="text-red-500">{minorError}</p>}
+            {minorError && <p className='text-red-500'>{minorError}</p>}
             <ul>
               {(formData.minors || []).map((minor, index) => (
-                <li key={index}>
-                  {minor.name} - {minor.age} años
+                <li key={index} className='flex justify-between items-center'>
+                  <span>
+                    {minor.name} - {minor.age} años
+                  </span>
+                  <button
+                    type='button'
+                    onClick={() => {
+                      const updatedMinors = formData.minors.filter(
+                        (_, i) => i !== index
+                      );
+                      setFormData({ ...formData, minors: updatedMinors });
+                    }}
+                    className='text-red-500 ml-4 hover:underline'
+                  >
+                    Eliminar
+                  </button>
                 </li>
               ))}
             </ul>
@@ -271,81 +303,79 @@ const MainForm = ({
 
         {/* Segunda parte del formulario para el adulto acompañante */}
         {includeAdult && (
-          <div className="mt-4">
-            <h3 className="font-bold text-lg mb-2">Adulto Acompañante</h3>
-            {/* Nombre Completo */}
+          <div className='mt-4'>
+            <h3 className='font-bold text-lg mb-2'>Adulto Acompañante</h3>
             <div>
-              <label className="block font-medium mb-1">Nombre Completo:</label>
+              <label className='block font-medium mb-1'>Nombre Completo:</label>
               <input
-                className="w-full border border-dark px-3 py-2"
-                name="fullname"
-                value={adultData.fullname || ""}
+                className='w-full border border-dark px-3 py-2'
+                name='fullname'
+                value={adultData.fullname || ''}
                 onChange={(e) =>
-                  setAdultData((prev) => ({ ...prev, fullname: e.target.value }))
+                  setAdultData((prev) => ({
+                    ...prev,
+                    fullname: e.target.value,
+                  }))
                 }
-                placeholder="Nombre Completo"
+                placeholder='Nombre Completo'
                 required
               />
             </div>
-
-            {/* Email */}
             <div>
-              <label className="block font-medium mb-1">Email:</label>
+              <label className='block font-medium mb-1'>Email:</label>
               <input
-                className="w-full border border-dark px-3 py-2"
-                type="email"
-                name="email"
-                value={adultData.email || ""}
+                className='w-full border border-dark px-3 py-2'
+                type='email'
+                name='email'
+                value={adultData.email || ''}
                 onChange={(e) =>
                   setAdultData((prev) => ({ ...prev, email: e.target.value }))
                 }
-                placeholder="Correo Electrónico"
+                placeholder='Correo Electrónico'
                 required
               />
             </div>
-
-            {/* Género y Edad */}
-            <div className="flex justify-between items-center gap-4">
-              <label htmlFor="gender">Género:</label>
+            <div className='flex justify-between items-center gap-4 mt-4'>
+              <label htmlFor='gender'>Género:</label>
               <select
-                id="gender"
-                name="gender"
-                value={adultData.gender || ""}
+                id='gender'
+                name='gender'
+                value={adultData.gender || ''}
                 onChange={(e) =>
                   setAdultData((prev) => ({ ...prev, gender: e.target.value }))
                 }
-                className="flex-1 border border-dark px-3 py-2"
+                className='flex-1 border border-dark px-3 py-2'
                 required
               >
-                <option value="">Seleccionar</option>
-                <option value="mujer">Mujer</option>
-                <option value="hombre">Hombre</option>
-                <option value="otros generos">Otro</option>
+                <option value=''>Seleccionar</option>
+                <option value='mujer'>Mujer</option>
+                <option value='hombre'>Hombre</option>
+                <option value='otros generos'>Otro</option>
               </select>
-              <label htmlFor="age">Edad:</label>
+              <label htmlFor='age'>Edad:</label>
               <input
-                id="age"
-                name="age"
-                type="number"
-                value={adultData.age || ""}
+                id='age'
+                name='age'
+                type='number'
+                value={adultData.age || ''}
                 onChange={(e) =>
                   setAdultData((prev) => ({ ...prev, age: e.target.value }))
                 }
-                className="flex-1 border border-dark px-3 py-2"
-                placeholder="Edad"
+                className='flex-1 border border-dark px-3 py-2'
+                placeholder='Edad'
                 required
               />
             </div>
             <button
-              type="button"
+              type='button'
               onClick={addAdult}
-              className="bg-orange text-white px-4 py-2 rounded-md mt-2"
+              className='bg-orange text-white px-4 py-2 rounded-md mt-2'
             >
               Agregar Adulto
             </button>
-            {adultError && <p className="text-red-500">{adultError}</p>}
+            {adultError && <p className='text-red-500'>{adultError}</p>}
             {adult && (
-              <div className="mt-2 p-2 border rounded-md">
+              <div className='mt-2 p-2 border rounded-md'>
                 <p>
                   <strong>Nombre:</strong> {adult.fullname}
                 </p>
@@ -359,9 +389,9 @@ const MainForm = ({
                   <strong>Género:</strong> {adult.gender}
                 </p>
                 <button
-                  type="button"
+                  type='button'
                   onClick={onRemoveAdult}
-                  className="text-red-500 mt-2 hover:underline"
+                  className='text-red-500 mt-2 hover:underline'
                 >
                   Eliminar Adulto
                 </button>
@@ -369,7 +399,94 @@ const MainForm = ({
             )}
           </div>
         )}
+
+        {/* Botón para mostrar resumen */}
+        {!showSummary && (
+          <button
+            type='button'
+            onClick={handleNext}
+            className='bg-orange text-white px-4 py-2 rounded-md mt-4'
+          >
+            Siguiente
+          </button>
+        )}
+
+        {/* Resumen */}
+        {showSummary && (
+          <div className='mt-4'>
+            <h3 className='font-bold text-lg mb-2'>
+              Resumen de la Inscripción
+            </h3>
+            <div className='p-4 border rounded-md bg-gray-50'>
+              <p>
+                <strong>Nombre Completo:</strong>{' '}
+                {formData.fullname || 'No proporcionado'}
+              </p>
+              <p>
+                <strong>Email:</strong> {formData.email || 'No proporcionado'}
+              </p>
+              <p>
+                <strong>Género:</strong> {formData.gender || 'No proporcionado'}
+              </p>
+              <p>
+                <strong>Edad:</strong> {formData.age || 'No proporcionado'}
+              </p>
+              <p>
+                <strong>Primera Actividad:</strong>{' '}
+                {formData.is_first_activity ? 'Sí' : 'No'}
+              </p>
+              <p>
+                <strong>Recibe Newsletter:</strong>{' '}
+                {formData.accepts_newsletter ? 'Sí' : 'No'}
+              </p>
+              {includeMinor && formData.minors && (
+                <div>
+                  <h4 className='font-semibold mt-2'>Menores:</h4>
+                  <ul>
+                    {formData.minors.map((minor, index) => (
+                      <li key={index}>
+                        {minor.name} - {minor.age} años
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              {includeAdult && adultData && (
+                <div>
+                  <h4 className='font-semibold mt-2'>Adulto Acompañante:</h4>
+                  <p>
+                    <strong>Nombre:</strong>{' '}
+                    {adultData.fullname || 'No proporcionado'}
+                  </p>
+                  <p>
+                    <strong>Email:</strong>{' '}
+                    {adultData.email || 'No proporcionado'}
+                  </p>
+                  <p>
+                    <strong>Género:</strong>{' '}
+                    {adultData.gender || 'No proporcionado'}
+                  </p>
+                  <p>
+                    <strong>Edad:</strong> {adultData.age || 'No proporcionado'}
+                  </p>
+                </div>
+              )}
+            </div>
+            <button
+              type='button'
+              onClick={handleSubmit}
+              className='bg-green-500 text-white px-4 py-2 rounded-md mt-4'
+            >
+              Inscribirse
+            </button>
+          </div>
+        )}
       </form>
+      {successMessage && (
+        <div className='mt-4 p-4 border rounded-md bg-green-100 text-green-800'>
+          {successMessage}
+        </div>
+      )}
     </div>
   );
 };
