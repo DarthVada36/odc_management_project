@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MainForm from "../components/MainForm";
+import Summary from "../components/SummaryInscriptionForm"; // Asegúrate de que el componente está importado
 import { createEnrollment } from "../services/enrollmentServices";
 import { getCourseById } from "../services/coursesServices";
 import formImage from "../assets/img/imageform.svg";
@@ -15,6 +16,7 @@ const FormPage = () => {
   const [courseTitle, setCourseTitle] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Estado de carga
   const [responseMessage, setResponseMessage] = useState(null); // Mensajes de respuesta
+  const [showSummary, setShowSummary] = useState(false); // Controlar si mostrar el resumen
 
   // Obtener el título del curso al cargar la página
   useEffect(() => {
@@ -59,6 +61,12 @@ const FormPage = () => {
     setAdult(null); // Eliminar al adulto
   };
 
+  const handleShowSummary = () => {
+    if (validateFormData()) {
+      setShowSummary(true); // Activar el resumen
+    }
+  };
+
   const handleSendToBackend = async () => {
     if (!validateFormData()) return;
 
@@ -83,6 +91,7 @@ const FormPage = () => {
       setFormData({});
       setMinors([]);
       setAdult(null);
+      setShowSummary(false); // Ocultar el resumen tras enviar
     } catch (error) {
       const errorMessage =
         error.response?.data?.message ||
@@ -129,13 +138,23 @@ const FormPage = () => {
           </div>
         </div>
 
-        <button
-          className="bg-orange text-white px-4 py-2 rounded-md font-semibold mt-4 disabled:opacity-50"
-          onClick={handleSendToBackend}
-          disabled={isLoading}
-        >
-          {isLoading ? "Enviando..." : "Siguiente"}
-        </button>
+        {!showSummary ? (
+          <button
+            className="bg-orange text-white px-4 py-2 rounded-md font-semibold mt-4 disabled:opacity-50"
+            onClick={handleShowSummary} // Mostrar el resumen
+            disabled={isLoading}
+          >
+            {isLoading ? "Cargando..." : "Siguiente"}
+          </button>
+        ) : (
+          <button
+            className="bg-green-500 text-white px-4 py-2 rounded-md font-semibold mt-4 disabled:opacity-50"
+            onClick={handleSendToBackend} // Enviar al backend
+            disabled={isLoading}
+          >
+            {isLoading ? "Enviando..." : "Confirmar Inscripción"}
+          </button>
+        )}
 
         {responseMessage && (
           <p
@@ -149,6 +168,9 @@ const FormPage = () => {
           </p>
         )}
       </div>
+
+      {/* Renderizar el resumen condicionalmente */}
+      {showSummary && <Summary formData={formData} minors={minors} adult={adult} />}
     </div>
   );
 };
