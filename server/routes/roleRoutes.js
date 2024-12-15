@@ -8,10 +8,12 @@ import {
 } from '../controllers/roleController.js'
 import { authMiddleware } from '../middleware/authMiddleware.js'
 import { checkRol } from '../middleware/rolMiddleware.js'
+import { validateCreateRole } from '../utils/validations/roleValidation.js'
+import validationHandler from '../utils/handle/handleValidator.js'
 
 const router = express.Router()
 
-router.post('/', createRole)
+router.post('/', validateCreateRole, validationHandler,createRole)
 router.get('/', getRoles)
 router.get('/:id', authMiddleware, checkRol(['superadmin']), getRoleById)
 // router.put('/:id', updateRole)
