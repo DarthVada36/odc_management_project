@@ -104,18 +104,52 @@ const AdminForm = ({
         setErrors(formErrors)
 
         if (Object.keys(formErrors).length === 0) {
-            const submitData = {
-                username: formData.username,
-                password: formData.password,
-                role_id: parseInt(formData.roleId),
-            }
+            try {
+                // Verify if the username already exists
+                if (!isEditing) {
+                    try {
+                        const response = await fetch(
+                            'http://localhost:3000/api/auth/check-username',
+                            {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({
+                                    username: formData.username,
+                                }),
+                            }
+                        )
+                        const data = await response.json()
 
-            const success = await onSubmit(submitData)
-            if (success) {
-                onCancel()
+                        if (data.exists) {
+                            setErrorMessage(
+                                'El nombre de usuario ya está en uso'
+                            )
+                            return
+                        }
+                    } catch (error) {
+                        console.error('Error al verificar el usuario:', error)
+                        setErrorMessage('Error al verificar el usuario')
+                        return
+                    }
+                }
+
+                // If then user existss, set error message
+                const submitData = {
+                    username: formData.username,
+                    password: formData.password,
+                    role_id: parseInt(formData.roleId),
+                }
+
+                const success = await onSubmit(submitData)
+                if (success) {
+                    onCancel()
+                }
+            } catch (error) {
+                setErrorMessage('Error al crear el administrador')
             }
         } else {
-            // Mostrar el primer error en el banner
             setErrorMessage(Object.values(formErrors)[0])
         }
     }

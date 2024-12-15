@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { removeCourseById } from '../services/coursesServices'
-import { updateCourseById } from '../services/coursesServices'
 import MessageBanner from './MessageBanner'
 
 const CourseForm = ({
@@ -43,7 +41,9 @@ const CourseForm = ({
         }
     }, [isEditing, initialData])
 
+    // Function to validate the form
     const validateForm = () => {
+        // Validation of title
         if (!formData.title) {
             setBannerMessage('Por favor, introduce un título')
             return false
@@ -57,6 +57,7 @@ const CourseForm = ({
             return false
         }
 
+        // Validation of description
         if (!formData.description) {
             setBannerMessage('Por favor, introduce una descripción')
             return false
@@ -72,20 +73,55 @@ const CourseForm = ({
             return false
         }
 
+        // Validation for date and schedule
         if (!formData.date) {
             setBannerMessage('Por favor, selecciona una fecha')
             return false
         }
+
+        // Validation for date
+        const selectedDate = new Date(formData.date)
+        const today = new Date()
+        today.setHours(0, 0, 0, 0)
+
+        if (selectedDate < today) {
+            setBannerMessage('La fecha no puede ser anterior a la actual')
+            return false
+        }
+
         if (!formData.schedule) {
             setBannerMessage('Por favor, selecciona un horario')
             return false
         }
+
+        //Validation for link
         if (!formData.link) {
             setBannerMessage('Por favor, introduce un enlace')
             return false
         }
+        const urlRegex =
+            /^(?:(?:https?:\/\/)?(?:www\.)?)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b(?:[-a-zA-Z0-9()@:%_+.~#?&/=]*)$/
+        if (!urlRegex.test(formData.link)) {
+            setBannerMessage(
+                'Por favor, introduce una URL que comience por www. o https:'
+            )
+            return false
+        }
+        // Añadir https:// si no tiene protocolo
+        if (
+            !formData.link.startsWith('http://') &&
+            !formData.link.startsWith('https://')
+        ) {
+            formData.link = 'https://' + formData.link
+        }
+
+        // Validación de tickets
         if (!formData.tickets) {
             setBannerMessage('Por favor, introduce el número de tickets')
+            return false
+        }
+        if (Number(formData.tickets) <= 0) {
+            setBannerMessage('El número de tickets debe ser mayor que 0')
             return false
         }
 

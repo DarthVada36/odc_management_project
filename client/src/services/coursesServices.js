@@ -4,7 +4,7 @@ const API_URL = 'http://localhost:3000/api/courses'
 
 // Función auxiliar para obtener el token y las cabeceras
 const getAuthHeaders = () => {
-    const token = localStorage.getItem('token') // O donde almacenes tu token
+    const token = localStorage.getItem('authToken')
     if (!token) {
         throw new Error('Token no encontrado. Por favor, inicia sesión.')
     }
@@ -40,13 +40,16 @@ export const getCourseById = async (id) => {
 // Eliminar un curso por ID -- DELETE
 export const removeCourseById = async (id) => {
     try {
-        const response = await axios.delete(
-            `${API_URL}/${id}`,
-            getAuthHeaders()
-        )
+        const token = localStorage.getItem('authToken')
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        }
+        const response = await axios.delete(`${API_URL}/${id}`, config)
         return response.data
     } catch (error) {
-        console.error('No se pudo eliminar el curso indicado:', error.message)
+        console.error('No se pudo eliminar el curso indicado:', error)
         throw error
     }
 }

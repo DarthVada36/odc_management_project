@@ -38,6 +38,15 @@ const EnrollmentForm = ({
     const validateForm = () => {
         const newErrors = {}
 
+        // Validation for fullname length
+        if (!formData.fullname) {
+            newErrors.fullname = 'El nombre completo es obligatorio'
+        } else if (formData.fullname.length < 4) {
+            newErrors.fullname = 'El nombre debe tener al menos 4 caracteres'
+        } else if (formData.fullname.length > 40) {
+            newErrors.fullname = 'El nombre no puede exceder los 40 caracteres'
+        }
+
         // Validation for adult
         if (formData.age < 15) {
             newErrors.age = 'La edad debe ser 15 años o más para un adulto.'
@@ -51,11 +60,6 @@ const EnrollmentForm = ({
                         'La edad de los menores debe ser 14 años o menos.'
                 }
             })
-        }
-
-        // Validation for fullname
-        if (!formData.fullname) {
-            newErrors.fullname = 'El nombre completo es obligatorio'
         }
 
         // Validación para email
@@ -179,6 +183,8 @@ const EnrollmentForm = ({
                                 required
                                 className="w-full p-3 border-2 border-black focus:outline-none hover:border-primary"
                                 placeholder="Nombre Completo"
+                                minLength={4}
+                                maxLength={40}
                             />
                             {errors.fullname && (
                                 <span className="text-red-500">

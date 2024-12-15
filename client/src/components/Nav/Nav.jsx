@@ -318,21 +318,31 @@ const Nav = () => {
                         initial={shouldAnimate ? 'hidden' : 'visible'}
                         animate="visible"
                     >
-                        {/* Logout icon */}
+                        {/* Username and Logout icon */}
                         {isAuthenticated && location.pathname !== '/courses' ? (
-                            <motion.button
-                                onClick={handleLogout}
-                                variants={
-                                    shouldAnimate ? containerVariants : {}
-                                }
-                                className="p-2 text-white transition-colors duration-300 ease-in-out hover:text-primary"
-                            >
-                                <img
-                                    src={sessionLeaveIcon}
-                                    alt="Cerrar sesión"
-                                    className="desktop:w-8 mt-[1.8rem] desktop:h-8 laptop:w-7 laptop:h-7 tablet:w-7 tablet:h-7 mobile:w-7 mobile:h-7"
-                                />
-                            </motion.button>
+                            <div className="flex items-center gap-4">
+                                <motion.span
+                                    variants={
+                                        shouldAnimate ? containerVariants : {}
+                                    }
+                                    className="text-white font-helvetica-w20-bold mt-[1.8rem] desktop:text-base laptop:text-sm tablet:text-sm mobile:text-xs"
+                                >
+                                    {admin?.username}
+                                </motion.span>
+                                <motion.button
+                                    onClick={handleLogout}
+                                    variants={
+                                        shouldAnimate ? containerVariants : {}
+                                    }
+                                    className="p-2 group"
+                                >
+                                    <img
+                                        src={sessionLeaveIcon}
+                                        alt="Cerrar sesión"
+                                        className="desktop:w-8 mt-[1.8rem] desktop:h-8 laptop:w-7 laptop:h-7 tablet:w-7 tablet:h-7 mobile:w-7 mobile:h-7 transition-all duration-300 hover:[filter:invert(47%)_sepia(98%)_saturate(2929%)_hue-rotate(1deg)_brightness(103%)_contrast(106%)]"
+                                    />
+                                </motion.button>
+                            </div>
                         ) : null}
 
                         {/* Menu button - mobile only */}

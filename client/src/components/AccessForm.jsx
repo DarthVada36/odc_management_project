@@ -2,19 +2,19 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import SubmitButton from './SubmitButton'
-import ConfirmationModal from './ConfirmationModal' // Importar el modal
+import ConfirmationModal from './ConfirmationModal'
+import MessageBanner from './MessageBanner'
 
-const AccessForm = ({ onError }) => {
+const AccessForm = ({ onError, errorMessage, onClearError }) => {
     const [username, setUsername] = useState('')
     const [password, setPassword] = useState('')
     const [showPassword, setShowPassword] = useState(false)
     const [errors, setErrors] = useState({})
-    const [isModalOpen, setIsModalOpen] = useState(false) // Estado para controlar el modal
+    const [isModalOpen, setIsModalOpen] = useState(false)
 
     const navigate = useNavigate()
     const { login } = useAuth()
 
-    // Function to toggle password visibility
     const validateForm = () => {
         const newErrors = {}
 
@@ -36,7 +36,6 @@ const AccessForm = ({ onError }) => {
         return newErrors
     }
 
-    // Function to handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault()
         onError('')
@@ -62,30 +61,35 @@ const AccessForm = ({ onError }) => {
         }
     }
 
-    // Function to handle the forgot password link
     const handleForgotPassword = () => {
         setIsModalOpen(true)
     }
 
-    //Function to close the modal
     const handleModalClose = () => {
         setIsModalOpen(false)
     }
 
-    // Function to handle the modal confirmation
     const handleModalConfirm = () => {
         handleModalClose()
     }
 
     return (
-        <div className="flex flex-col items-center justify-center h-[98%] w-[98%] border-2 border-primary">
+        <div className="relative flex flex-col items-center justify-center h-[98%] w-[98%] border-2 border-primary">
+            {errorMessage && (
+                <div className="absolute top-0 left-0 right-0 z-50">
+                    <MessageBanner
+                        message={errorMessage}
+                        onClose={onClearError}
+                    />
+                </div>
+            )}
+
             <div className="w-full max-w-md p-4 bg-white sm:p-8 md:p-12">
                 <h2 className="mb-6 text-3xl font-bold text-center text-orange-500 font-helvetica-w20-bold">
                     Accede a tu cuenta
                 </h2>
 
-                <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Username */}
+                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                     <div className="flex flex-col">
                         <label
                             htmlFor="username"
@@ -106,7 +110,6 @@ const AccessForm = ({ onError }) => {
                         />
                     </div>
 
-                    {/* Password */}
                     <div className="flex flex-col">
                         <label
                             htmlFor="password"
@@ -144,7 +147,6 @@ const AccessForm = ({ onError }) => {
                         </div>
                     </div>
 
-                    {/* Remember me checkbox */}
                     <div className="flex items-center justify-between">
                         <label className="inline-flex items-center text-sm font-helvetica-w20-bold">
                             <input
@@ -164,12 +166,10 @@ const AccessForm = ({ onError }) => {
                         </Link>
                     </div>
 
-                    {/* Access button */}
                     <SubmitButton text="Acceder" />
                 </form>
             </div>
 
-            {/* Modal */}
             <ConfirmationModal
                 title="Recuperación de contraseña"
                 isOpen={isModalOpen}
