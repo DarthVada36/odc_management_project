@@ -3,12 +3,14 @@ import MainForm from "../components/MainForm";
 import { createEnrollment } from "../services/enrollmentServices";
 import { getCourseById } from "../services/coursesServices";
 import formImage from "../assets/img/imageform.svg";
-import { useParams } from "react-router-dom";
-import CoockieModal from "../components/CoockieModal";
+import { useParams, useNavigate } from "react-router-dom"; // Importar useNavigate
+import CookieModal from "../components/CoockieModal";
+import { useAuth } from "../context/AuthContext";
+
 const FormPage = () => {
-    const { id } = useParams() // Capturar el ID del curso desde la URL
-    const navigate = useNavigate()
-    const { isAuthenticated } = useAuth()
+    const { id } = useParams(); // Capturar el ID del curso desde la URL
+    const navigate = useNavigate(); // Inicializar el hook
+    const { isAuthenticated } = useAuth();
     const [includeMinor, setIncludeMinor] = useState(false)
     const [includeAdult, setIncludeAdult] = useState(false)
     const [formData, setFormData] = useState({})
@@ -18,8 +20,10 @@ const FormPage = () => {
     const [isLoading, setIsLoading] = useState(false) // Estado de carga
     const [responseMessage, setResponseMessage] = useState(null) // Mensajes de respuesta
     const [showSummary, setShowSummary] = useState(false) // Controlar si mostrar el resumen
+    const [showCookiesModal, setShowCookiesModal] = useState(true); // Estado para mostrar/ocultar el modal
+    
 
-    // Obtener el título del curso al cargar la página
+    
     useEffect(() => {
         const fetchCourseTitle = async () => {
             try {
@@ -184,6 +188,11 @@ const FormPage = () => {
                     </p>
                 )}
             </div>
+
+            {/* Renderizar el modal condicionalmente */}
+            {showCookiesModal && (
+                <CookieModal onClose={() => setShowCookiesModal(false)} />
+            )}
 
             {/* Renderizar el resumen condicionalmente */}
             {showSummary && (
