@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { getAllEnrollments } from '../services/enrollmentServices.js';
-import UserTable from './UserTable';
+import EnrollmentsTable from './EnrollmentsTable.jsx';
 import SearchBar from './SearchBar.jsx';
 import EmailEditorComponent from './EmailEditorComponent.jsx';
 
@@ -54,7 +54,7 @@ const AdminPanel = () => {
         <h1 className='text-orange text-2xl font-bold'>Gestión de Inscripciones</h1>
         <SearchBar onSearch={handleSearch} />
       </div>
-      <UserTable
+      <EnrollmentsTable
         users={filteredEnrollments}
         onSendEmail={handleOpenEmailEditor}
       />
