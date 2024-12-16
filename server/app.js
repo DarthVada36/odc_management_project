@@ -10,6 +10,8 @@ import courseRoutes from './routes/courseRoutes.js'
 import minorRoutes from './routes/minorRoutes.js'
 import roleRoutes from './routes/roleRoutes.js'
 import adminRoutes from './routes/adminRoutes.js'
+import mailerRoutes from './routes/mailerRoutes.js';
+import templateRoutes from './routes/templateRoutes.js';
 
 dotenv.config();
 
@@ -18,12 +20,19 @@ const app = express();
 // Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(cors({
-  origin: 'http://localhost:5173',
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  allowedHeaders: ['Content-Type', 'Authorization']
-}));
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+    ],
+  })
+);
 
 
 // Puerto
@@ -31,13 +40,14 @@ const PORT = process.env.PORT || 3000;
 
 // Rutas
 
-
 app.use('/api/auth', authRoutes);
 app.use('/api/enrollments', enrollmentRoutes)
 app.use('/api/courses', courseRoutes)
 app.use('/api/minors', minorRoutes)
 app.use('/api/roles', roleRoutes)
 app.use('/api/admins', adminRoutes)
+app.use('/api/mailer', mailerRoutes);
+app.use('/api/templates', templateRoutes);
 
 
 

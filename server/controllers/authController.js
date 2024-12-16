@@ -196,3 +196,22 @@ export const getAdminById = async (req, res) => {
         })
     }
 }
+
+// Controlador para verificar si existe el usuario
+export const checkUsername = async (req, res) => {
+    const { username } = req.body
+
+    try {
+        const existingAdmin = await Admin.findOne({ where: { username } })
+
+        res.json({
+            exists: !!existingAdmin,
+        })
+    } catch (error) {
+        console.error('Error al verificar el usuario:', error)
+        res.status(500).json({
+            message: 'Error al verificar el usuario',
+            error: error.message,
+        })
+    }
+}

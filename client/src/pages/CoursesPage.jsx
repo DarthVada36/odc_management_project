@@ -3,70 +3,75 @@ import { getAllCourses } from '../services/coursesServices';
 import { useNavigate } from 'react-router-dom';
 import CookieModal from '../components/CoockieModal';
 const CoursesPage = () => {
-  const [courses, setCourses] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
+    const [courses, setCourses] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [error, setError] = useState(null)
+    const navigate = useNavigate()
 
-  // Cargar cursos desde la API
-  useEffect(() => {
-    const fetchCourses = async () => {
-      try {
-        const data = await getAllCourses();
-        setCourses(data);
-      } catch (err) {
-        setError('No se pudieron cargar los cursos');
-        console.error(err);
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    // Cargar cursos desde la API
+    useEffect(() => {
+        const fetchCourses = async () => {
+            try {
+                const data = await getAllCourses()
+                setCourses(data)
+            } catch (err) {
+                setError('No se pudieron cargar los cursos')
+                console.error(err)
+            } finally {
+                setIsLoading(false)
+            }
+        }
 
-    fetchCourses();
-  }, []);
+        fetchCourses()
+    }, [])
 
-  if (isLoading) return <p>Cargando cursos...</p>;
-  if (error) return <p className="text-red-500">{error}</p>;
+    if (isLoading) return <p>Cargando cursos...</p>
+    if (error) return <p className="text-red-500">{error}</p>
 
-  return (
-    
-    <div className="flex flex-col items-center mb-8 px-4">  {/* Contenedor para Separar el footerpx4.separadelmargen */}
-      <h1 className="text-3xl font-bold text-center mt-8 mb-8 w-full">Cursos Disponibles</h1> {/* texto a la izquierda */}
-      <div className="grid gap-4 justify-center w-full max-w-screen-lg mx-auto"
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '16px',
-          }}
-      >
-
-        {courses.map((course) => (
-          <div
-            key={course.id}
-            className="border p-4 rounded shadow-md "
-          >
-            <h2 className="font-semibold text-lg">{course.title}</h2>
-            <p className="text-gray-600">{course.description}</p>
-            <div className='mt-4 text-left'>
-            <button
-              className="mt-4 bg-orange text-black px-4 py-2 rounded-none font-bold hover:bg-black hover:text-white transition-colors"
-              onClick={() => navigate(`/inscription/${course.id}`)}
+    return (
+        <div className="flex flex-col items-center px-4 mb-8 flex-grow-1">
+            {' '}
+            {/* Contenedor para Separar el footerpx4.separadelmargen */}
+            <h1 className="w-full mt-8 mb-8 text-3xl font-bold text-center">
+                Cursos Disponibles
+            </h1>{' '}
+            {/* texto a la izquierda */}
+            <div
+                className="grid justify-center w-full max-w-screen-lg gap-4 mx-auto"
+                style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+                    gap: '16px',
+                }}
             >
-              Inscribirme
-            </button>
-            <button
-              className="mt-4 bg-orange-500 text-dark px-4 py-2 rounded"
-              onClick={() => navigate(`/inscription/${course.id}`)}
-            >
-              Inscritos
-            </button>
-          </div>
+                {courses.map((course) => (
+                    <div
+                        key={course.id}
+                        className="p-4 border rounded shadow-md "
+                    >
+                        <h2 className="text-lg font-semibold">
+                            {course.title}
+                        </h2>
+                        <p className="text-gray-600">{course.description}</p>
+                        <div className="mt-4 text-left">
+                            <button
+                                className="px-4 py-2 mt-4 font-bold text-black transition-colors rounded-none bg-orange hover:bg-black hover:text-white"
+                                onClick={() =>
+                                    navigate(`/inscription/${course.id}`)
+                                }
+                            >
+                                Inscribirme
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
-        ))}
-      </div>
+        );
+      
       <CookieModal />
-    </div>
-  );
+    
+  
 };
 
-export default CoursesPage;
+export default CoursesPage

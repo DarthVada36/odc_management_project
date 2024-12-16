@@ -1,27 +1,33 @@
-import React from 'react'
+// AccessAdminPage.jsx
+import React, { useState } from 'react'
 import AccessForm from '../components/AccessForm'
-import EventCard from '../components/EventCard'
+import MessageBanner from '../components/MessageBanner'
 
 const AccessAdminPage = () => {
-    return (
-        <div className="flex min-h-screen">
-            {/* Imagen de la izquierda */}
-            <div
-                className="w-1/2 bg-center bg-cover"
-                style={{ backgroundImage: 'url(/img-login.png)' }}
-            ></div>
+    const [errorMessage, setErrorMessage] = useState('')
 
-            {/* Formulario de acceso a la derecha */}
-            <div className="w-1/2 p-8 bg-white">
-                <AccessForm />
+    const handleErrorMessage = (message) => {
+        setErrorMessage(message)
+    }
+
+    return (
+        <div className="relative w-full h-screen">
+            <div className="flex flex-row w-full h-full">
+                {/* Container with image */}
+                <div
+                    className="hidden w-1/2 bg-center bg-cover mobile:hidden tablet:hidden laptop:block desktop:block"
+                    style={{ backgroundImage: 'url(/img-login.png)' }}
+                ></div>
+
+                {/* Container with form */}
+                <div className="flex-1 p-4 bg-white sm:p-8 laptop:w-1/2 laptop:p-12 desktop:p-16">
+                    <AccessForm
+                        onError={handleErrorMessage}
+                        errorMessage={errorMessage}
+                        onClearError={() => setErrorMessage('')}
+                    />
+                </div>
             </div>
-            {/* <div className="mt-8">
-        <EventCard
-          imageUrl="https://1000marcas.net/wp-content/uploads/2019/12/Orange-S.A.-logotipo.jpg"
-          title="Título"
-          description="Ejemplo de texto secundario."
-        />
-      </div> */}
         </div>
     )
 }

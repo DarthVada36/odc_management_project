@@ -6,11 +6,11 @@ const SearchBar = ({ onSearch }) => {
     }
 
     return (
-        <div className="flex items-center pb-4 justify-right md:justify-end">
+        <div className="flex items-center justify-end w-full">
             <input
                 type="text"
                 placeholder="Buscar"
-                className="max-w-xs p-2 text-sm border rounded-none border-inputBorder w-28 sm:w-40 md:w-60 sm:max-w-md md:max-w-lg hover:border-dark focus:border-dark focus:outline-none placeholder:text-placeHolderText font-helvetica-w20-bold"
+                className="w-full font-helvetica-w20-bold  h-[2.8rem] p-2 transition-colors duration-300 border-2 border-black outline-none mobile:p-2 tablet:p-3 laptop:p-3 desktop:p-3 mobile:text-sm tablet:text-base laptop:text-base desktop:text-base placeholder-neutral-500 hover:border-primary focus:border-primary ring-0 font-helvetica-w20-bold"
                 onChange={handleInputChange}
             />
         </div>

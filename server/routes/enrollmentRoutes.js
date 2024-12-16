@@ -11,8 +11,8 @@ enrollmentRoutes.get('/',  getAllEnrollments);
 enrollmentRoutes.get('/by-course/:id',  getAllEnrollmentsByCourseId);
 enrollmentRoutes.get('/:id',  getEnrollmentById);
 enrollmentRoutes.get('/:id/with-minors', authMiddleware, checkRol(['superadmin', 'admin', 'facilitator']), getEnrollmentByIdWithMinors);
-enrollmentRoutes.post('/', createEnrollment);
-enrollmentRoutes.put('/:id', authMiddleware, checkRol(['superadmin', 'admin']), updateEnrollmentById);
-enrollmentRoutes.delete('/:id',  deleteEnrollmentById);
+enrollmentRoutes.post('/'/* , validateCreateEnrollment  */,createEnrollment);
+enrollmentRoutes.put('/:id', authMiddleware, checkRol(['superadmin', 'admin']),/* , validateCreateEnrollment,  */ updateEnrollmentById);
+enrollmentRoutes.delete('/:id', authMiddleware, checkRol(['superadmin', 'admin']), deleteEnrollmentById);
 
 export default enrollmentRoutes;
