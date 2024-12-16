@@ -16,5 +16,4 @@ export const JWT_SECRET = process.env.JWT_SECRET;
 export const UNLAYER_PROJECT_ID = process.env.UNLAYER_PROJECT_ID;
 export const UNLAYER_API_KEY = process.env.UNLAYER_API_KEY;
 
-console.log(PORT);
-console.log(UNLAYER_PROJECT_ID); // Solo para depuración, elimínalo en producción
+
