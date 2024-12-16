@@ -18,7 +18,7 @@ const Sidebar = () => {
     )
 
     return (
-        <div className="hidden laptop:block w-[28.4rem] min-h-screen bg-black">
+        <div className="pt-[0.5rem] hidden font-bold font-helvetica-w20-bold laptop:block desktop:w-[11.3rem] min-h-screen bg-black">
             <ul className="flex flex-col">
                 {filteredMenuItems.map((item) => (
                     <React.Fragment key={item.id}>
