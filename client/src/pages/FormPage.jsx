@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react";
-import MainForm from "../components/MainForm";
-import { createEnrollment } from "../services/enrollmentServices";
-import { getCourseById } from "../services/coursesServices";
-import formImage from "../assets/img/imageform.svg";
-import { useParams } from "react-router-dom";
-import CoockieModal from "../components/CoockieModal";
+import React, { useState, useEffect } from 'react'
+import MainForm from '../components/MainForm'
+import { createEnrollment } from '../services/enrollmentServices'
+import { getCourseById } from '../services/coursesServices'
+import formImage from '../assets/img/imageform.svg'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import CoockieModal from '../components/CoockieModal'
+import Summary from '../components/SummaryInscriptionForm' // Añadir esta línea
+
 const FormPage = () => {
     const { id } = useParams() // Capturar el ID del curso desde la URL
     const navigate = useNavigate()
