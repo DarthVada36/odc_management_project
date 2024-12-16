@@ -1,9 +1,10 @@
-import Role from './roleModel.js'
-import Admin from './adminModel.js'
-import Course from './courseModel.js'
-import Enrollment from './enrollmentModel.js'
-import Minor from './minorModel.js'
-import connectionDb from '../database/connectionDb.js'
+import Role from './roleModel.js';
+import Admin from './adminModel.js';
+import Course from './courseModel.js';
+import Enrollment from './enrollmentModel.js';
+import Minor from './minorModel.js';
+import Template from './templateModel.js';
+import connectionDb from '../database/connectionDb.js';
 
 // Roles y Admins
 Role.hasMany(Admin, { foreignKey: 'role_id', as: 'admins' })
@@ -31,4 +32,4 @@ const syncModels = async () => {
   }
 };
 
-export { Role, Admin, Minor, Enrollment, Course, syncModels }
+export { Role, Admin, Minor, Enrollment, Course, Template, syncModels }
