@@ -24,14 +24,42 @@ describe ('Modelo Admin', () => {
             //Creamos un admin válido
             const admin = await Admin.create({
                 username: 'admin',
-                password: 'admin123',
+                password: 'password123',
                 role_id: role.id
             });
             //Verificaciones 
             expect(admin).toBeDefined();
             expect(admin.username).toBe('admin');
-            expect(admin.password).toBe('admin123');
+            expect(admin.password).toBe('password123');
             expect(admin.role_id).toBe(role.id);
         });
+        it('No debe permitir administradores sin username', async ()=> {
+            const role = await Role.create({
+                name: 'RoleWithoutUsername',
+            });
+            //Intentamos crear un admin sin username
+            await expect(
+                Admin.create({
+                    username: null, // Campo nulo no permitido
+                    password: 'password123',
+                    role_id: role.id,
+                })
+            ).rejects.toThrow(); // Verificar que lanza un error
+        });
+        it('No debe permitir administradoeres sin password', async () =>{
+            const role = await Role.create({
+                name: 'RoleWithoutPassword',
+            });
+            //Intentamos crear un admin sin password
+            await expect(
+                Admin.create({
+                    username: 'UserWithoutPassword',
+                    password: null, // Campo nulo no permitido
+                    role_id: role.id,
+                })
+            ).rejects.toThrow(); // Verificar que lanza un error
+        });
+        
+        })
+
     })
-})
