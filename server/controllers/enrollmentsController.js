@@ -98,10 +98,10 @@ export const createEnrollment = async (req, res) => {
       is_first_activity = false,
       id_admin = null,
       id_course,
-      group_id = null, // Cambiamos la lógica para generar un entero si es necesario
+      group_id = null,
       accepts_newsletter = false,
       minors = [],
-      adults = [], // Segundo adulto
+      adults = [],
     } = req.body;
 
     // Validación de campos obligatorios
@@ -115,6 +115,23 @@ export const createEnrollment = async (req, res) => {
     if (age < 14) {
       return res.status(400).json({
         message: "El titular debe ser mayor de 14 años.",
+      });
+    }
+
+    // Verificar la disponibilidad de tickets del curso
+    const course = await Course.findByPk(id_course, { transaction });
+    if (!course) {
+      return res.status(404).json({
+        message: "Curso no encontrado.",
+      });
+    }
+
+    // Calcular el total de tickets requeridos
+    const totalTicketsRequired = 1 + adults.length + minors.length; // 1 titular + adultos + menores
+
+    if (course.tickets < totalTicketsRequired) {
+      return res.status(400).json({
+        message: "No hay suficientes tickets disponibles para esta inscripción.",
       });
     }
 
@@ -132,7 +149,7 @@ export const createEnrollment = async (req, res) => {
         is_first_activity,
         id_admin,
         id_course,
-        group_id: newGroupId, // Asignar el nuevo group_id
+        group_id: newGroupId,
         accepts_newsletter,
       },
       { transaction }
@@ -157,11 +174,19 @@ export const createEnrollment = async (req, res) => {
         is_first_activity: adult.is_first_activity || false,
         id_admin: adult.id_admin || id_admin,
         id_course,
-        group_id: newGroupId, // Mismo group_id del titular
+        group_id: newGroupId,
         accepts_newsletter: adult.accepts_newsletter || false,
       }));
       await Enrollment.bulkCreate(adultData, { transaction });
     }
+
+    // Descontar tickets del curso
+    await Course.update(
+      {
+        tickets: course.tickets - totalTicketsRequired,
+      },
+      { where: { id: id_course }, transaction }
+    );
 
     // Confirmar transacción
     await transaction.commit();
@@ -178,6 +203,7 @@ export const createEnrollment = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
 
 // UPDATE ENROLLMENT BY ID
 export const updateEnrollmentById = async (req, res) => {
