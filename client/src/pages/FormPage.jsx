@@ -152,6 +152,7 @@ const FormPage = () => {
                             className="w-[615px] h-[616px] lg:max-w-full object-contain"
                         />
                     </div>
+                    <CoockieModal   />
                 </div>
 
                 {!showSummary ? (
@@ -197,6 +198,7 @@ const FormPage = () => {
             )}
         </div>
     )
+    
 }
 
 export default FormPage
