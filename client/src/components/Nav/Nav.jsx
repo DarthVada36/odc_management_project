@@ -416,7 +416,7 @@ const Nav = () => {
 
             {/* Floating navbar */}
             {showFloating && (
-                <header className="fixed top-0 w-full z-50 bg-black shadow-lg transform transition-transform duration-500 animate-[slideFromTop_0.5s_ease-out]">
+                <header className="fixed top-0 w-full z-[9999] bg-black shadow-lg transform transition-transform duration-500 animate-[slideFromTop_0.5s_ease-out]">
                     <NavContent isFloating={true} />
                 </header>
             )}

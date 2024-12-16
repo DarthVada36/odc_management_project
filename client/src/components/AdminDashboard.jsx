@@ -185,144 +185,10 @@ const AdminDashboard = () => {
         exportToPDF(title, exportHeaders, exportData, fileName)
     }
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true)
-                const [courses, enrollments] = await Promise.all([
-                    getAllCourses(),
-                    getAllEnrollments(),
-                ])
-
-                // Calculate age groups including minors
-                const ageGroups = [
-                    { name: '< 14', value: 0 },
-                    { name: '15-24', value: 0 },
-                    { name: '25-54', value: 0 },
-                    { name: '55+', value: 0 },
-                    { name: 'NS/NC', value: 0 },
-                ]
-
-                // Calculate gender distribution
-                const genderCounts = enrollments.reduce((acc, curr) => {
-                    acc[curr.gender] = (acc[curr.gender] || 0) + 1
-                    return acc
-                }, {})
-
-                const genderDistribution = [
-                    { name: 'Mujer', value: genderCounts['mujer'] || 0 },
-                    { name: 'Hombre', value: genderCounts['hombre'] || 0 },
-                    {
-                        name: 'Otros géneros',
-                        value: genderCounts['otros generos'] || 0,
-                    },
-                    { name: 'NS/NC', value: genderCounts['NS/NC'] || 0 },
-                ]
-
-                // Calculate metrics by course
-                const coursesMetrics = courses.map((course) => {
-                    const courseEnrollments = enrollments.filter(
-                        (e) => e.id_course === course.id
-                    )
-                    const firstTimeCount = courseEnrollments.filter(
-                        (e) => e.is_first_activity
-                    ).length
-
-                    return {
-                        id: course.id,
-                        name: course.title,
-                        total: courseEnrollments.length,
-                        capacity: course.tickets,
-                        occupancyRate:
-                            (courseEnrollments.length / course.tickets) * 100,
-                        firstTime: firstTimeCount,
-                        date: course.date,
-                    }
-                })
-
-                // Calculate first activity rate
-                const firstTimeCount = enrollments.filter(
-                    (e) => e.is_first_activity
-                ).length
-                const firstTimeRate =
-                    (firstTimeCount / enrollments.length) * 100
-
-                // Aggregate by days for the temporal evolution
-                const dailyEnrollments = enrollments.reduce((acc, curr) => {
-                    const date = new Date(curr.createdAt)
-                        .toISOString()
-                        .split('T')[0]
-                    if (!acc[date]) {
-                        acc[date] = {
-                            date,
-                            total: 0,
-                            byCourse: {},
-                        }
-                    }
-                    acc[date].total++
-                    if (!acc[date].byCourse[curr.id_course]) {
-                        acc[date].byCourse[curr.id_course] = 0
-                    }
-                    acc[date].byCourse[curr.id_course]++
-                    return acc
-                }, {})
-
-                // Convert to array and sort
-                const dailyEnrollmentsArray = Object.values(
-                    dailyEnrollments
-                ).sort((a, b) => new Date(a.date) - new Date(b.date))
-
-                // Group ages
-                enrollments.forEach((enrollment) => {
-                    if (enrollment.age === 0) {
-                        ageGroups[4].value++
-                    } else if (enrollment.age < 14) {
-                        ageGroups[0].value++
-                    } else if (enrollment.age < 25) {
-                        ageGroups[1].value++
-                    } else if (enrollment.age < 55) {
-                        ageGroups[2].value++
-                    } else {
-                        ageGroups[3].value++
-                    }
-                })
-
-                // Calculate occupancy rate
-                const totalCapacity = courses.reduce(
-                    (sum, course) => sum + course.tickets,
-                    0
-                )
-                const enrollmentRate =
-                    totalCapacity > 0
-                        ? (enrollments.length / totalCapacity) * 100
-                        : 0
-
-                setMetrics({
-                    totalCourses: courses.length,
-                    totalEnrollments: enrollments.length,
-                    ageGroups,
-                    genderDistribution,
-                    enrollmentRate,
-                    coursesMetrics,
-                    firstTimeRate,
-                    dailyEnrollments: dailyEnrollmentsArray,
-                    enrollments,
-                })
-            } catch (error) {
-                console.error(
-                    'Error al obtener los datos del dashboard:',
-                    error
-                )
-            } finally {
-                setLoading(false)
-            }
-        }
-
-        fetchData()
-    }, [])
-
+    // Function for filtering enrollments by date
     const getFilteredEnrollments = () => {
-        if (!metrics.dailyEnrollments.length) return []
+        if (!metrics.dailyEnrollments || metrics.dailyEnrollments.length === 0)
+            return []
 
         return metrics.dailyEnrollments
             .filter((entry) => {
@@ -339,7 +205,11 @@ const AdminDashboard = () => {
     }
 
     const getFilteredDetailsMetrics = () => {
-        // Primero filtramos los enrollments por fecha
+        if (!metrics.enrollments || !metrics.coursesMetrics) {
+            return null
+        }
+
+        // Filter enrollments by date
         const filteredEnrollments = metrics.enrollments.filter((enrollment) => {
             const enrollmentDate = new Date(enrollment.createdAt)
                 .toISOString()
@@ -348,18 +218,36 @@ const AdminDashboard = () => {
         })
 
         if (selectedCourse === 'all') {
-            // Para la vista general
+            // Calculate total enrollments
+            const totalMinors = filteredEnrollments.reduce(
+                (sum, enrollment) =>
+                    sum + (enrollment.minors ? enrollment.minors.length : 0),
+                0
+            )
+
             const courseTotals = metrics.coursesMetrics.map((course) => {
                 const courseEnrollments = filteredEnrollments.filter(
                     (e) => e.id_course === course.id
                 )
+
+                //  Count minors by course
+                const courseMinors = courseEnrollments.reduce(
+                    (sum, enrollment) => sum + (enrollment.minors?.length || 0),
+                    0
+                )
+
+                const totalInCourse = courseEnrollments.length + courseMinors
+
                 return {
                     ...course,
-                    filteredTotal: courseEnrollments.length,
-                    filteredOccupancyRate:
-                        (courseEnrollments.length / course.capacity) * 100,
+                    filteredTotal: totalInCourse,
+                    capacity: course.capacity,
+                    occupancyRate: (totalInCourse / course.capacity) * 100,
                 }
             })
+
+            // Total adults and minors
+            const totalInscritos = filteredEnrollments.length + totalMinors
 
             return {
                 totalCourses: metrics.coursesMetrics.length,
@@ -372,19 +260,15 @@ const AdminDashboard = () => {
                         sum + (course.capacity - course.filteredTotal),
                     0
                 ),
-                totalInscritos: courseTotals.reduce(
-                    (sum, course) => sum + course.filteredTotal,
-                    0
-                ),
+                totalInscritos: totalInscritos,
                 mediaOcupacion:
                     courseTotals.reduce(
-                        (sum, course) => sum + course.filteredOccupancyRate,
+                        (sum, course) => sum + course.occupancyRate,
                         0
                     ) / courseTotals.length,
                 mediaEdad: getAverageAge(filteredEnrollments),
             }
         } else {
-            // Para un curso específico
             const courseEnrollments = filteredEnrollments.filter(
                 (e) => e.id_course.toString() === selectedCourse
             )
@@ -392,28 +276,47 @@ const AdminDashboard = () => {
                 (c) => c.id.toString() === selectedCourse
             )
 
-            const firstTimeCount = courseEnrollments.filter(
-                (e) => e.is_first_activity
-            ).length
+            if (!selectedCourseMetric) {
+                return null
+            }
+
+            // Count the minors for the selected course
+            const totalMinors = courseEnrollments.reduce(
+                (sum, enrollment) => sum + (enrollment.minors?.length || 0),
+                0
+            )
+
+            const totalParticipants = courseEnrollments.length + totalMinors
+
+            // Count the first time 
+            const firstTimeCount = courseEnrollments.reduce(
+                (sum, enrollment) => {
+                    let count = enrollment.is_first_activity ? 1 : 0
+                    if (enrollment.is_first_activity && enrollment.minors) {
+                        count += enrollment.minors.length
+                    }
+                    return sum + count
+                },
+                0
+            )
 
             return {
-                capacidadTotal: selectedCourseMetric?.capacity || 0,
-                totalInscritos: courseEnrollments.length,
+                capacidadTotal: selectedCourseMetric.capacity,
+                totalInscritos: totalParticipants,
                 ticketsDisponibles:
-                    (selectedCourseMetric?.capacity || 0) -
-                    courseEnrollments.length,
+                    selectedCourseMetric.capacity - totalParticipants,
                 ocupacion:
-                    (courseEnrollments.length /
-                        (selectedCourseMetric?.capacity || 1)) *
-                    100,
-                primeraActividad:
-                    (firstTimeCount / courseEnrollments.length) * 100,
+                    (totalParticipants / selectedCourseMetric.capacity) * 100,
+                primeraActividad: (firstTimeCount / totalParticipants) * 100,
                 mediaEdad: getAverageAge(courseEnrollments),
             }
         }
     }
 
+    // Function to calculate the average age of the enrollments
     const getFilteredAgeGroups = () => {
+        if (!metrics.enrollments) return []
+
         let relevantEnrollments = metrics.enrollments.filter((enrollment) => {
             const enrollmentDate = new Date(enrollment.createdAt)
                 .toISOString()
@@ -447,12 +350,249 @@ const AdminDashboard = () => {
             } else {
                 ageGroups[3].value++
             }
+
+            // Add minors ages
+            if (enrollment.minors) {
+                enrollment.minors.forEach((minor) => {
+                    if (minor.age < 14) {
+                        ageGroups[0].value++
+                    }
+                })
+            }
         })
 
         return ageGroups
     }
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                setLoading(true)
+                const [courses, enrollments] = await Promise.all([
+                    getAllCourses(),
+                    getAllEnrollments(),
+                ])
+
+                // Filter enrrollments by date
+                const filteredEnrollments = enrollments.filter((enrollment) => {
+                    const enrollmentDate = new Date(enrollment.createdAt)
+                        .toISOString()
+                        .slice(0, 10)
+                    return (
+                        enrollmentDate >= startDate && enrollmentDate <= endDate
+                    )
+                })
+
+                // Calculate age groups including minors
+                const ageGroups = [
+                    { name: '< 14', value: 0 },
+                    { name: '15-24', value: 0 },
+                    { name: '25-54', value: 0 },
+                    { name: '55+', value: 0 },
+                    { name: 'NS/NC', value: 0 },
+                ]
+
+                // Calculate gender distribution (solo para adultos)
+                const genderCounts = filteredEnrollments.reduce((acc, curr) => {
+                    acc[curr.gender] = (acc[curr.gender] || 0) + 1
+                    return acc
+                }, {})
+
+                const genderDistribution = [
+                    { name: 'Mujer', value: genderCounts['mujer'] || 0 },
+                    { name: 'Hombre', value: genderCounts['hombre'] || 0 },
+                    {
+                        name: 'Otros géneros',
+                        value: genderCounts['otros generos'] || 0,
+                    },
+                    { name: 'NS/NC', value: genderCounts['NS/NC'] || 0 },
+                ]
+
+                // Calculate metrics by course including minors
+                const coursesMetrics = courses.map((course) => {
+                    const courseEnrollments = filteredEnrollments.filter(
+                        (e) => e.id_course === course.id
+                    )
+
+                    const totalMinorsInCourse = courseEnrollments.reduce(
+                        (sum, enrollment) =>
+                            sum + (enrollment.minors?.length || 0),
+                        0
+                    )
+
+                    // Count the number of first-time activities of minors
+                    const firstTimeCount = courseEnrollments.reduce(
+                        (sum, enrollment) => {
+                            let count = enrollment.is_first_activity ? 1 : 0
+                            if (
+                                enrollment.is_first_activity &&
+                                enrollment.minors
+                            ) {
+                                count += enrollment.minors.length
+                            }
+                            return sum + count
+                        },
+                        0
+                    )
+
+                    const totalParticipantsCourse =
+                        courseEnrollments.length + totalMinorsInCourse
+
+                    return {
+                        id: course.id,
+                        name: course.title,
+                        total: totalParticipantsCourse,
+                        capacity: course.tickets || 0,
+                        occupancyRate: course.tickets
+                            ? (totalParticipantsCourse / course.tickets) * 100
+                            : 0,
+                        firstTime: firstTimeCount,
+                        date: course.date,
+                    }
+                })
+
+                // Calculate global total
+                const totalParticipants = coursesMetrics.reduce(
+                    (sum, course) => sum + course.total,
+                    0
+                )
+
+                const totalCapacity = coursesMetrics.reduce(
+                    (sum, course) => sum + course.capacity,
+                    0
+                )
+
+                // Calculate first activity rate including minors
+                const totalFirstTime = coursesMetrics.reduce(
+                    (sum, course) => sum + course.firstTime,
+                    0
+                )
+
+                const firstTimeRate =
+                    totalParticipants > 0
+                        ? (totalFirstTime / totalParticipants) * 100
+                        : 0
+
+                // Calculate enrollment rate
+                const enrollmentRate =
+                    totalCapacity > 0
+                        ? (totalParticipants / totalCapacity) * 100
+                        : 0
+
+                // Aggregate daily enrollments including minors
+                const dailyEnrollments = filteredEnrollments.reduce(
+                    (acc, curr) => {
+                        const date = new Date(curr.createdAt)
+                            .toISOString()
+                            .split('T')[0]
+                        if (!acc[date]) {
+                            acc[date] = {
+                                date,
+                                total: 0,
+                                byCourse: {},
+                            }
+                        }
+
+                        // Add the enrollment
+                        acc[date].total++
+                        // Add the minors
+                        if (curr.minors) {
+                            acc[date].total += curr.minors.length
+                        }
+
+                        if (!acc[date].byCourse[curr.id_course]) {
+                            acc[date].byCourse[curr.id_course] = 0
+                        }
+                        acc[date].byCourse[curr.id_course]++
+                        // Add minors to course count
+                        if (curr.minors) {
+                            acc[date].byCourse[curr.id_course] +=
+                                curr.minors.length
+                        }
+
+                        return acc
+                    },
+                    {}
+                )
+
+                // Group ages including minors
+                filteredEnrollments.forEach((enrollment) => {
+                    if (enrollment.age === 0) {
+                        ageGroups[4].value++
+                    } else if (enrollment.age < 14) {
+                        ageGroups[0].value++
+                    } else if (enrollment.age < 25) {
+                        ageGroups[1].value++
+                    } else if (enrollment.age < 55) {
+                        ageGroups[2].value++
+                    } else {
+                        ageGroups[3].value++
+                    }
+
+                    if (enrollment.minors) {
+                        enrollment.minors.forEach((minor) => {
+                            if (minor.age < 14) {
+                                ageGroups[0].value++
+                            }
+                        })
+                    }
+                })
+
+                setMetrics({
+                    totalCourses: courses.length,
+                    totalEnrollments: totalParticipants,
+                    ageGroups,
+                    genderDistribution,
+                    enrollmentRate,
+                    coursesMetrics,
+                    firstTimeRate,
+                    dailyEnrollments: Object.values(dailyEnrollments).sort(
+                        (a, b) => new Date(a.date) - new Date(b.date)
+                    ),
+                    enrollments: filteredEnrollments,
+                })
+            } catch (error) {
+                console.error(
+                    'Error al obtener los datos del dashboard:',
+                    error
+                )
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchData()
+    }, [startDate, endDate])
+
+    const getAverageAge = (enrollments) => {
+        let allAges = []
+        // Ages of adults
+        const adultAges = enrollments
+            .filter((e) => e.age !== 0)
+            .map((e) => e.age)
+        allAges = [...allAges, ...adultAges]
+
+        // Ages of minors
+        enrollments.forEach((enrollment) => {
+            if (enrollment.minors) {
+                const minorAges = enrollment.minors.map((minor) => minor.age)
+                allAges = [...allAges, ...minorAges]
+            }
+        })
+
+        if (allAges.length === 0) return 0
+        const sum = allAges.reduce((acc, curr) => acc + curr, 0)
+        return (sum / allAges.length).toFixed(1)
+    }
+
+    // Function to handle date change
+    const handleCourseChange = (selectedOption) => {
+        setSelectedCourse(selectedOption.value)
+    }
+
     const getFilteredGenderDistribution = () => {
+        if (!metrics.enrollments) return []
+
         let relevantEnrollments = metrics.enrollments.filter((enrollment) => {
             const enrollmentDate = new Date(enrollment.createdAt)
                 .toISOString()
@@ -466,6 +606,7 @@ const AdminDashboard = () => {
             )
         }
 
+        // Only count adult enrollments
         const genderCounts = relevantEnrollments.reduce((acc, curr) => {
             acc[curr.gender] = (acc[curr.gender] || 0) + 1
             return acc
@@ -482,27 +623,7 @@ const AdminDashboard = () => {
         ]
     }
 
-    const COLORS = ['#ff6600', '#00a1e0', '#28a745', '#6c757d']
-
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-screen">
-                <p>Cargando métricas...</p>
-            </div>
-        )
-    }
-
-    const getAverageAge = (enrollments) => {
-        const validAges = enrollments.filter((e) => e.age !== 0)
-        if (validAges.length === 0) return 0
-        const sum = validAges.reduce((acc, curr) => acc + curr.age, 0)
-        return (sum / validAges.length).toFixed(1)
-    }
-
-    // Function to handle date change
-    const handleCourseChange = (selectedOption) => {
-        setSelectedCourse(selectedOption.value)
-    }
+    const COLORS = ['#ff6600', '#00a1e0', '#28a745', '#6c757d'] // Añadido un color para niños/as
 
     // Personalizated styles for react-select
     const customStyles = {
@@ -514,10 +635,10 @@ const AdminDashboard = () => {
             '&:hover': {
                 borderColor: '#ff7b00',
             },
-            padding: '0 6px', // Ajustamos el padding vertical
+            padding: '0 6px',
             borderRadius: '0',
-            minHeight: '40px', // height-10 de Tailwind es equivalente a 40px
-            height: '40px', // Forzamos la altura exacta
+            minHeight: '40px',
+            height: '40px',
         }),
         option: (provided, state) => ({
             ...provided,
