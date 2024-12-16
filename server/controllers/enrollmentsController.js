@@ -220,18 +220,53 @@ export const updateEnrollmentById = async (req, res) => {
       id_course,
       group_id,
       accepts_newsletter,
-      minors,
-      adults,
+      minors = [],
+      adults = [],
     } = req.body;
 
-    const enrollment = await Enrollment.findByPk(id, { transaction });
-    if (!enrollment) {
+    // Obtener la inscripción actual con menores y adultos
+    const existingEnrollment = await Enrollment.findByPk(id, {
+      include: [
+        { model: Minor, as: 'minors' },
+        { model: Enrollment, as: 'adults', where: { group_id }, required: false },
+      ],
+      transaction,
+    });
+
+    if (!existingEnrollment) {
       await transaction.rollback();
-      return res.status(404).json({ message: "Inscripción no encontrada" });
+      return res.status(404).json({ message: 'Inscripción no encontrada' });
     }
 
-    // Actualizar titular
-    await enrollment.update(
+    // Obtener el curso para verificar los tickets disponibles
+    const course = await Course.findByPk(id_course, { transaction });
+    if (!course) {
+      await transaction.rollback();
+      return res.status(404).json({ message: 'Curso no encontrado' });
+    }
+
+    // Calcular diferencias en menores
+    const currentMinors = existingEnrollment.minors.length;
+    const newMinors = minors.length;
+    const minorsDifference = newMinors - currentMinors;
+
+    // Calcular diferencias en adultos (incluye el titular y otros adultos del grupo)
+    const currentAdults = existingEnrollment.adults.length + 1; // +1 por el titular actual
+    const newAdults = adults.length + 1; // +1 por el titular actualizado
+    const adultsDifference = newAdults - currentAdults;
+
+    // Calcular tickets totales necesarios
+    const totalDifference = minorsDifference + adultsDifference;
+
+    if (totalDifference > 0 && course.tickets < totalDifference) {
+      await transaction.rollback();
+      return res.status(400).json({
+        message: 'No hay suficientes tickets disponibles para completar la inscripción.',
+      });
+    }
+
+    // Actualizar la inscripción principal
+    await existingEnrollment.update(
       {
         fullname,
         email,
@@ -240,68 +275,88 @@ export const updateEnrollmentById = async (req, res) => {
         is_first_activity,
         id_admin,
         id_course,
-        group_id, // Usar el mismo group_id existente
+        group_id,
         accepts_newsletter,
       },
       { transaction }
     );
 
     // Actualizar menores asociados
-    if (minors && minors.length > 0) {
-      for (const minor of minors) {
-        if (minor.id) {
-          await Minor.update(
-            { name: minor.name, age: minor.age },
-            { where: { id: minor.id, enrollment_id: id }, transaction }
-          );
-        } else {
-          await Minor.create({ ...minor, enrollment_id: id }, { transaction });
-        }
+    const existingMinorIds = existingEnrollment.minors.map((minor) => minor.id);
+    const updatedMinorIds = minors.map((minor) => minor.id).filter(Boolean);
+
+    // Eliminar menores que ya no están
+    const minorsToDelete = existingMinorIds.filter(
+      (id) => !updatedMinorIds.includes(id)
+    );
+    if (minorsToDelete.length > 0) {
+      await Minor.destroy({
+        where: { id: minorsToDelete },
+        transaction,
+      });
+    }
+
+    // Crear o actualizar menores
+    for (const minor of minors) {
+      if (minor.id) {
+        // Actualizar menor existente
+        await Minor.update(
+          { name: minor.name, age: minor.age },
+          { where: { id: minor.id, enrollment_id: id }, transaction }
+        );
+      } else {
+        // Crear nuevo menor
+        await Minor.create({ ...minor, enrollment_id: id }, { transaction });
       }
     }
 
-    // Actualizar o agregar segundo adulto
-    if (adults && adults.length > 0) {
-      for (const adult of adults) {
-        if (adult.id) {
-          await Enrollment.update(
-            {
-              fullname: adult.fullname,
-              email: adult.email,
-              gender: adult.gender,
-              age: adult.age,
-            },
-            { where: { id: adult.id, group_id }, transaction }
-          );
-        } else {
-          await Enrollment.create(
-            {
-              fullname: adult.fullname,
-              email: adult.email,
-              gender: adult.gender,
-              age: adult.age,
-              is_first_activity: adult.is_first_activity || false,
-              id_admin: adult.id_admin || id_admin,
-              id_course,
-              group_id,
-            },
-            { transaction }
-          );
-        }
+    // Actualizar o agregar adultos adicionales
+    for (const adult of adults) {
+      if (adult.id) {
+        // Actualizar adulto existente
+        await Enrollment.update(
+          {
+            fullname: adult.fullname,
+            email: adult.email,
+            gender: adult.gender,
+            age: adult.age,
+          },
+          { where: { id: adult.id, group_id }, transaction }
+        );
+      } else {
+        // Crear nuevo adulto
+        await Enrollment.create(
+          {
+            fullname: adult.fullname,
+            email: adult.email,
+            gender: adult.gender,
+            age: adult.age,
+            is_first_activity: adult.is_first_activity || false,
+            id_admin: adult.id_admin || id_admin,
+            id_course,
+            group_id,
+          },
+          { transaction }
+        );
       }
+    }
+
+    // Actualizar tickets del curso
+    if (totalDifference !== 0) {
+      course.tickets -= totalDifference;
+      await course.save({ transaction });
     }
 
     // Confirmar transacción
     await transaction.commit();
-
-    // Respuesta exitosa
-    res.status(200).json({ message: "Inscripción actualizada con éxito." });
+    res.status(200).json({ message: 'Inscripción actualizada con éxito.' });
   } catch (error) {
     await transaction.rollback();
-    console.error("Error al actualizar la inscripción:", error);
+    console.error('Error al actualizar la inscripción:', error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 // DELETE ENROLLMENT BY ID
