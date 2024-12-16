@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import MainForm from "../components/MainForm";
+import Summary from "../components/SummaryInscriptionForm"; // Asegúrate de que el componente está importado
 import { createEnrollment } from "../services/enrollmentServices";
 import { getCourseById } from "../services/coursesServices";
 import formImage from "../assets/img/imageform.svg";
@@ -8,11 +9,14 @@ import { useParams } from "react-router-dom";
 const FormPage = () => {
   const { id } = useParams(); // Capturar el ID del curso desde la URL
   const [includeMinor, setIncludeMinor] = useState(false);
+  const [includeAdult, setIncludeAdult] = useState(false);
   const [formData, setFormData] = useState({});
   const [minors, setMinors] = useState([]);
+  const [adult, setAdult] = useState(null);
   const [courseTitle, setCourseTitle] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Estado de carga
   const [responseMessage, setResponseMessage] = useState(null); // Mensajes de respuesta
+  const [showSummary, setShowSummary] = useState(false); // Controlar si mostrar el resumen
 
   // Obtener el título del curso al cargar la página
   useEffect(() => {
@@ -45,54 +49,62 @@ const FormPage = () => {
     return true;
   };
 
- const handleAddMinor = (minorData) => {
-  setMinors((prev) => [...prev, minorData]);
-};
+  const handleAddMinor = (minorData) => {
+    setMinors((prev) => [...prev, minorData]);
+  };
 
-const handleSendToBackend = async () => {
-  if (!validateFormData()) return;
+  const handleAddAdult = (adultData) => {
+    setAdult(adultData); // Solo se permite un adulto
+  };
 
-  setIsLoading(true);
-  setResponseMessage(null);
+  const handleRemoveAdult = () => {
+    setAdult(null); // Eliminar al adulto
+  };
 
-  try {
-    const mainEnrollment = await createEnrollment(formData);
-
-    // Obtener el enrollment_id de la respuesta del servidor
-    const enrollmentId = mainEnrollment?.enrollment_id; // Cambia "enrollment_id" si el campo tiene otro nombre
-    if (!enrollmentId) {
-      throw new Error('No se pudo obtener el enrollment_id del servidor.');
+  const handleShowSummary = () => {
+    if (validateFormData()) {
+      setShowSummary(true); // Activar el resumen
     }
+  };
 
-    // Crear menores asociados al enrollment_id
-    const minorRequests = minors.map((minor) =>
-      createMinor({ ...minor, enrollment_id: enrollmentId })
-    );
-  
-    await Promise.all([...minorRequests]);
+  const handleSendToBackend = async () => {
+    if (!validateFormData()) return;
 
-    setResponseMessage({
-      type: 'success',
-      text: 'Inscripción realizada con éxito.',
-    });
+    setIsLoading(true);
+    setResponseMessage(null);
 
-    setFormData({});
-    setMinors([]);
-    
-  } catch (error) {
-    const errorMessage =
-      error.response?.data?.message ||
-      error.message ||
-      'Ha ocurrido un error inesperado.';
+    try {
+      const payload = {
+        ...formData,
+        minors,
+        adults: adult ? [adult] : [], // Incluir adulto si existe
+      };
+
+      const response = await createEnrollment(payload);
+
       setResponseMessage({
-        type: 'success',
-        text: 'Inscripción realizada con éxito.',
+        type: "success",
+        text: "Inscripción realizada con éxito.",
       });
-  } finally {
-    setIsLoading(false);
-  }
-};
 
+      // Reiniciar formulario
+      setFormData({});
+      setMinors([]);
+      setAdult(null);
+      setShowSummary(false); // Ocultar el resumen tras enviar
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        error.message ||
+        "Ha ocurrido un error inesperado.";
+      setResponseMessage({
+        type: "error",
+        text: errorMessage,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="flex font flex-col items-center justify-center px-4">
@@ -102,16 +114,20 @@ const handleSendToBackend = async () => {
       <div className="flex p-8 m-10 border border-orange flex-col gap-6 lg:flex-col lg:gap-4 px-4">
         <div className="flex flex-col-reverse lg:flex-row lg:justify-between items-center gap-6">
           <div>
-          <MainForm
-        courseId={id}
-        setIncludeMinor={setIncludeMinor}
-        includeMinor={includeMinor}
-        formData={formData}
-        setFormData={setFormData}
-        onAddMinor={handleAddMinor}
-        minors={minors}
-      />
-          
+            <MainForm
+              courseId={id}
+              setIncludeMinor={setIncludeMinor}
+              includeMinor={includeMinor}
+              setIncludeAdult={setIncludeAdult}
+              includeAdult={includeAdult}
+              formData={formData}
+              setFormData={setFormData}
+              onAddMinor={handleAddMinor}
+              minors={minors}
+              onAddAdult={handleAddAdult}
+              adult={adult}
+              onRemoveAdult={handleRemoveAdult}
+            />
           </div>
           <div className="flex-1">
             <img
@@ -122,18 +138,28 @@ const handleSendToBackend = async () => {
           </div>
         </div>
 
-        <button
-          className="bg-orange text-white px-4 py-2 rounded-md font-semibold mt-4 disabled:opacity-50"
-          onClick={handleSendToBackend}
-          disabled={isLoading}
-        >
-          {isLoading ? "Enviando..." : "Siguiente"}
-        </button>
+        {!showSummary ? (
+          <button
+            className="bg-orange text-white px-4 py-2 rounded-md font-semibold mt-4 disabled:opacity-50"
+            onClick={handleShowSummary} // Mostrar el resumen
+            disabled={isLoading}
+          >
+            {isLoading ? "Cargando..." : "Siguiente"}
+          </button>
+        ) : (
+          <button
+            className="bg-green-500 text-white px-4 py-2 rounded-md font-semibold mt-4 disabled:opacity-50"
+            onClick={handleSendToBackend} // Enviar al backend
+            disabled={isLoading}
+          >
+            {isLoading ? "Enviando..." : "Confirmar Inscripción"}
+          </button>
+        )}
 
         {responseMessage && (
           <p
             className={`text-center mt-4 ${
-              responseMessage.type === "tas bien wey y algo esta mal del front"
+              responseMessage.type === "error"
                 ? "text-red-500"
                 : "text-green-500"
             }`}
@@ -142,6 +168,10 @@ const handleSendToBackend = async () => {
           </p>
         )}
       </div>
+
+      {/* Renderizar el resumen condicionalmente */}
+      {showSummary && <Summary formData={formData} minors={minors} adult={adult} courseTitle={courseTitle}
+  handleSubmit={handleSendToBackend} />}
     </div>
   );
 };
