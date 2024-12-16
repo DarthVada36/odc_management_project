@@ -14,6 +14,7 @@ import pdfIcon from '../assets/icons/file-pdf.svg'
 import ConfirmationModal from './ConfirmationModal'
 
 const EnrollmentsTable = () => {
+    const { authRequest } = useAuth() // Añadir esta línea aquí
     const [enrollments, setEnrollments] = useState([])
     const [filteredEnrollments, setFilteredEnrollments] = useState([])
     const [loading, setLoading] = useState(true)
@@ -133,9 +134,14 @@ const EnrollmentsTable = () => {
     const handleConfirmDelete = async () => {
         try {
             if (selectedEnrollment) {
-                await deleteEnrollmentById(selectedEnrollment.id)
+                await authRequest(
+                    `http://localhost:3000/api/enrollments/${selectedEnrollment.id}`,
+                    {
+                        method: 'DELETE',
+                    }
+                )
                 fetchEnrollments()
-                setCurrentPage(1) // Reinicia la página tras eliminar
+                setCurrentPage(1)
             }
             setIsModalOpen(false)
         } catch (error) {
