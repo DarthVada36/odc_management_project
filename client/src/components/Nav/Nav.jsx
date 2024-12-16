@@ -11,13 +11,14 @@ const Nav = () => {
     const [isInitialMenuOpen, setIsInitialMenuOpen] = useState(false)
     const [isFloatingMenuOpen, setIsFloatingMenuOpen] = useState(false)
     const [activeLabel, setActiveLabel] = useState(null)
-    const [activeLang, setActiveLang] = useState('ES')
     const [showFloating, setShowFloating] = useState(false)
     const [hasAnimated, setHasAnimated] = useState(false)
     const { isAuthenticated, logout, admin } = useAuth()
     const location = useLocation()
     const navigate = useNavigate()
     const isDashboardRoute = location.pathname.includes('/dashboard')
+    const isCoursesPage =
+        location.pathname === '/' || location.pathname === '/courses'
 
     // Solo usamos el dashboard context si estamos en la ruta correcta
     let dashboardContext = { setActiveComponent: () => {} }
@@ -39,18 +40,14 @@ const Nav = () => {
 
     // Determine the menu items based on the current route
     const getMenuItems = () => {
-        if (location.pathname === '/access-admin') {
+        if (location.pathname === '/access-admin' || isCoursesPage) {
             return []
         }
 
-        const isHome = location.pathname === '/'
         const isDashboardRoute = ['/dashboard', '/new-admin'].includes(
             location.pathname
         )
-
-        if (isHome) {
-            return ['Inscripción', 'Cursos', 'Contacto']
-        }
+        const isInscriptionRoute = location.pathname.startsWith('/inscription/')
 
         if (isDashboardRoute) {
             const dashboardItems = [
@@ -74,13 +71,11 @@ const Nav = () => {
                 .map((item) => item.label)
         }
 
-        return ['Panel de administrador']
-    }
+        if (isInscriptionRoute) {
+            return []
+        }
 
-    const handleLanguageChange = (lang) => {
-        setActiveLang(lang)
-        setIsFloatingMenuOpen(false)
-        setIsInitialMenuOpen(false)
+        return ['Panel de administrador']
     }
 
     const currentMenuItems = getMenuItems()
@@ -221,14 +216,10 @@ const Nav = () => {
             navigate('/dashboard')
         } else {
             switch (item) {
-                case 'Cursos':
-                    navigate('/courses')
-                    break
                 case 'Inscripción':
                     navigate('/inscription')
                     break
                 case 'Contacto':
-                    // Manejar contacto
                     break
                 default:
                     break
@@ -249,44 +240,8 @@ const Nav = () => {
 
         return (
             <>
-                {/* Language selector - desktop only */}
-                <div className="items-center justify-end hidden h-10 pb-1  font-bold font-helvetica-w20-bold text-[0.9rem] bg-black border-b border-neutral-600 laptop:flex desktop:w-full">
-                    <motion.div
-                        className="flex items-center gap-2 mt-[0.8rem] desktop:mr-[2.2rem] laptop:-mr-[4rem] font-bold text-white desktop:px-36 laptop:px-24 tablet:px-12"
-                        initial={!hasAnimated ? { y: -20, opacity: 0 } : false}
-                        animate={!hasAnimated ? { y: 0, opacity: 1 } : false}
-                        transition={{ duration: 0.8 }}
-                    >
-                        <button
-                            onClick={() => handleLanguageChange('ES')}
-                            className={`relative pb-[0.55rem] transition-colors duration-300 ease-in-out
-                            after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[0.3rem] after:transition-colors after:duration-500
-                            ${
-                                activeLang === 'ES'
-                                    ? 'text-primary after:bg-primary'
-                                    : 'text-white hover:text-primary after:bg-transparent'
-                            }`}
-                        >
-                            ES
-                        </button>
-                        <span className="text-neutral-600"></span>
-                        <button
-                            onClick={() => handleLanguageChange('EN')}
-                            className={`relative pb-[0.55rem] transition-colors duration-300 ease-in-out
-                            after:content-[''] after:absolute after:bottom-0 after:left-0 after:w-full after:h-[0.3rem] after:transition-colors after:duration-500
-                            ${
-                                activeLang === 'EN'
-                                    ? 'text-primary after:bg-primary'
-                                    : 'text-white hover:text-primary after:bg-transparent'
-                            }`}
-                        >
-                            EN
-                        </button>
-                    </motion.div>
-                </div>
-
-                {/* Main navbar */}
-                <nav className="flex items-center justify-between w-full h-[6.2rem] tablet:h-[6.31rem] mobile:h-[3.13rem] bg-transparent">
+                {/* Navbar */}
+                <nav className="flex items-center justify-between desktop:w-full h-[6.2rem] tablet:h-[6.31rem] mobile:h-[3.13rem] bg-transparent">
                     {/* Left section with logo and menu */}
                     <motion.div
                         className="flex items-center gap-4 desktop:pl-36 laptop:pl-24 tablet:pl-12 mobile:pl-4"
@@ -363,52 +318,52 @@ const Nav = () => {
                         initial={shouldAnimate ? 'hidden' : 'visible'}
                         animate="visible"
                     >
-                        {/* Login icon */}
-                        {/* <motion.button
-                            variants={shouldAnimate ? containerVariants : {}}
-                            className="p-2 mt-[1.8rem] text-white hover:text-primary transition-colors duration-300 ease-in-out"
-                        >
-                            <img
-                                src={loginAdministratoIcon}
-                                alt="Iniciar sesión"
-                                className="desktop:w-8 desktop:h-8 laptop:w-7 laptop:h-7 tablet:w-7 tablet:h-7 mobile:w-7 mobile:h-7"
-                            />
-                        </motion.button> */}
-
-                        {/* Logout icon */}
-                        {isAuthenticated ? (
-                            <motion.button
-                                onClick={handleLogout}
-                                variants={
-                                    shouldAnimate ? containerVariants : {}
-                                }
-                                className="p-2 text-white transition-colors duration-300 ease-in-out hover:text-primary"
-                            >
-                                <img
-                                    src={sessionLeaveIcon}
-                                    alt="Cerrar sesión"
-                                    className="desktop:w-8 mt-[1.8rem] desktop:h-8 laptop:w-7 laptop:h-7 tablet:w-7 tablet:h-7 mobile:w-7 mobile:h-7"
-                                />
-                            </motion.button>
+                        {/* Username and Logout icon */}
+                        {isAuthenticated && location.pathname !== '/courses' ? (
+                            <div className="flex items-center gap-4">
+                                <motion.span
+                                    variants={
+                                        shouldAnimate ? containerVariants : {}
+                                    }
+                                    className="text-white font-helvetica-w20-bold mt-[1.8rem] desktop:text-base laptop:text-sm tablet:text-sm mobile:text-xs"
+                                >
+                                    {admin?.username}
+                                </motion.span>
+                                <motion.button
+                                    onClick={handleLogout}
+                                    variants={
+                                        shouldAnimate ? containerVariants : {}
+                                    }
+                                    className="p-2 group"
+                                >
+                                    <img
+                                        src={sessionLeaveIcon}
+                                        alt="Cerrar sesión"
+                                        className="desktop:w-8 mt-[1.8rem] desktop:h-8 laptop:w-7 laptop:h-7 tablet:w-7 tablet:h-7 mobile:w-7 mobile:h-7 transition-all duration-300 hover:[filter:invert(47%)_sepia(98%)_saturate(2929%)_hue-rotate(1deg)_brightness(103%)_contrast(106%)]"
+                                    />
+                                </motion.button>
+                            </div>
                         ) : null}
 
                         {/* Menu button - mobile only */}
-                        <button
-                            className="p-2 mt-[1.9rem] mobile:-mr-[0.8rem] text-white laptop:hidden"
-                            onClick={() => setIsMenuOpen(!isMenuOpen)}
-                        >
-                            {isMenuOpen ? (
-                                <HiX
-                                    className={`tablet:w-8 tablet:h-8 mobile:w-8 mobile:h-8 transition-transform duration-300 animate-[spin_0.5s_ease-out]`}
-                                    color="white"
-                                />
-                            ) : (
-                                <IoMenuOutline
-                                    className={`tablet:w-9 tablet:h-9 mobile:w-8 mobile:h-8 transition-transform duration-300 animate-[spin_0.5s_ease-out_reverse]`}
-                                    color="white"
-                                />
-                            )}
-                        </button>
+                        {!isCoursesPage && (
+                            <button
+                                className="p-2 mt-[1.9rem] mobile:-mr-[0.8rem] text-white laptop:hidden"
+                                onClick={() => setIsMenuOpen(!isMenuOpen)}
+                            >
+                                {isMenuOpen ? (
+                                    <HiX
+                                        className={`tablet:w-8 tablet:h-8 mobile:w-8 mobile:h-8 transition-transform duration-300 animate-[spin_0.5s_ease-out]`}
+                                        color="white"
+                                    />
+                                ) : (
+                                    <IoMenuOutline
+                                        className={`tablet:w-9 tablet:h-9 mobile:w-8 mobile:h-8 transition-transform duration-300 animate-[spin_0.5s_ease-out_reverse]`}
+                                        color="white"
+                                    />
+                                )}
+                            </button>
+                        )}
                     </motion.div>
                 </nav>
 
@@ -446,33 +401,6 @@ const Nav = () => {
                             </a>
                         ))}
                     </div>
-
-                    {/* Language selector in mobile menu */}
-                    <div className="flex justify-end gap-2 p-6 py-[0.9rem]  font-bold font-helvetica-w20-bold text-white tablet:text-[14px] text-[13px]">
-                        <button
-                            onClick={() => handleLanguageChange('ES')}
-                            className={`transition-colors duration-300 ease-in-out
-                                ${
-                                    activeLang === 'ES'
-                                        ? 'text-primary'
-                                        : 'text-white hover:text-primary'
-                                }`}
-                        >
-                            ES
-                        </button>
-                        <span className="text-neutral-600"></span>
-                        <button
-                            onClick={() => handleLanguageChange('EN')}
-                            className={`transition-colors duration-300 ease-in-out
-                                ${
-                                    activeLang === 'EN'
-                                        ? 'text-primary'
-                                        : 'text-white hover:text-primary'
-                                }`}
-                        >
-                            EN
-                        </button>
-                    </div>
                 </motion.div>
             </>
         )
@@ -488,7 +416,7 @@ const Nav = () => {
 
             {/* Floating navbar */}
             {showFloating && (
-                <header className="fixed top-0 w-full z-50 bg-black shadow-lg transform transition-transform duration-500 animate-[slideFromTop_0.5s_ease-out]">
+                <header className="fixed top-0 w-full z-[9999] bg-black shadow-lg transform transition-transform duration-500 animate-[slideFromTop_0.5s_ease-out]">
                     <NavContent isFloating={true} />
                 </header>
             )}

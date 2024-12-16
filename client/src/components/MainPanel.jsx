@@ -1,71 +1,60 @@
-import React, { useState, useEffect } from 'react';
-import { getAllEnrollments } from '../services/enrollmentServices.js';
-import EnrollmentsTable from './EnrollmentsTable.jsx';
-import SearchBar from './SearchBar.jsx';
-import EmailEditorComponent from './EmailEditorComponent.jsx';
+import React, { useState, useEffect } from "react";
+import SearchBar from "./SearchBar.jsx";
+import EmailEditorComponent from "./EmailEditorComponent.jsx";
 
-const AdminPanel = () => {
-  const [enrollments, setEnrollments] = useState([]);
-  const [filteredEnrollments, setFilteredEnrollments] = useState([]);
-  const [showEmailEditor, setShowEmailEditor] = useState(false);
-  const [selectedRecipients, setSelectedRecipients] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+const [showEmailEditor, setShowEmailEditor] = useState(false);
+const [selectedRecipients, setSelectedRecipients] = useState([]);
 
-  const fetchEnrollments = async () => {
-    try {
-      const data = await getAllEnrollments();
-      setEnrollments(data);
-      setFilteredEnrollments(data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error al obtener los usuarios:', error);
-      setError(error);
-      setLoading(false);
-    }
-  };
+const handleSearch = (searchTerm) => {
+  const lowerCaseSearch = searchTerm.toLowerCase();
+  const filtered = enrollments.filter(
+    (enrollment) =>
+      enrollment.fullname.toLowerCase().includes(lowerCaseSearch) ||
+      enrollment.email.toLowerCase().includes(lowerCaseSearch)
+  );
+  setFilteredEnrollments(filtered);
+};
 
-  useEffect(() => {
-    fetchEnrollments();
-  }, []);
+const handleOpenEmailEditor = (recipients) => {
+  setSelectedRecipients(recipients);
+  setShowEmailEditor(true);
+};
 
-  const handleSearch = (searchTerm) => {
-    const lowerCaseSearch = searchTerm.toLowerCase();
-    const filtered = enrollments.filter(
-      (enrollment) =>
-        enrollment.fullname.toLowerCase().includes(lowerCaseSearch) ||
-        enrollment.email.toLowerCase().includes(lowerCaseSearch)
-    );
-    setFilteredEnrollments(filtered);
-  };
+const handleCloseEmailEditor = () => {
+  setShowEmailEditor(false);
+};
 
-  const handleOpenEmailEditor = (recipients) => {
-    setSelectedRecipients(recipients);
-    setShowEmailEditor(true);
-  };
-
-  const handleCloseEmailEditor = () => {
-    setShowEmailEditor(false);
-  };
-
+const MainPanel = ({ title, totalItems, children, onSearch }) => {
   return (
-    <div className='flex flex-col min-h-screen bg-white p-4'>
-      <div className='flex justify-between items-center mb-4'>
-        <h1 className='text-orange text-2xl font-bold'>Gestión de Inscripciones</h1>
-        <SearchBar onSearch={handleSearch} />
+    <div className="flex flex-col flex-1 bg-neutral-100">
+      <div className="px-4 pt-6 pb-8 mobile:px-4 tablet:px-8 laptop:px-8 desktop:px-8">
+        <div className="flex flex-col mb-2 mobile:mb-2 tablet:flex-row tablet:justify-between tablet:items-center">
+          <h1 className="text-xl font-bold text-black font-helvetica-w20-bold tablet:text-2xl">
+            {title}
+          </h1>
+        </div>
+        <div className="mt-2 mb-3 border-t-2 border-orange"></div>
+        <div className="flex flex-col py-2 mobile:flex-col tablet:flex-row tablet:justify-between tablet:items-center">
+          <p className="mb-2 text-black font-helvetica-w20-bold tablet:mb-0">
+            Total: {totalItems}
+          </p>
+          <div className="flex items-right desktop:w-[23%] mobile:w-ful tablet:w-[27.5%] laptop:w-1/3 ">
+            <SearchBar onSearch={onSearch} />
+          </div>
+        </div>
       </div>
-      <EnrollmentsTable
-        users={filteredEnrollments}
-        onSendEmail={handleOpenEmailEditor}
-      />
       {showEmailEditor && (
         <EmailEditorComponent
           onClose={handleCloseEmailEditor}
           recipients={selectedRecipients}
         />
       )}
+      {/* Content section */}
+      <div className="flex-1 px-4 pb-6 mobile:px-4 tablet:px-8 laptop:px-8 desktop:px-8">
+        {children}
+      </div>
     </div>
   );
 };
 
-export default AdminPanel;
+export default MainPanel;

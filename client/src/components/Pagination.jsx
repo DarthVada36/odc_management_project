@@ -39,7 +39,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
             ).map((page) => (
                 <button
                     key={page}
-                    className={`px-4 py-2 text-black transition-colors duration-300 font-helvetica-w20-bold rounded-none border-2 border-black ${
+                    className={`px-4 py-2 text-black transition-colors duration-300 font-helvetica-w20-bold rounded-none ${
                         currentPage === page
                             ? 'bg-orange text-white'
                             : 'bg-white hover:bg-black hover:text-white'

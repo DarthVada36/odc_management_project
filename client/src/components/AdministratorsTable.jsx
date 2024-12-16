@@ -228,7 +228,7 @@ const AdministratorsTable = () => {
                                                 onClick={() =>
                                                     handleDeleteClick(admin)
                                                 }
-                                                className="px-4 py-2 text-black transition-all duration-300 border-2 border-black bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
+                                                className="px-4 py-2 text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
                                             >
                                                 Eliminar
                                             </button>
@@ -281,17 +281,12 @@ const AdministratorsTable = () => {
                                     }
                                 )
                             }
-                            setFilteredAdmins([
-                                ...filteredAdmins,
-                                ...(isEditing
-                                    ? [
-                                          {
-                                              ...selectedAdmin,
-                                              ...formData,
-                                          },
-                                      ]
-                                    : [formData]),
-                            ])
+
+                            // Refrescar la lista completa de administradores
+                            const updatedAdmins = await getAllAdmins()
+                            setAdmins(updatedAdmins)
+                            setFilteredAdmins(updatedAdmins)
+
                             setShowModal(false)
                             return true
                         } catch (error) {
