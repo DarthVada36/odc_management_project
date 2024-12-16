@@ -365,45 +365,64 @@ export const deleteEnrollmentById = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Buscar la inscripción principal
     const enrollment = await Enrollment.findByPk(id, { transaction });
     if (!enrollment) {
       await transaction.rollback();
       return res.status(404).json({ message: 'Inscripción no encontrada' });
     }
 
+    // Buscar el curso asociado
+    const course = await Course.findByPk(enrollment.id_course, { transaction });
+    if (!course) {
+      await transaction.rollback();
+      return res.status(404).json({ message: 'Curso no encontrado' });
+    }
+
+    // Contar menores asociados a la inscripción principal
+    const minorsCount = await Minor.count({
+      where: { enrollment_id: id },
+      transaction,
+    });
+
+    // Buscar adultos asociados al mismo group_id (excluyendo la inscripción principal)
+    const adultsCount = await Enrollment.count({
+      where: {
+        group_id: enrollment.group_id,
+        id: { [sequelize.Op.ne]: id }, // Excluir la inscripción principal
+      },
+      transaction,
+    });
+
+    // Calcular el total de tickets a devolver
+    const totalTicketsToRefund = 1 + minorsCount + adultsCount; // +1 por el adulto principal
+
+    // Actualizar los tickets del curso
+    course.tickets += totalTicketsToRefund;
+    await course.save({ transaction });
+
+    // Eliminar menores asociados
     await Minor.destroy({ where: { enrollment_id: id }, transaction });
+
+    // Eliminar adultos asociados al mismo group_id
+    await Enrollment.destroy({
+      where: {
+        group_id: enrollment.group_id,
+        id: { [sequelize.Op.ne]: id }, // Excluir la inscripción principal
+      },
+      transaction,
+    });
+
+    // Eliminar la inscripción principal
     await enrollment.destroy({ transaction });
 
+    // Confirmar la transacción
     await transaction.commit();
     res.status(200).json({ message: 'Inscripción eliminada correctamente' });
   } catch (error) {
     await transaction.rollback();
+    console.error('Error al eliminar la inscripción:', error);
     res.status(500).json({ message: error.message });
   }
 };
 
-// GET ALL ENROLLMENTS BY COURSE ID
-export const getAllEnrollmentsByCourseId = async (req, res) => {
-  try {
-    const enrollments = await Enrollment.findAll({
-      include: [
-        {
-          model: Course,
-          as: 'course',
-          attributes: ['title'], // Solo incluye el título del curso
-        },
-        {
-          model: Minor,
-          as: 'minors',
-          attributes: ['id', 'name', 'age'],
-        },
-      ],
-      where: {
-        id_course: req.params.id,
-      },
-    });
-    res.status(200).json(enrollments);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-};
