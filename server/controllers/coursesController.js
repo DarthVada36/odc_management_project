@@ -34,6 +34,51 @@ export const createCourse = async (req, res) => {
         res.status(500).json({ message: 'Error al crear el curso', error: error.message });
     }
 };
+
+//UPDATE COURSE
+export const updateCourse = async (req, res) => {
+    try {
+        const course = await Course.findByPk(req.params.id);
+        if (!course) {
+            return res.status(404).json({ message: 'No se encontró el curso' });
+        }
+
+        await course.update(req.body);
+        const updatedCourse = await Course.findByPk(req.params.id);
+        res.status(200).json(updatedCourse);
+    } catch (error) {
+        res.status(500).json({ message: 'Error al actualizar el curso', error: error.message });
+    }
+};
+
+//DELETE COURSE
+export const deleteCourseFromDb = async (req, res) => {
+    try {
+        const course = await Course.findByPk(req.params.id);
+        if (!course) {
+            return res.status(404).json({ message: 'No se encontró el curso' });
+        }
+
+        // Verificar si hay inscripciones asociadas
+        const enrollments = await Enrollment.findAll({
+            where: {
+                id_course: req.params.id
+            }
+        });
+
+        if (enrollments.length > 0) {
+            return res.status(400).json({ 
+                message: 'No se puede eliminar el curso porque tiene inscripciones asociadas'
+            });
+        }
+
+        await course.destroy();
+        res.status(200).json({ message: 'Curso eliminado correctamente' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error al eliminar el curso', error: error.message });
+    }
+};
+
 // // GET ALL STUDENTS ENROLLED BY COURSE (incluyed course)
 // export const getStudentsByCourse = async (req, res) => {
 //     try {
@@ -96,4 +141,3 @@ export const getStudentsByCourse = async (req, res) => {
         res.status(500).json({ message: 'Error al obtener los estudiantes inscritos', error: error.message });
     }
 };
-
