@@ -1,15 +1,20 @@
-import { config } from 'dotenv'
+import { config } from 'dotenv';
 
-config()
+config();
 
-export const DB_PASSWORD = process.env.DB_PASSWORD
-export const DB_HOST = process.env.DB_HOST
-export const DB_USER = process.env.DB_USER
-export const DB_DEV_NAME = process.env.DB_DEV_NAME
-export const DB_PORT = process.env.DB_PORT
-export const PORT = process.env.PORT
-export const DB_TEST_NAME = process.env.DB_TEST_NAME
-export const NODE_ENV = process.env.NODE_ENV
-export const JWT_SECRET = process.env.JWT_SECRET
+export const DB_PASSWORD = process.env.DB_PASSWORD;
+export const DB_HOST = process.env.DB_HOST;
+export const DB_USER = process.env.DB_USER;
+export const DB_DEV_NAME = process.env.DB_DEV_NAME;
+export const DB_PORT = process.env.DB_PORT;
+export const PORT = process.env.PORT;
+export const DB_TEST_NAME = process.env.DB_TEST_NAME;
+export const NODE_ENV = process.env.NODE_ENV;
+export const JWT_SECRET = process.env.JWT_SECRET;
 
-console.log(PORT)
+// Añade las credenciales de Unlayer
+export const UNLAYER_PROJECT_ID = process.env.UNLAYER_PROJECT_ID;
+export const UNLAYER_API_KEY = process.env.UNLAYER_API_KEY;
+
+console.log(PORT);
+console.log(UNLAYER_PROJECT_ID); // Solo para depuración, elimínalo en producción
