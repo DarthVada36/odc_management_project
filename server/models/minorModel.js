@@ -14,6 +14,10 @@ const Minor = connectionDb.define('Minor', {
     age: {
         type: DataTypes.INTEGER,
         allowNull: false,
+        validate: {
+            min: 0,
+            max: 14,
+        },
     },
     enrollment_id: {
         type: DataTypes.INTEGER,

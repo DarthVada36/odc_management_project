@@ -11,8 +11,8 @@ import { checkRol } from '../middleware/rolMiddleware.js'
 
 const router = express.Router()
 
-router.post('/', authMiddleware, checkRol(['superadmin']), createRole)
-router.get('/', authMiddleware, checkRol(['superadmin']), getRoles)
+router.post('/', createRole)
+router.get('/', getRoles)
 router.get('/:id', authMiddleware, checkRol(['superadmin']), getRoleById)
 // router.put('/:id', updateRole)
 // router.delete('/:id', deleteRole)

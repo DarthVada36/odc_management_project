@@ -1,25 +1,44 @@
-import React from 'react';
+import React from 'react'
+import { useAuth } from '../context/AuthContext'
+import { useDashboard } from '../context/DashboardContext'
+
 const Sidebar = () => {
+    const { activeComponent, setActiveComponent } = useDashboard()
+    const { admin } = useAuth()
+
+    const menuItems = [
+        { id: 'dashboard', label: 'Dashboard' },
+        { id: 'administrators', label: 'Administradores', requiredRole: 1 },
+        { id: 'enrollments', label: 'Inscripciones' },
+        { id: 'courses', label: 'Cursos' },
+    ]
+
+    const filteredMenuItems = menuItems.filter(
+        (item) => !item.requiredRole || admin?.role_id === item.requiredRole
+    )
+
     return (
-        <div className='bg-black text-white p-4 border-orange w-full md:w-1/4 min-h-screen flex flex-col'>
-            {/* Título del Sidebar */}
-            <div className='text-center text-orange font-bold text-xl mb-4 p-4'>Panel Administrador</div>
-            {/* Línea separadora naranja */}
-            <div className="border-t-2 border-orange"></div>
-             {/* Lista de opciones */}
-            <ul className='flex flex-col gap-4 p-8'>
-            
-                <li className='text-center font-bold hover:text-orange transition-colors cursor-pointer'>Dasboard</li>
-                <div className="border-t-2 border-orange mt-2"></div>
-                <li className='text-center font-bold hover:text-orange transition-colors cursor-pointer'>Administradores</li>
-                <div className="border-t-2 border-orange mt-2"></div>
-                <li className='text-center font-bold hover:text-orange transition-colors cursor-pointer'>Cursos</li>
-                <div className="border-t-2 border-orange mt-2"></div>
-                <li className='text-center font-bold hover:text-orange transition-colors cursor-pointer'>Inscripciones</li>
-                
-            </ul>        
+        <div className="hidden laptop:block w-[28.4rem] min-h-screen bg-black">
+            <ul className="flex flex-col">
+                {filteredMenuItems.map((item) => (
+                    <React.Fragment key={item.id}>
+                        <li
+                            onClick={() => setActiveComponent(item.id)}
+                            className={`px-8 py-4 font-helvetica-w20-bold transition-all duration-300 cursor-pointer
+                                ${
+                                    activeComponent === item.id
+                                        ? 'text-primary'
+                                        : 'text-white hover:text-primary'
+                                }`}
+                        >
+                            {item.label}
+                        </li>
+                        <div className="border-t border-neutral-600"></div>
+                    </React.Fragment>
+                ))}
+            </ul>
         </div>
-    ) 
+    )
 }
 
-export default Sidebar;
+export default Sidebar

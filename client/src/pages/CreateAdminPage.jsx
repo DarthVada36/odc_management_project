@@ -1,5 +1,5 @@
-import React from 'react';
-import CreateAdminForm from '../components/CreateAdminForm';
+import React from 'react'
+import CreateAdminForm from '../components/CreateAdminForm'
 
 const CreateAdminPage = () => {
   return (

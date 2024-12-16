@@ -49,6 +49,8 @@ app.use('/api/admins', adminRoutes)
 app.use('/api/mailer', mailerRoutes);
 app.use('/api/templates', templateRoutes);
 
+
+
 const startServer = async () => {
     try {
         await initializeDb()

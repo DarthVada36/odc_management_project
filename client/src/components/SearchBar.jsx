@@ -1,21 +1,20 @@
-import React from "react";
+import React from 'react'
 
 const SearchBar = ({ onSearch }) => {
-  const handleInputChange = (e) => {
-    onSearch(e.target.value); // Llama a la función `handleSearch` en AdminPanel
-  };
+    const handleInputChange = (e) => {
+        onSearch(e.target.value)
+    }
 
-  return (
-    <div className="flex items-center justify-right md:justify-end p-8">
-    <input
-      type="text"
-      placeholder="Buscar inscripciones..."
-      className="border border-orange rounded-md p-1 text-sm w-28 sm:w-40 md:w-60 max-w-xs sm:max-w-md md:max-w-lg"
-      //px-3 py-2 text-sm w-full max-w-xs sm:max-w-md md:max-w-lg focus:outline-none focus:ring focus:ring-orange-300"
-      onChange={handleInputChange}
-    />
-    </div>
-  );
-};
+    return (
+        <div className="flex items-center justify-end w-full">
+            <input
+                type="text"
+                placeholder="Buscar"
+                className="w-full p-2 transition-colors duration-300 border-2 border-black outline-none mobile:p-2 tablet:p-3 laptop:p-3 desktop:p-3 mobile:text-sm tablet:text-base laptop:text-base desktop:text-base placeholder-neutral-500 hover:border-primary focus:border-primary ring-0 font-helvetica-w20-bold"
+                onChange={handleInputChange}
+            />
+        </div>
+    )
+}
 
-export default SearchBar;
+export default SearchBar

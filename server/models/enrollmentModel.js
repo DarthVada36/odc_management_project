@@ -15,13 +15,18 @@ const Enrollment = connectionDb.define('Enrollment', {
         type: DataTypes.STRING,
         allowNull: false,
         unique: true,
+        validate: {
+            isEmail: true,
+        },
     },
     gender: {
         type: DataTypes.ENUM('mujer', 'hombre', 'otros generos', 'NS/NC'),
+        defaultValue: 'NS/NC',
         allowNull: true,
     },
     age: {
         type: DataTypes.INTEGER,
+        defaultValue: 0,
         allowNull: true,
         validate: {
             min: 0,
@@ -39,23 +44,22 @@ const Enrollment = connectionDb.define('Enrollment', {
             model: 'admins',
             key: 'id',
         },
-        allowNull: false,
+        allowNull: true, //Cambiar a true
     },
     id_course: {
         type: DataTypes.INTEGER,
-        references: {
-            model: 'courses',
-            key: 'id',
-        },
         allowNull: false,
-    },
+        references: {
+          model: 'courses', // Nombre de la tabla
+          key: 'id', // Clave primaria en la tabla de Cursos
+            },
+        },
     group_id: {
         type: DataTypes.INTEGER,
         allowNull: true, // Opcional, asignado automáticamente para inscripciones en grupo
     },
     accepts_newsletter: {
         type: DataTypes.BOOLEAN,
-        allowNull: false,
         defaultValue: false,
     },
     createdAt: {
@@ -68,6 +72,6 @@ const Enrollment = connectionDb.define('Enrollment', {
         allowNull: false,
         defaultValue: DataTypes.NOW,
     },
-})
+});
 
 export default Enrollment
