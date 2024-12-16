@@ -26,16 +26,17 @@ export const getAllCourses = async () => {
     }
 }
 
+
 // Obtener un curso por ID -- GET
 export const getCourseById = async (id) => {
     try {
-        const response = await axios.get(`${API_URL}/${id}`, getAuthHeaders())
-        return response.data
+      const response = await axios.get(`${API_URL}/${id}`);
+      return response.data;
     } catch (error) {
-        console.error('No se pudo obtener el curso indicado:', error.message)
-        throw error
+      console.error("No se pudo obtener el curso indicado:", error.message);
+      throw error;
     }
-}
+  };
 
 // Eliminar un curso por ID -- DELETE
 export const removeCourseById = async (id) => {

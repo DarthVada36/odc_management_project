@@ -8,6 +8,7 @@ import { ProtectedRoute } from '../components/ProtectedRoute'
 import CoursesPage from '../pages/CoursesPage'
 import { Navigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import { PublicRoute } from '../components/PublicRoute' 
 
 const AccessAdminWrapper = () => {
     const { isAuthenticated, loading } = useAuth()
@@ -30,11 +31,27 @@ export const router = createBrowserRouter([
         children: [
             {
                 index: true,
-                element: <CoursesPage />,
+                element: (
+                    <PublicRoute>
+                        <CoursesPage />
+                    </PublicRoute>
+                )
+            },
+            {
+                path: 'courses',
+                element: (
+                    <PublicRoute>
+                        <CoursesPage />
+                    </PublicRoute>
+                )
             },
             {
                 path: 'inscription/:id',
-                element: <FormPage />,
+                element: (
+                    <PublicRoute>
+                        <FormPage />
+                    </PublicRoute>
+                ),
             },
             {
                 path: 'dashboard',
