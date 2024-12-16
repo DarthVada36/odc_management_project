@@ -1,7 +1,7 @@
 import { check } from "express-validator";
 
 export const validateCreateEnrollment = [
-    check("fullName")
+    check("fullname")
         .notEmpty()
         .withMessage("El nombre es obligatorio"),
     check("email")
@@ -14,14 +14,14 @@ export const validateCreateEnrollment = [
         .withMessage("El campo edad debe ser un número entero desde 15 años"),
 ]
 
-export const validateUpdateEnrollment = [
-    check("fullName")
-        .notEmpty()
-        .withMessage("El nombre es obligatorio"),
-    check("email")
-        .notEmpty()
-        .withMessage("El email es un campo obligatorio"),
-    check("age")
-        .notEmpty()
-        .withMessage("El campo edad es obligatorio"),
-]
+// export const validateUpdateEnrollment = [
+//     check("fullname")
+//         .notEmpty()
+//         .withMessage("El nombre es obligatorio"),
+//     check("email")
+//         .notEmpty()
+//         .withMessage("El email es un campo obligatorio"),
+//     check("age")
+//         .notEmpty()
+//         .withMessage("El campo edad es obligatorio"),
+// ]
