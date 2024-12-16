@@ -356,66 +356,61 @@ export const deleteEnrollmentById = async (req, res) => {
   try {
     const { id } = req.params;
 
-    // Buscar la inscripción principal
+    // Buscar la inscripción a eliminar
     const enrollment = await Enrollment.findByPk(id, { transaction });
     if (!enrollment) {
       await transaction.rollback();
-      return res.status(404).json({ message: 'Inscripción no encontrada' });
+      return res.status(404).json({ message: "Inscripción no encontrada" });
     }
 
-    // Buscar el curso asociado
+    // Obtener el curso asociado a esta inscripción
     const course = await Course.findByPk(enrollment.id_course, { transaction });
     if (!course) {
       await transaction.rollback();
-      return res.status(404).json({ message: 'Curso no encontrado' });
+      return res.status(404).json({ message: "Curso no encontrado." });
     }
 
-    // Contar menores asociados a la inscripción principal
-    const minorsCount = await Minor.count({
-      where: { enrollment_id: id },
+    // Identificar todos los adultos del grupo a través del group_id
+    const groupEnrollments = await Enrollment.findAll({
+      where: { group_id: enrollment.group_id },
       transaction,
     });
 
-    // Buscar adultos asociados al mismo group_id (excluyendo la inscripción principal)
-    const adultsCount = await Enrollment.count({
-      where: {
-        group_id: enrollment.group_id,
-        id: { [Op.ne]: id }, // Excluir la inscripción principal
-      },
+    // Extraer las IDs de las inscripciones de adultos
+    const enrollmentIds = groupEnrollments.map((enrollment) => enrollment.id);
+
+    // Contar el número de adultos en el grupo
+    const adultCount = enrollmentIds.length;
+
+    // Eliminar menores vinculados a estas inscripciones
+    const minorsDeleted = await Minor.destroy({
+      where: { enrollment_id: enrollmentIds },
       transaction,
     });
 
-    // Calcular el total de tickets a devolver
-    const totalTicketsToRefund = 1 + minorsCount + adultsCount; // +1 por el adulto principal
-
-    // Actualizar los tickets del curso
-    course.tickets += totalTicketsToRefund;
-    await course.save({ transaction });
-
-    // Eliminar menores asociados
-    await Minor.destroy({ where: { enrollment_id: id }, transaction });
-
-    // Eliminar adultos asociados al mismo group_id
-    await Enrollment.destroy({
-      where: {
-        group_id: enrollment.group_id,
-        id: { [Op.ne]: id }, // Excluir la inscripción principal
-      },
+    // Eliminar todos los adultos del grupo
+    const adultsDeleted = await Enrollment.destroy({
+      where: { id: enrollmentIds },
       transaction,
     });
 
-    // Eliminar la inscripción principal
-    await enrollment.destroy({ transaction });
+    // Sumar los tickets eliminados al total del curso
+    const totalTicketsToAdd = minorsDeleted + adultCount;
+    await course.increment("tickets", { by: totalTicketsToAdd, transaction });
 
-    // Confirmar la transacción
+    // Confirmar transacción
     await transaction.commit();
-    res.status(200).json({ message: 'Inscripción eliminada correctamente' });
+    res.status(200).json({
+      message: "Inscripción eliminada correctamente.",
+      ticketsReturned: totalTicketsToAdd,
+    });
   } catch (error) {
     await transaction.rollback();
-    console.error('Error al eliminar la inscripción:', error);
+    console.error("Error al eliminar inscripción:", error);
     res.status(500).json({ message: error.message });
   }
 };
+
 
 
 

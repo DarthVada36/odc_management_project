@@ -136,17 +136,17 @@ const EnrollmentsTable = () => {
             if (selectedEnrollment) {
                 await authRequest(
                     `http://localhost:3000/api/enrollments/${selectedEnrollment.id}`,
-                    {
-                        method: 'DELETE',
-                    }
+                    { method: 'DELETE' }
                 )
-                fetchEnrollments()
-                setCurrentPage(1)
+                fetchEnrollments() // Recargar lista después de eliminar
+                setCurrentPage(1) // Reiniciar paginación
             }
-            setIsModalOpen(false)
         } catch (error) {
             console.error('Error al eliminar la inscripción:', error)
             alert('Error al eliminar la inscripción.')
+        } finally {
+            setIsModalOpen(false) // Cerrar modal
+            setSelectedEnrollment(null) // Limpiar selección
         }
     }
 
@@ -291,14 +291,15 @@ const EnrollmentsTable = () => {
 
             {/* Modal de confirmación */}
             <ConfirmationModal
-                title="Confirmar eliminación"
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                message={`¿Estás seguro de que quieres eliminar la inscripción de ${
-                    selectedEnrollment ? selectedEnrollment.fullname : ''
-                }?`}
-                onConfirm={handleConfirmDelete}
-            />
+    isOpen={isModalOpen}
+    onClose={() => setIsModalOpen(false)}
+    message={
+        selectedEnrollment
+            ? `¿Estás seguro de que quieres eliminar la inscripción de ${selectedEnrollment.fullname}?`
+            : ''
+    }
+    onConfirm={handleConfirmDelete}
+/>
         </MainPanel>
     )
 }
