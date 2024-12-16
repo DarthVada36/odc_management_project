@@ -251,7 +251,7 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
                                                         enrollment
                                                     )
                                                 }
-                                                className="px-4 py-2 text-black transition-all duration-300 border-2 border-black bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
+                                                className="px-4 py-2 text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
                                             >
                                                 Eliminar
                                             </button>
