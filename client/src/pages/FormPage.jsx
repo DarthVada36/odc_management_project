@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from "react";
-import MainForm from "../components/MainForm";
-import { createEnrollment } from "../services/enrollmentServices";
-import { getCourseById } from "../services/coursesServices";
-import formImage from "../assets/img/imageform.svg";
-import { useParams, useNavigate } from "react-router-dom"; // Importar useNavigate
+import React, { useState, useEffect } from 'react'
+import MainForm from '../components/MainForm'
+import { createEnrollment } from '../services/enrollmentServices'
+import { getCourseById } from '../services/coursesServices'
+import formImage from '../assets/img/imageform.svg'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
 import CookieModal from "../components/CoockieModal";
-import { useAuth } from "../context/AuthContext";
+import Summary from '../components/SummaryInscriptionForm' // Añadir esta línea
 
 const FormPage = () => {
-    const { id } = useParams(); // Capturar el ID del curso desde la URL
-    const navigate = useNavigate(); // Inicializar el hook
-    const { isAuthenticated } = useAuth();
+    const { id } = useParams() // Capturar el ID del curso desde la URL
+    const navigate = useNavigate()
+    const { isAuthenticated } = useAuth()
     const [includeMinor, setIncludeMinor] = useState(false)
     const [includeAdult, setIncludeAdult] = useState(false)
     const [formData, setFormData] = useState({})
@@ -23,7 +24,7 @@ const FormPage = () => {
     const [showCookiesModal, setShowCookiesModal] = useState(true); // Estado para mostrar/ocultar el modal
     
 
-    
+
     useEffect(() => {
         const fetchCourseTitle = async () => {
             try {
