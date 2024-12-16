@@ -1,8 +1,8 @@
-import Pagination from './Pagination';
+import Pagination from './Pagination.jsx';
 import React, { useEffect, useState } from 'react';
-import { exportToPDF, exportToExcel } from '../utils/exportUtils';
+import { exportToPDF, exportToExcel } from '../utils/exportUtils.js';
 import { getAllEnrollments, deleteEnrollmentById } from '../services/enrollmentServices.js';
-import { sendEmail } from '../services/emailService'; // Importa el servicio para enviar correos
+import { sendEmail } from '../services/emailService.js'; // Importa el servicio para enviar correos
 import EmailEditorComponent from './EmailEditorComponent.jsx';
 
 const UserTable = () => {

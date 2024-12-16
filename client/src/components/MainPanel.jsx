@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { getAllEnrollments } from '../services/enrollmentServices.js';
 import UserTable from './UserTable';
-import SearchBar from './SearchBar';
+import SearchBar from './SearchBar.jsx';
 import EmailEditorComponent from './EmailEditorComponent.jsx';
 
 const AdminPanel = () => {
