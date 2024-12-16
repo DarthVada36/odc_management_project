@@ -2,6 +2,8 @@ import Enrollment from '../models/enrollmentModel.js';
 import Course from '../models/courseModel.js';
 import Minor from '../models/minorModel.js';
 import sequelize from '../database/connectionDb.js';
+import { Op } from 'sequelize';
+
 
 // Función auxiliar para obtener inscripción con menores
 const getEnrollmentWithMinors = async (id) => {
@@ -218,6 +220,246 @@ export const updateEnrollmentById = async (req, res) => {
       is_first_activity,
       id_admin,
       id_course,
+      accepts_newsletter,
+      minors = [],
+      adults = [],
+    } = req.body;
+
+    const enrollment = await Enrollment.findByPk(id, { transaction });
+    if (!enrollment) {
+      await transaction.rollback();
+      return res.status(404).json({ message: "Inscripción no encontrada" });
+    }
+
+    // Verificar si el curso ha cambiado
+    const previousCourseId = enrollment.id_course;
+    if (id_course && id_course !== previousCourseId) {
+      // Liberar un ticket en el curso anterior
+      const previousCourse = await Course.findByPk(previousCourseId, { transaction });
+      if (previousCourse) {
+        await previousCourse.increment("tickets", { by: 1, transaction });
+      }
+
+      // Verificar y descontar ticket en el nuevo curso
+      const newCourse = await Course.findByPk(id_course, { transaction });
+      if (!newCourse || newCourse.tickets <= 0) {
+        await transaction.rollback();
+        return res.status(400).json({
+          message: "No hay tickets disponibles para el nuevo curso.",
+        });
+      }
+      await newCourse.decrement("tickets", { by: 1, transaction });
+    }
+
+    // Actualizar la inscripción principal
+    await enrollment.update(
+      {
+        fullname,
+        email,
+        gender,
+        age,
+        is_first_activity,
+        id_admin,
+        id_course,
+        accepts_newsletter,
+      },
+      { transaction }
+    );
+
+    // Actualizar menores asociados
+    if (minors && minors.length > 0) {
+      for (const minor of minors) {
+        if (minor.id) {
+          // Actualizar menor existente
+          await Minor.update(
+            { name: minor.name, age: minor.age },
+            { where: { id: minor.id, enrollment_id: id }, transaction }
+          );
+        } else {
+          // Agregar nuevo menor
+          await Minor.create({ ...minor, enrollment_id: id }, { transaction });
+        }
+      }
+    }
+
+    // Eliminar menores que ya no estén en la lista
+    const existingMinors = await Minor.findAll({ where: { enrollment_id: id }, transaction });
+    const minorIdsToKeep = minors.map((minor) => minor.id);
+    for (const existingMinor of existingMinors) {
+      if (!minorIdsToKeep.includes(existingMinor.id)) {
+        await existingMinor.destroy({ transaction });
+      }
+    }
+
+    // Actualizar adultos asociados
+    if (adults && adults.length > 0) {
+      for (const adult of adults) {
+        if (adult.id) {
+          // Actualizar adulto existente
+          await Enrollment.update(
+            {
+              fullname: adult.fullname,
+              email: adult.email,
+              gender: adult.gender,
+              age: adult.age,
+            },
+            { where: { id: adult.id, group_id: enrollment.group_id }, transaction }
+          );
+        } else {
+          // Agregar nuevo adulto
+          await Enrollment.create(
+            {
+              fullname: adult.fullname,
+              email: adult.email,
+              gender: adult.gender,
+              age: adult.age,
+              is_first_activity: adult.is_first_activity || false,
+              id_admin: adult.id_admin || id_admin,
+              id_course,
+              group_id: enrollment.group_id, // Mantener el mismo group_id
+            },
+            { transaction }
+          );
+        }
+      }
+    }
+
+    // Eliminar adultos que ya no estén en la lista
+    const existingAdults = await Enrollment.findAll({
+      where: { group_id: enrollment.group_id, id: { [sequelize.Op.ne]: enrollment.id } },
+      transaction,
+    });
+    const adultIdsToKeep = adults.map((adult) => adult.id);
+    for (const existingAdult of existingAdults) {
+      if (!adultIdsToKeep.includes(existingAdult.id)) {
+        await existingAdult.destroy({ transaction });
+      }
+    }
+
+    // Confirmar transacción
+    await transaction.commit();
+
+    res.status(200).json({ message: "Inscripción actualizada con éxito." });
+  } catch (error) {
+    await transaction.rollback();
+    console.error("Error al actualizar la inscripción:", error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+
+// DELETE ENROLLMENT BY ID
+export const deleteEnrollmentById = async (req, res) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const { id } = req.params;
+
+    // Buscar la inscripción principal
+    const enrollment = await Enrollment.findByPk(id, { transaction });
+    if (!enrollment) {
+      await transaction.rollback();
+      return res.status(404).json({ message: 'Inscripción no encontrada' });
+    }
+
+    // Buscar el curso asociado
+    const course = await Course.findByPk(enrollment.id_course, { transaction });
+    if (!course) {
+      await transaction.rollback();
+      return res.status(404).json({ message: 'Curso no encontrado' });
+    }
+
+    // Contar menores asociados a la inscripción principal
+    const minorsCount = await Minor.count({
+      where: { enrollment_id: id },
+      transaction,
+    });
+
+    // Buscar adultos asociados al mismo group_id (excluyendo la inscripción principal)
+    const adultsCount = await Enrollment.count({
+      where: {
+        group_id: enrollment.group_id,
+        id: { [Op.ne]: id }, // Excluir la inscripción principal
+      },
+      transaction,
+    });
+
+    // Calcular el total de tickets a devolver
+    const totalTicketsToRefund = 1 + minorsCount + adultsCount; // +1 por el adulto principal
+
+    // Actualizar los tickets del curso
+    course.tickets += totalTicketsToRefund;
+    await course.save({ transaction });
+
+    // Eliminar menores asociados
+    await Minor.destroy({ where: { enrollment_id: id }, transaction });
+
+    // Eliminar adultos asociados al mismo group_id
+    await Enrollment.destroy({
+      where: {
+        group_id: enrollment.group_id,
+        id: { [Op.ne]: id }, // Excluir la inscripción principal
+      },
+      transaction,
+    });
+
+    // Eliminar la inscripción principal
+    await enrollment.destroy({ transaction });
+
+    // Confirmar la transacción
+    await transaction.commit();
+    res.status(200).json({ message: 'Inscripción eliminada correctamente' });
+  } catch (error) {
+    await transaction.rollback();
+    console.error('Error al eliminar la inscripción:', error);
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+// GET ALL ENROLLMENTS BY COURSE ID
+export const getAllEnrollmentsByCourseId = async (req, res) => {
+  try {
+    const enrollments = await Enrollment.findAll({
+      include: [
+        {
+          model: Course,
+          as: 'course',
+          attributes: ['title'], // Solo incluye el título del curso
+        },
+        {
+          model: Minor,
+          as: 'minors',
+          attributes: ['id', 'name', 'age'],
+        },
+      ],
+      where: {
+        id_course: req.params.id,
+      },
+    });
+    res.status(200).json(enrollments);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+//UPDATE ENROLLMENT BY ID (modificado)
+/* export const updateEnrollmentById = async (req, res) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const { id } = req.params;
+    const {
+      fullname,
+      email,
+      gender,
+      age,
+      is_first_activity,
+      id_admin,
+      id_course,
       group_id,
       accepts_newsletter,
       minors = [],
@@ -356,73 +598,4 @@ export const updateEnrollmentById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
-// DELETE ENROLLMENT BY ID
-export const deleteEnrollmentById = async (req, res) => {
-  const transaction = await sequelize.transaction();
-  try {
-    const { id } = req.params;
-
-    // Buscar la inscripción principal
-    const enrollment = await Enrollment.findByPk(id, { transaction });
-    if (!enrollment) {
-      await transaction.rollback();
-      return res.status(404).json({ message: 'Inscripción no encontrada' });
-    }
-
-    // Buscar el curso asociado
-    const course = await Course.findByPk(enrollment.id_course, { transaction });
-    if (!course) {
-      await transaction.rollback();
-      return res.status(404).json({ message: 'Curso no encontrado' });
-    }
-
-    // Contar menores asociados a la inscripción principal
-    const minorsCount = await Minor.count({
-      where: { enrollment_id: id },
-      transaction,
-    });
-
-    // Buscar adultos asociados al mismo group_id (excluyendo la inscripción principal)
-    const adultsCount = await Enrollment.count({
-      where: {
-        group_id: enrollment.group_id,
-        id: { [sequelize.Op.ne]: id }, // Excluir la inscripción principal
-      },
-      transaction,
-    });
-
-    // Calcular el total de tickets a devolver
-    const totalTicketsToRefund = 1 + minorsCount + adultsCount; // +1 por el adulto principal
-
-    // Actualizar los tickets del curso
-    course.tickets += totalTicketsToRefund;
-    await course.save({ transaction });
-
-    // Eliminar menores asociados
-    await Minor.destroy({ where: { enrollment_id: id }, transaction });
-
-    // Eliminar adultos asociados al mismo group_id
-    await Enrollment.destroy({
-      where: {
-        group_id: enrollment.group_id,
-        id: { [sequelize.Op.ne]: id }, // Excluir la inscripción principal
-      },
-      transaction,
-    });
-
-    // Eliminar la inscripción principal
-    await enrollment.destroy({ transaction });
-
-    // Confirmar la transacción
-    await transaction.commit();
-    res.status(200).json({ message: 'Inscripción eliminada correctamente' });
-  } catch (error) {
-    await transaction.rollback();
-    console.error('Error al eliminar la inscripción:', error);
-    res.status(500).json({ message: error.message });
-  }
-};
-
+ */
