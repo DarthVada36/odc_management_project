@@ -357,7 +357,7 @@ const MainForm = ({
                                 Nombre Completo:
                             </label>
                             <input
-                                className="w-full p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
+                                className=" p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
                                 name="fullname"
                                 value={adultData.fullname || ''}
                                 onChange={(e) =>
@@ -371,7 +371,7 @@ const MainForm = ({
                             />
                         </div>
                         <div>
-                            <label className="block mt-2 mb-1 font-medium">
+                            <label className="block mb-1 font-medium">
                                 Email:
                             </label>
                             <input
@@ -453,7 +453,7 @@ const MainForm = ({
                                 <button
                                     type="button"
                                     onClick={onRemoveAdult}
-                                    className="mt-2 text-orange font-bold hover:underline"
+                                    className="mt-2 text-orange font-semibold hover:underline"
                                 >
                                     Eliminar Adulto
                                 </button>

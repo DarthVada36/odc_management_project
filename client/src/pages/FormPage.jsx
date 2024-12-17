@@ -129,84 +129,80 @@ const FormPage = () => {
 
     return (
         <div className="flex flex-col items-center justify-center px-4 font">
-            <h1 className="font-sans mt-10 text-3xl font-bold text-center text-orange">
-                Solicitud de inscripción a {courseTitle}
-            </h1>
-            <div className="flex flex-col gap-6 p-8 px-4 m-10 border border-orange lg:flex-col lg:gap-4">
-                <div className="flex flex-col-reverse items-center gap-6 lg:flex-row lg:justify-between">
-                    <div>
-                        <MainForm
-                            courseId={id}
-                            setIncludeMinor={setIncludeMinor}
-                            includeMinor={includeMinor}
-                            setIncludeAdult={setIncludeAdult}
-                            includeAdult={includeAdult}
-                            formData={formData}
-                            setFormData={setFormData}
-                            onAddMinor={handleAddMinor}
-                            minors={minors}
-                            onAddAdult={handleAddAdult}
-                            adult={adult}
-                            onRemoveAdult={handleRemoveAdult}
-                        />
-                    </div>
-                    <div className="flex-1">
-                        <img
-                            src={formImage}
-                            alt="Formulario Imagen"
-                            className="w-[615px] h-[616px] pl-14 lg:max-w-full object-contain"
-                        />
-                    </div>
-                    
-                </div>
-
-                {!showSummary ? (
-                    <button
-                        className="px-4 py-2 mt-4 font-semibold text-white bg-orange disabled:opacity-50"
-                        onClick={handleShowSummary} // Mostrar el resumen
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Cargando...' : 'Siguiente'}
-                    </button>
-                ) : (
-                    <button
-                        className="px-4 py-2 mt-4 font-semibold text-white bg-green-500 disabled:opacity-50"
-                        onClick={handleSendToBackend} // Enviar al backend
-                        disabled={isLoading}
-                    >
-                        {isLoading ? 'Enviando...' : 'Confirmar Inscripción'}
-                    </button>
-                )}
-
-                {responseMessage && (
-                    <p
-                        className={`text-center mt-4 ${
-                            responseMessage.type === 'error'
-                                ? 'text-red-500'
-                                : 'text-green-500'
-                        }`}
-                    >
-                        {responseMessage.text}
-                    </p>
-                )}
-            </div>
-
-            {/* Renderizar el modal condicionalmente */}
-            {showCookiesModal && (
-                <CookieModal onClose={() => setShowCookiesModal(false)} />
-            )}
-
-            {/* Renderizar el resumen condicionalmente */}
-            {showSummary && (
-                <Summary
+        <h1 className="font-sans mt-10 text-3xl font-bold text-center text-orange">
+            Solicitud de inscripción a {courseTitle}
+        </h1>
+        <div className="flex flex-col lg:flex-row lg:gap-4 p-8 px-4 m-10 border border-orange w-full max-w-[1200px]">
+            <div className="flex-1 lg:w-1/2 min-w-[50%] max-w-[50%]">              
+                <MainForm
+                    courseId={id}
+                    setIncludeMinor={setIncludeMinor}
+                    includeMinor={includeMinor}
+                    setIncludeAdult={setIncludeAdult}
+                    includeAdult={includeAdult}
                     formData={formData}
+                    setFormData={setFormData}
+                    onAddMinor={handleAddMinor}
                     minors={minors}
+                    onAddAdult={handleAddAdult}
                     adult={adult}
-                    courseTitle={courseTitle}
-                    handleSubmit={handleSendToBackend}
+                    onRemoveAdult={handleRemoveAdult}
                 />
-            )}
+            </div>
+    
+            <div className="flex-1 lg:w-1/2 min-w-[50%] max-w-[50%] flex">
+                <img
+                    src={formImage}
+                    alt="Formulario Imagen"
+                    className="w-auto mr-6 object-contain max-h-full"
+                />
+            </div>
         </div>
+    
+        {!showSummary ? (
+            <button
+                className="px-4 py-2 mt-4 font-semibold text-white bg-orange disabled:opacity-50"
+                onClick={handleShowSummary}
+                disabled={isLoading}
+            >
+                {isLoading ? 'Cargando...' : 'Siguiente'}
+            </button>
+        ) : (
+            <button
+                className="px-4 py-2 mt-4 font-semibold text-white bg-green-500 disabled:opacity-50"
+                onClick={handleSendToBackend}
+                disabled={isLoading}
+            >
+                {isLoading ? 'Enviando...' : 'Confirmar Inscripción'}
+            </button>
+        )}
+    
+        {responseMessage && (
+            <p
+                className={`text-center mt-4 ${
+                    responseMessage.type === 'error'
+                        ? 'text-red-500'
+                        : 'text-green-500'
+                }`}
+            >
+                {responseMessage.text}
+            </p>
+        )}
+    
+        {showCookiesModal && (
+            <CookieModal onClose={() => setShowCookiesModal(false)} />
+        )}
+    
+        {showSummary && (
+            <Summary
+                formData={formData}
+                minors={minors}
+                adult={adult}
+                courseTitle={courseTitle}
+                handleSubmit={handleSendToBackend}
+            />
+        )}
+</div>
     )
     
 }
