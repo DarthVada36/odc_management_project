@@ -7,14 +7,10 @@
 - [Características](#características-principales)
 - [Tecnologías Utilizadas](#tecnologías)
 - [Instalación](#instalación)
-- [Roles y Permisos](#roles-y-permisos)
-- [Recursos de Diseño y Base de Datos](#recursos-de-diseño-y-base-de-datos)
-- [Estructura del Proyecto](#estructura)
-- [Uso](#uso)
-- [Herramientas y Utilidades](#herramientas-y-utilidades)
-- [Documentación de la API](#Documentación-de-la-API)
-- [Visionado de la Web](#visionado-de-la-web)
-- [Autores](#Autores)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Tests unitarios](#pruebas)
+- [Previsualización de la Web](#previsualización-de-la-aplicación)
+- [Autores](#autores)
 
 
 ## Características Principales
@@ -200,13 +196,13 @@ npx run test adminModel.test.js
 - Creación de roles
 - Creación de inscripciones
 
-## Capturas de Pantalla (Muestra de diseño Responsive)
+## Previsualización de la Aplicación
 
 ### Panel de Administración (PC/Laptop)
 
 <img src="/client/public/laptopdashboard.png" alt="GIT" width="90%" />
 
-<img src="/client/public/tabletdashboard.png" alt="GIT" width="90%" />
+<img src="/client/public/tabletdashboard.png" alt="GIT" width="60%" />
 
 ### Página Principal de Cursos (PC/Movil)
 
@@ -221,7 +217,7 @@ npx run test adminModel.test.js
 <img src="/client/public/cursoslaptop.png" alt="GIT" width="90%" /> Pendiente cambiar cuando se arreglle el bug de la imagen
 
 
-## ![Contribuidores](/client/public/collaborators.png)  
+## ![Autores](/client/public/collaborators.png)  
 
 **José Ruiz**
 
