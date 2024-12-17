@@ -157,7 +157,7 @@ const FormPage = () => {
                             className="w-[615px] h-[616px] pl-14 lg:max-w-full object-contain"
                         />
                     </div>
-                    <CoockieModal   />
+                    
                 </div>
 
                 {!showSummary ? (

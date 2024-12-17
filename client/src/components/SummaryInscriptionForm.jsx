@@ -103,13 +103,13 @@ const Summary = ({ formData, minors, adult, courseTitle, handleSubmit }) => {
         <div className="flex justify-center gap-4">
           <button
             onClick={handleInscription}
-            className="bg-orange text-white px-6 py-2 rounded-md font-semibold hover:bg-orange-600 cursor-pointer"
+            className="bg-orange text-black px-6 py-2 font-semibold hover:bg-orange-600 cursor-pointer"
           >
             Inscribirse
           </button>
           <button
             onClick={handleExportPDF}
-            className="bg-orange text-white px-6 py-2 rounded-md font-semibold hover:bg-orange-600 cursor-pointer"
+            className="bg-orange text-black px-6 py-2 font-semibold hover:bg-orange-600 cursor-pointer"
           >
             Descargar PDF
           </button>

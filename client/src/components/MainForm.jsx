@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { getCourseById } from '../services/coursesServices'
+import plus from '../assets/icons/plus.svg'
+import minus from '../assets/icons/minus.svg'
 
 const MainForm = ({
     setIncludeMinor,
@@ -286,7 +288,7 @@ const MainForm = ({
                                     placeholder="Nombre del menor"
                                     value={minor.name}
                                     onChange={handleMinorChange}
-                                    className=" p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none hover:border-primary focus:border-primary placeholder-neutral-500 ring-0 "
+                                    className=" p-2 mb-4 transition-colors duration-300 border-2 border-black outline-none hover:border-primary focus:border-primary placeholder-neutral-500 ring-0 "
                                 />
                                 <input
                                     type="number"
@@ -294,14 +296,15 @@ const MainForm = ({
                                     placeholder="Edad"
                                     value={minor.age}
                                     onChange={handleMinorChange}
-                                    className=" p-2 mt-2 transition-colors duration-300 border-2 border-black outline-none hover:border-primary focus:border-primary placeholder-neutral-500 ring-0 "
+                                    className=" p-2 mb-4 transition-colors duration-300 border-2 border-black outline-none hover:border-primary focus:border-primary placeholder-neutral-500 ring-0 "
                                 />
                                 <button
                                     type="button"
                                     onClick={addMinor}
-                                    className=" p- mt-2 w-full text-black  hover:bg-opacity-80 bg-orange font-semibold"
-                                >
-                                    Agregar
+                                    className=" p-1 mt-1 w-8 h-8 text-black  hover:bg-opacity-80 bg-orange font-semibold"
+                                    
+                            >
+                                    <img src={plus} alt="plus" className='w-6 h-6 ' />
                                 </button>
                             </div>
                         ) : (
@@ -335,7 +338,7 @@ const MainForm = ({
                                         }}
                                         className="ml-4 text-red-500 hover:underline"
                                     >
-                                        Eliminar
+                                       <img src={minus} alt="minus" className='w-6 my-1 mr-3 bg-orange h-6 font-bold' />
                                     </button>
                                 </li>
                             ))}
@@ -368,7 +371,7 @@ const MainForm = ({
                             />
                         </div>
                         <div>
-                            <label className="block mb-1 font-medium">
+                            <label className="block mt-2 mb-1 font-medium">
                                 Email:
                             </label>
                             <input
@@ -450,7 +453,7 @@ const MainForm = ({
                                 <button
                                     type="button"
                                     onClick={onRemoveAdult}
-                                    className="mt-2 text-red-500 hover:underline"
+                                    className="mt-2 text-orange font-bold hover:underline"
                                 >
                                     Eliminar Adulto
                                 </button>
