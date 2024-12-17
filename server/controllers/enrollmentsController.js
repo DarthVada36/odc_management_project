@@ -4,7 +4,6 @@ import Minor from '../models/minorModel.js';
 import sequelize from '../database/connectionDb.js';
 import { Op } from 'sequelize';
 
-
 // Función auxiliar para obtener inscripción con menores
 const getEnrollmentWithMinors = async (id) => {
   return Enrollment.findByPk(id, {
@@ -50,21 +49,28 @@ export const getEnrollmentById = async (req, res) => {
       include: [
         {
           model: Minor,
-          as: "minors",
-          attributes: ["id", "name", "age"], // Campos específicos de los menores
+          as: 'minors',
+          attributes: ['id', 'name', 'age'], // Campos específicos de los menores
         },
         {
           model: Enrollment, // Relación con otros adultos del mismo grupo
-          as: "adults",
-          attributes: ["id", "fullname", "email", "age", "gender", "is_first_activity"],
-          where: { group_id: Sequelize.col("Enrollment.group_id") },
+          as: 'adults',
+          attributes: [
+            'id',
+            'fullname',
+            'email',
+            'age',
+            'gender',
+            'is_first_activity',
+          ],
+          where: { group_id: Sequelize.col('Enrollment.group_id') },
           required: false, // No es obligatorio que existan adultos adicionales
         },
       ],
     });
 
     if (!enrollment) {
-      return res.status(404).json({ message: "Inscripción no encontrada" });
+      return res.status(404).json({ message: 'Inscripción no encontrada' });
     }
 
     res.status(200).json(enrollment);
@@ -72,7 +78,6 @@ export const getEnrollmentById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
-
 
 // GET ENROLLMENT BY ID INCLUDING MINORS
 export const getEnrollmentByIdWithMinors = async (req, res) => {
@@ -95,7 +100,7 @@ export const createEnrollment = async (req, res) => {
     const {
       fullname,
       email,
-      gender = "NS/NC",
+      gender = 'NS/NC',
       age = 0,
       is_first_activity = false,
       id_admin = null,
@@ -109,14 +114,14 @@ export const createEnrollment = async (req, res) => {
     // Validación de campos obligatorios
     if (!fullname || !email || !id_course) {
       return res.status(400).json({
-        message: "Faltan datos obligatorios: fullname, email, o id_course.",
+        message: 'Faltan datos obligatorios: fullname, email, o id_course.',
       });
     }
 
     // Validación de edad del titular
     if (age < 14) {
       return res.status(400).json({
-        message: "El titular debe ser mayor de 14 años.",
+        message: 'El titular debe ser mayor de 14 años.',
       });
     }
 
@@ -124,7 +129,7 @@ export const createEnrollment = async (req, res) => {
     const course = await Course.findByPk(id_course, { transaction });
     if (!course) {
       return res.status(404).json({
-        message: "Curso no encontrado.",
+        message: 'Curso no encontrado.',
       });
     }
 
@@ -133,12 +138,13 @@ export const createEnrollment = async (req, res) => {
 
     if (course.tickets < totalTicketsRequired) {
       return res.status(400).json({
-        message: "No hay suficientes tickets disponibles para esta inscripción.",
+        message:
+          'No hay suficientes tickets disponibles para esta inscripción.',
       });
     }
 
     // Generar un nuevo group_id si no se proporciona
-    const lastGroupId = group_id || (await Enrollment.max("group_id")) || 0;
+    const lastGroupId = group_id || (await Enrollment.max('group_id')) || 0;
     const newGroupId = group_id || lastGroupId + 1;
 
     // Crear la inscripción principal
@@ -195,13 +201,13 @@ export const createEnrollment = async (req, res) => {
 
     // Respuesta exitosa
     res.status(201).json({
-      message: "Inscripción creada con éxito.",
+      message: 'Inscripción creada con éxito.',
       enrollment,
     });
   } catch (error) {
     // Rollback de la transacción en caso de error
     await transaction.rollback();
-    console.error("Error al crear la inscripción:", error);
+    console.error('Error al crear la inscripción:', error);
     res.status(500).json({ message: error.message });
   }
 };
@@ -228,7 +234,7 @@ export const updateEnrollmentById = async (req, res) => {
     const enrollment = await Enrollment.findByPk(id, { transaction });
     if (!enrollment) {
       await transaction.rollback();
-      return res.status(404).json({ message: "Inscripción no encontrada" });
+      return res.status(404).json({ message: 'Inscripción no encontrada' });
     }
 
     // Actualizar titular
@@ -296,16 +302,13 @@ export const updateEnrollmentById = async (req, res) => {
     await transaction.commit();
 
     // Respuesta exitosa
-    res.status(200).json({ message: "Inscripción actualizada con éxito." });
+    res.status(200).json({ message: 'Inscripción actualizada con éxito.' });
   } catch (error) {
     await transaction.rollback();
-    console.error("Error al actualizar la inscripción:", error);
+    console.error('Error al actualizar la inscripción:', error);
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
 
 // DELETE ENROLLMENT BY ID
 export const deleteEnrollmentById = async (req, res) => {
@@ -317,14 +320,14 @@ export const deleteEnrollmentById = async (req, res) => {
     const enrollment = await Enrollment.findByPk(id, { transaction });
     if (!enrollment) {
       await transaction.rollback();
-      return res.status(404).json({ message: "Inscripción no encontrada" });
+      return res.status(404).json({ message: 'Inscripción no encontrada' });
     }
 
     // Obtener el curso asociado a esta inscripción
     const course = await Course.findByPk(enrollment.id_course, { transaction });
     if (!course) {
       await transaction.rollback();
-      return res.status(404).json({ message: "Curso no encontrado." });
+      return res.status(404).json({ message: 'Curso no encontrado.' });
     }
 
     // Identificar todos los adultos del grupo a través del group_id
@@ -353,23 +356,20 @@ export const deleteEnrollmentById = async (req, res) => {
 
     // Sumar los tickets eliminados al total del curso
     const totalTicketsToAdd = minorsDeleted + adultCount;
-    await course.increment("tickets", { by: totalTicketsToAdd, transaction });
+    await course.increment('tickets', { by: totalTicketsToAdd, transaction });
 
     // Confirmar transacción
     await transaction.commit();
     res.status(200).json({
-      message: "Inscripción eliminada correctamente.",
+      message: 'Inscripción eliminada correctamente.',
       ticketsReturned: totalTicketsToAdd,
     });
   } catch (error) {
     await transaction.rollback();
-    console.error("Error al eliminar inscripción:", error);
+    console.error('Error al eliminar inscripción:', error);
     res.status(500).json({ message: error.message });
   }
 };
-
-
-
 
 // GET ALL ENROLLMENTS BY COURSE ID
 export const getAllEnrollmentsByCourseId = async (req, res) => {
