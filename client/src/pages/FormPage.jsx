@@ -5,11 +5,11 @@ import { getCourseById } from '../services/coursesServices'
 import formImage from '../assets/img/imageform.svg'
 import { useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import CookieModal from "../components/CoockieModal";
-import Summary from '../components/SummaryInscriptionForm' // Añadir esta línea
+import CookieModal from '../components/CoockieModal'
+import Summary from '../components/SummaryInscriptionForm'
 
 const FormPage = () => {
-    const { id } = useParams() // Capturar el ID del curso desde la URL
+    const { id } = useParams()
     const navigate = useNavigate()
     const { isAuthenticated } = useAuth()
     const [includeMinor, setIncludeMinor] = useState(false)
@@ -18,12 +18,10 @@ const FormPage = () => {
     const [minors, setMinors] = useState([])
     const [adult, setAdult] = useState(null)
     const [courseTitle, setCourseTitle] = useState('')
-    const [isLoading, setIsLoading] = useState(false) // Estado de carga
-    const [responseMessage, setResponseMessage] = useState(null) // Mensajes de respuesta
-    const [showSummary, setShowSummary] = useState(false) // Controlar si mostrar el resumen
-    const [showCookiesModal, setShowCookiesModal] = useState(true); // Estado para mostrar/ocultar el modal
-    
-
+    const [isLoading, setIsLoading] = useState(false)
+    const [responseMessage, setResponseMessage] = useState(null)
+    const [showSummary, setShowSummary] = useState(false)
+    const [showCookiesModal, setShowCookiesModal] = useState(true)
 
     useEffect(() => {
         const fetchCourseTitle = async () => {
@@ -103,7 +101,7 @@ const FormPage = () => {
             setFormData({})
             setMinors([])
             setAdult(null)
-            setShowSummary(false) // Ocultar el resumen tras enviar
+            setShowSummary(false)
 
             // Redirigir basado en el estado de autenticación
             setTimeout(() => {
@@ -129,7 +127,7 @@ const FormPage = () => {
 
     return (
         <div className="flex flex-col items-center justify-center px-4 font">
-            <h1 className="font-sans mt-10 text-3xl font-bold text-center text-orange">
+            <h1 className="font-sans text-3xl font-bold text-center text-orange">
                 Solicitud de inscripción a {courseTitle}
             </h1>
             <div className="flex flex-col gap-6 p-8 px-4 m-10 border border-orange lg:flex-col lg:gap-4">
@@ -154,14 +152,14 @@ const FormPage = () => {
                         <img
                             src={formImage}
                             alt="Formulario Imagen"
-                            className="w-[615px] h-[616px] pl-14 lg:max-w-full object-contain"
+                            className="w-[615px] h-[616px] lg:max-w-full object-contain"
                         />
                     </div>
                 </div>
 
                 {!showSummary ? (
                     <button
-                        className="px-4 py-2 mt-4 font-semibold text-white bg-orange disabled:opacity-50"
+                        className="px-4 py-2 mt-4 font-semibold text-white rounded-md bg-orange disabled:opacity-50"
                         onClick={handleShowSummary} // Mostrar el resumen
                         disabled={isLoading}
                     >
@@ -169,7 +167,7 @@ const FormPage = () => {
                     </button>
                 ) : (
                     <button
-                        className="px-4 py-2 mt-4 font-semibold text-white bg-green-500 disabled:opacity-50"
+                        className="px-4 py-2 mt-4 font-semibold text-white bg-green-500 rounded-md disabled:opacity-50"
                         onClick={handleSendToBackend} // Enviar al backend
                         disabled={isLoading}
                     >

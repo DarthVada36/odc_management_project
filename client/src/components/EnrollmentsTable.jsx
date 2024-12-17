@@ -14,7 +14,7 @@ import pdfIcon from '../assets/icons/file-pdf.svg'
 import ConfirmationModal from './ConfirmationModal'
 
 const EnrollmentsTable = () => {
-    const { authRequest } = useAuth() // Añadir esta línea aquí
+    const { authRequest } = useAuth()
     const [enrollments, setEnrollments] = useState([])
     const [filteredEnrollments, setFilteredEnrollments] = useState([])
     const [loading, setLoading] = useState(true)
@@ -24,8 +24,8 @@ const EnrollmentsTable = () => {
     const [selectedRecipients, setSelectedRecipients] = useState(null)
     const [selectedEnrollment, setSelectedEnrollment] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedSubject, setSelectedSubject] = useState('') // Asunto del correo
-    const itemsPerPage = 8 // Items por página
+    const [selectedSubject, setSelectedSubject] = useState('')
+    const itemsPerPage = 8
 
     const totalPages = Math.ceil(filteredEnrollments.length / itemsPerPage)
     const indexOfLastItem = currentPage * itemsPerPage
