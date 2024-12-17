@@ -1,6 +1,6 @@
 # ![ODC Manager](/client/public/introduction.png)
 
-       **ODC: Manager** es una aplicación diseñada para gestionar y centralizar las inscripciones a los cursos que se imparten en ODC (Orange Digital Center) de manera eficiente, ofreciendo un panel de administración intuitivo y funcionalidades clave para simplificar el proceso de registro y seguimiento de datos.
+**ODC: Manager es una aplicación diseñada para gestionar y centralizar las inscripciones a los cursos que se imparten en ODC (Orange Digital Center) de manera eficiente, ofreciendo un panel de administración intuitivo y funcionalidades clave para simplificar el proceso de registro y seguimiento de datos.**
 
 
 ### Índice
@@ -21,16 +21,9 @@
 
 - **Gestión de Inscripciones**: Permite registrar, editar, eliminar y monitorear las inscripciones a los cursos presenciales en ODC sin tener que redirigirse a una plataforma externa.
 
-![Gestión de Inscripciones](public/images/gestion-inscripciones.png)
-
 - **Panel Administrativo**: Acceso para gestionar cursos y inscripciones y administradores. El administrador tiene acceso a estadísticas y datos relevantes de cada curso y sus inscripciones, añadiendo la funcionalidad de descargar los datos en formato CSV y PDF.
 
-![Panel Administrativo](public/images/panel-admin.png)
-
-
 - **Seguridad**: Autenticación y autorización de los administradores y facilitadores mediante JWT y bcrypt.
-
-![Seguridad](public/images/seguridad-jwt.png)
 
 - **Interfaz Intuitiva**: UI amigable desarrollada detalladamente con Tailwind CSS, con un diseño basado totalmente en el libro de estilo de Orange. 
 
@@ -38,7 +31,7 @@
 
 ## ![Tecnologías](/client/public/tecnologias.png)
 
-     Este proyecto fue desarrollado utilizando tecnologías y librerías actuales que facilitan el desarrollo de aplicaciones web modernas y escalables.
+**Este proyecto fue desarrollado utilizando tecnologías y librerías actuales que facilitan el desarrollo de aplicaciones web modernas y escalables**
 
 ---
 
@@ -92,7 +85,7 @@
 <img src="/client/public/mysql-logo-svg-vector.svg" alt="MYSQL" width="100" />
 
 - **Git**  
-<img src="/client/public/Git-Icon-1788C.png" alt="GIT" width="100" />
+<img src="/client/public/Git-Icon-1788C.png" alt="GIT" width="50" />
 
 ### Instrucciones
 
@@ -114,7 +107,7 @@
    ```env
    DB_DEV_NAME=odc_project
    DB_TEST_NAME=odc_project_test
-   DB_USER=tuusuario
+   DB_USER=tuUsuario
    DB_PASSWORD=tucontraseña
    DB_HOST=localhost
    DB_PORT=3306
@@ -142,21 +135,25 @@
    ```
 
 7. **Acceder a la aplicación:**
-   Visita `http://localhost:3000` en tu navegador.
+   Visita `http://localhost:5173/` en tu navegador.
 
-## ![Pruebas](public/images/tests-icon.png) 🧪 Pruebas
+## ![Pruebas](/client/public/Tests.png)
 
 Para ejecutar las pruebas, utiliza el siguiente comando:
 ```bash
 npm test
 ```
 
-Las pruebas cubren:
-- Validación de endpoints.
-- Comportamiento del frontend.
-- Autenticación y seguridad.
+**Las pruebas cubren:**
+- Creación de administradores
+- Creación de roles
+- Creación de inscripciones
 
-## ![Capturas](public/images/screenshots-icon.png) 📸 Capturas de Pantalla
+## Capturas de Pantalla (Muestra de diseño Responsive)
+
+### PC/Laptop (Panel de Administración)
+
+<img src="/client/public/laptopdashboard.png" alt="GIT" width="100" />
 
 ### Página Principal
 ![Página Principal](public/images/pagina-principal.png)
