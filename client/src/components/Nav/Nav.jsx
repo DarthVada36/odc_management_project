@@ -17,6 +17,7 @@ const Nav = () => {
     const location = useLocation()
     const navigate = useNavigate()
     const isDashboardRoute = location.pathname.includes('/dashboard')
+    const isAccessAdminPage = location.pathname === '/access-admin'
     const isCoursesPage =
         location.pathname === '/' || location.pathname === '/courses'
 
@@ -346,7 +347,7 @@ const Nav = () => {
                         ) : null}
 
                         {/* Menu button - mobile only */}
-                        {!isCoursesPage && (
+                        {!isCoursesPage && !isAccessAdminPage && (
                             <button
                                 className="p-2 mt-[1.9rem] mobile:-mr-[0.8rem] text-white laptop:hidden"
                                 onClick={() => setIsMenuOpen(!isMenuOpen)}

@@ -6,13 +6,15 @@ import {
     deleteEnrollmentById,
     getAllEnrollmentsByCourseId,
 } from '../services/enrollmentServices'
+import EmailEditorComponent from './EmailEditorComponent.jsx'
+import { sendEmail } from '../services/emailService.js'
 import { getCourseById } from '../services/coursesServices'
 import { exportToPDF, exportToExcel } from '../utils/exportUtils'
 import pdfIcon from '../assets/icons/file-pdf.svg'
 import excelIcon from '../assets/icons/file-excel.svg'
 import ConfirmationModal from './ConfirmationModal'
 import EnrollmentForm from './EnrollmentForm'
-import { useAuth } from '../context/AuthContext'
+import { useAuth } from '../context/AuthContext.jsx'
 import { useNavigate } from 'react-router-dom'
 
 const EnrollmentsTableByCourse = ({ courseId }) => {
@@ -20,6 +22,9 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
     const [filteredEnrollments, setFilteredEnrollments] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [selectedRecipients, setSelectedRecipients] = useState([])
+    const [selectedSubject, setSelectedSubject] = useState('')
+    const [showEmailEditor, setShowEmailEditor] = useState(false)
     const [currentPage, setCurrentPage] = useState(1)
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [modalMessage, setModalMessage] = useState('')
@@ -27,8 +32,8 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
     const [selectedEnrollment, setSelectedEnrollment] = useState(null)
     const [isEditing, setIsEditing] = useState(false)
     const [courseName, setCourseName] = useState('')
-    const { authRequest } = useAuth()
     const navigate = useNavigate()
+    const { authRequest } = useAuth()
     const itemsPerPage = 8
 
     const totalPages = Math.ceil(filteredEnrollments.length / itemsPerPage)
@@ -80,6 +85,37 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
         navigate(`/inscription/${courseId}`)
     }
 
+    const handleOpenEmailEditor = (recipients, subject) => {
+        setSelectedRecipients(recipients)
+        setSelectedSubject(subject)
+        setShowEmailEditor(true)
+    }
+
+    const handleSendEmail = async (html) => {
+        const customSubject = prompt(
+            'Escribe el asunto del correo:',
+            selectedSubject || 'Asunto por defecto'
+        )
+
+        if (!customSubject) {
+            alert('El asunto no puede estar vacío.')
+            return
+        }
+
+        try {
+            await sendEmail(selectedRecipients, customSubject, html)
+            alert('Correo enviado con éxito.')
+        } catch (error) {
+            alert('Error al enviar el correo. Por favor, inténtalo de nuevo.')
+        } finally {
+            setShowEmailEditor(false)
+        }
+    }
+
+    const handleCloseEmailEditor = () => {
+        setShowEmailEditor(false)
+    }
+
     const handleExportPDF = async () => {
         try {
             const headers = ['Usuario', 'Email', 'Menores']
@@ -128,7 +164,12 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
     const handleDeleteConfirm = async () => {
         setIsModalOpen(false)
         try {
-            await deleteEnrollmentById(selectedEnrollment.id)
+            await authRequest(
+                `http://localhost:3000/api/enrollments/${selectedEnrollment.id}`,
+                {
+                    method: 'DELETE',
+                }
+            )
             fetchEnrollments()
         } catch (error) {
             console.error('Error al eliminar:', error)
@@ -156,12 +197,12 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
 
     return (
         <MainPanel
-            title={`Gestion de inscripciones del curso ${courseName}`}
+            title={`Gestión de inscripciones del curso ${courseName}`}
             totalItems={filteredEnrollments.length}
             onSearch={handleSearch}
         >
             <div className="flex flex-col h-full">
-                {/* Actions buttons */}
+                {/* Botones de acciones */}
                 <div className="flex flex-col justify-between mb-4 space-y-2 mobile:flex-col tablet:flex-row tablet:space-y-0">
                     <button
                         onClick={handleRegisterClick}
@@ -184,10 +225,26 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
                             onClick={handleExportExcel}
                             title="Exportar a Excel"
                         />
+                        <button
+                            onClick={() =>
+                                handleOpenEmailEditor(
+                                    enrollments.map((e) => e.email),
+                                    'Inscripciones Generales'
+                                )
+                            }
+                            className="flex items-center px-4 py-2 text-black transition-all duration-300 border border-black bg-orange hover:bg-black hover:text-white"
+                        >
+                            <img
+                                src={'src/assets/email.png'}
+                                className="w-5 h-5 mr-2"
+                                alt="Email Icon"
+                            />
+                            <span>Email a todos</span>
+                        </button>
                     </div>
                 </div>
 
-                {/* Table of Enrollments */}
+                {/* Tabla de inscripciones */}
                 <div className="flex-1 overflow-auto">
                     <table className="w-full mb-4 border-collapse">
                         <thead>
@@ -259,7 +316,15 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
                                     </td>
                                     <td className="p-3">
                                         <div className="flex justify-center">
-                                            <button className="flex items-center px-4 py-2 text-white transition-all duration-300 bg-black border-2 border-black font-helvetica-w20-bold hover:bg-white hover:text-black group">
+                                            <button
+                                                className="flex items-center px-4 py-2 text-white transition-all duration-300 bg-black border-2 border-black font-helvetica-w20-bold hover:bg-white hover:text-black group"
+                                                onClick={() =>
+                                                    handleOpenEmailEditor(
+                                                        [enrollment.email],
+                                                        `Contacto con ${enrollment.fullname}`
+                                                    )
+                                                }
+                                            >
                                                 <img
                                                     src={'src/assets/email.png'}
                                                     className="w-5 h-5 mr-2 brightness-0 invert group-hover:brightness-100 group-hover:invert-0"
@@ -275,7 +340,7 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
                     </table>
                 </div>
 
-                {/* Pagination */}
+                {/* Paginación */}
                 <div className="mt-4">
                     <Pagination
                         currentPage={currentPage}
@@ -285,13 +350,23 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
                 </div>
             </div>
 
-            {/* Modal of confirmation */}
+            {/* Modal de confirmación */}
             <ConfirmationModal
                 isOpen={isModalOpen}
                 onClose={() => setIsModalOpen(false)}
                 message={modalMessage}
                 onConfirm={handleDeleteConfirm}
             />
+
+            {/* Editor de correos */}
+            {showEmailEditor && (
+                <EmailEditorComponent
+                    onSendEmail={handleSendEmail}
+                    onClose={handleCloseEmailEditor}
+                    subject={selectedSubject}
+                    recipients={selectedRecipients}
+                />
+            )}
 
             {showModal && (
                 <EnrollmentForm
