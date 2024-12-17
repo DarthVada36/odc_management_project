@@ -26,9 +26,19 @@ export const sendEmail = async (recipients, subject, htmlContent, useBcc = false
     console.log('Payload enviado al backend:', payload);
 
     const response = await axios.post(API_URL, payload);
-    return response.data;
+    // Retornar siempre un objeto con { success, message }
+    return {
+      success: true,
+      message: response.data.message || 'Correo enviado con éxito.',
+    };
   } catch (error) {
     console.error('Error al enviar el correo:', error.response?.data || error.message);
-    throw error;
+
+    // Capturar el mensaje del backend en caso de error
+    return {
+      success: false,
+      message:
+        error.response?.data?.message || 'Hubo un error al enviar el correo. Inténtalo de nuevo.',
+    };
   }
 };

@@ -148,21 +148,21 @@ const AccessForm = ({ onError, errorMessage, onClearError }) => {
                     </div>
 
                     <div className="flex items-center justify-between">
-                        <label className="inline-flex items-center text-sm font-helvetica-w20-bold">
+                        <div className="flex items-center">
                             <input
                                 type="checkbox"
                                 className="text-orange-500 form-checkbox"
                             />
-                            <span className="ml-2 text-gray-600 font-helvetica-w20-bold">
-                                Recordar mi información
+                            <span className="ml-2 text-sm text-orange-500 font-helvetica-w20-bold">
+                                Recordar contraseña
                             </span>
-                        </label>
+                        </div>
                         <Link
                             to="#"
                             className="text-sm text-orange-500 font-helvetica-w20-bold hover:underline"
                             onClick={handleForgotPassword}
                         >
-                            ¿Olvidaste tu contraseña?
+                            Recuperar contraseña
                         </Link>
                     </div>
 

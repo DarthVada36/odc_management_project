@@ -1,44 +1,47 @@
 # ![ODC Manager](/client/public/introduction.png)
 
-       **ODC: Manager** es una aplicación diseñada para gestionar y centralizar las inscripciones a los cursos que se imparten en ODC (Orange Digital Center) de manera eficiente, ofreciendo un panel de administración intuitivo y funcionalidades clave para simplificar el proceso de registro y seguimiento de datos.
+**ODC: Manager es una aplicación diseñada para gestionar y centralizar las inscripciones a los cursos que se imparten en ODC (Orange Digital Center) de manera eficiente, ofreciendo un panel de administración intuitivo y funcionalidades clave para simplificar el proceso de registro y seguimiento de datos.**
 
 
 ### Índice
 - [Características](#características-principales)
 - [Tecnologías Utilizadas](#tecnologías)
 - [Instalación](#instalación)
-- [Roles y Permisos](#roles-y-permisos)
-- [Recursos de Diseño y Base de Datos](#recursos-de-diseño-y-base-de-datos)
-- [Estructura del Proyecto](#estructura)
-- [Uso](#uso)
-- [Herramientas y Utilidades](#herramientas-y-utilidades)
-- [Documentación de la API](#Documentación-de-la-API)
-- [Visionado de la Web](#visionado-de-la-web)
-- [Autores](#Autores)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Tests unitarios](#pruebas)
+- [Previsualización de la Web](#previsualización-de-la-aplicación)
+- [Autores](#autores)
 
 
 ## Características Principales
 
 - **Gestión de Inscripciones**: Permite registrar, editar, eliminar y monitorear las inscripciones a los cursos presenciales en ODC sin tener que redirigirse a una plataforma externa.
 
-![Gestión de Inscripciones](public/images/gestion-inscripciones.png)
-
 - **Panel Administrativo**: Acceso para gestionar cursos y inscripciones y administradores. El administrador tiene acceso a estadísticas y datos relevantes de cada curso y sus inscripciones, añadiendo la funcionalidad de descargar los datos en formato CSV y PDF.
-
-![Panel Administrativo](public/images/panel-admin.png)
-
 
 - **Seguridad**: Autenticación y autorización de los administradores y facilitadores mediante JWT y bcrypt.
 
-![Seguridad](public/images/seguridad-jwt.png)
-
 - **Interfaz Intuitiva**: UI amigable desarrollada detalladamente con Tailwind CSS, con un diseño basado totalmente en el libro de estilo de Orange. 
+
+- **Figma y Figjam**  
+<img src="/client/public/figma.png" alt="GIT" width="50" />
+
+   - [Archivo de Figma](https://www.figma.com/design/uMD8gF2knntP7RVJ2zbXOu/ODC-Project?node-id=38-2&t=qJjDhTyAu7a0Y6dm-1)
+
+   Flujo de proceso de la aplicación hecho en FigJam para facilitar el proceso de desarrollo
+
+   - [Archivo de FigJam](https://www.figma.com/board/mf9pIQYRdpqPogAEU4heTu/Flowchart-ODC-orange-project?node-id=8-1124&t=1Ly8NL067XHC22B4-1) 
+
+
+
 
 - **Base de Datos Relacional**: Modelo de datos eficiente y modular utilizando Sequelize. Permite que en un futuro se puedan añadir más modelos y relaciones sin afectar la estructura existente. 
 
+![MySQL](/client/public/drawSQLdos.png)
+
 ## ![Tecnologías](/client/public/tecnologias.png)
 
-     Este proyecto fue desarrollado utilizando tecnologías y librerías actuales que facilitan el desarrollo de aplicaciones web modernas y escalables.
+**Este proyecto fue desarrollado utilizando tecnologías y librerías actuales que facilitan el desarrollo de aplicaciones web modernas y escalables**
 
 ---
 
@@ -85,9 +88,14 @@
 
 ### Prerrequisitos
 
-- **Node.js** (v14 o superior)
-- **MySQL Workbench** (versión 8.x o superior)
-- **Git**
+- **Node.js**  
+<img src="/client/public/nodejsLight.svg" alt="NODE.JS" width="100" />
+
+- **MySQL Workbench**  
+<img src="/client/public/mysql-logo-svg-vector.svg" alt="MYSQL" width="100" />
+
+- **Git**  
+<img src="/client/public/Git-Icon-1788C.png" alt="GIT" width="50" />
 
 ### Instrucciones
 
@@ -109,7 +117,7 @@
    ```env
    DB_DEV_NAME=odc_project
    DB_TEST_NAME=odc_project_test
-   DB_USER=tuusuario
+   DB_USER=tuUsuario
    DB_PASSWORD=tucontraseña
    DB_HOST=localhost
    DB_PORT=3306
@@ -137,42 +145,118 @@
    ```
 
 7. **Acceder a la aplicación:**
-   Visita `http://localhost:3000` en tu navegador.
+   Visita `http://localhost:5173/` en tu navegador.
 
-## ![Pruebas](public/images/tests-icon.png) 🧪 Pruebas
+
+## Estructura del Proyecto
+
+      odc_project/
+          ├── client/                  # Código del frontend (interfaz de usuario)
+          │   ├── node_modules/        # Dependencias del cliente
+          │   ├── public/              # Archivos estáticos (imágenes, CSS, index.html)
+          │   ├── src/                 # Código fuente de la aplicación cliente
+          │   │   ├── assets/          # Recursos estáticos (imágenes, estilos)
+          │   │   ├── components/      # Componentes reutilizables de React
+          │   │   ├── context/         # Contexto de React
+          │   │   ├── layout/          # Componentes de diseño y navegación
+          │   │   ├── pages/           # Páginas principales
+          │   │   ├── services/        # Servicios y llamadas a la API
+          │   │   ├── test/            # Pruebas unitarias del frontend
+          │   │   ├── utils/           # Utilidades y funciones auxiliares
+          │   │   └── Main.jsx         # Componente principal de la aplicación
+          │   ├── eslint.config.js     # Configuración de ESLint
+          │   ├── index.html           # Página principal
+          │   ├── postcss.config.js    # Configuración de PostCSS
+          │   ├── tailwind.config.js   # Configuración de TailwindCSS
+          │   └── vite.config.js       # Configuración de Vite
+          ├── server/                  # Código del backend (API y lógica del servidor)
+          │   ├── controllers/         # Controladores que gestionan lógica de las rutas
+          │   ├── database/            # Configuración de la base de datos
+          │   ├── interfaces/          # Definiciones de tipos de datos e interfaces
+          │   ├── mailer/              # Configuración de nodemailer
+          │   ├── middleware/          # Middleware para autenticación, logs, etc.
+          │   ├── models/              # Modelos de la base de datos (ORM)
+          │   ├── node_modules/        # Dependencias del servidor
+          │   ├── routes/              # Definición de las rutas de la API
+          │   ├── utils/               # Funciones de utilidad usadas en el servidor
+          │   ├── test                 # Pruebas unitarias del backend
+          │   └── .env                 # Variables de entorno para el servidor
+          └── README.md                # Documentación del proyecto
+
+## ![Pruebas](/client/public/Tests.png)
 
 Para ejecutar las pruebas, utiliza el siguiente comando:
 ```bash
-npm test
+npx run test roleModel.test.js
+npx run test adminModel.test.js
 ```
 
-Las pruebas cubren:
-- Validación de endpoints.
-- Comportamiento del frontend.
-- Autenticación y seguridad.
+**Las pruebas cubren:**
+- Creación de administradores
+- Creación de roles
+- Creación de inscripciones
 
-## ![Capturas](public/images/screenshots-icon.png) 📸 Capturas de Pantalla
+## Previsualización de la Aplicación
 
-### Página Principal
-![Página Principal](public/images/pagina-principal.png)
+### Panel de Administración (PC/Laptop)
 
-### Panel de Administración
-![Panel Administrativo](public/images/panel-admin.png)
+<img src="/client/public/laptopdashboard.png" alt="GIT" width="90%" />
 
-### Seguridad JWT
-![Seguridad JWT](public/images/seguridad-jwt.png)
+<img src="/client/public/tabletdashboard.png" alt="GIT" width="60%" />
 
-## ![Contribuidores](public/images/contributors-icon.png) 👥 Contribuidores
+### Página Principal de Cursos (PC/Movil)
 
-- **[Tu Nombre]**: Desarrollo del frontend y backend.
-- _(Incluye más nombres si corresponde)_
+<img src="/client/public/cursoslaptop.png" alt="GIT" width="80%" />
 
-## ![Próximos Pasos](public/images/next-steps-icon.png) 📌 Próximos Pasos
+<img src="/client/public/cursosmovil.png" alt="GIT" width="50%" />
 
-- Despliegue en Docker.
-- Mejorar cobertura de pruebas.
-- Optimización del rendimiento para grandes volúmenes de datos.
+### Formulario de Inscripción (PC/Movil)
 
+<img src="/client/public/inscripcionmovil.png" alt="GIT" width="50%" />
+
+<img src="/client/public/cursoslaptop.png" alt="GIT" width="90%" /> Pendiente cambiar cuando se arreglle el bug de la imagen
+
+
+## ![Autores](/client/public/collaborators.png)  
+
+**José Ruiz**
+
+Proyect Owner, Frontend Developer Backend Developer
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/jruizndev) [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/josealfonsoruiz/)
+
+
+**Vada Velázquez**
+
+Scrum Master, Frontend Developer, Backend Developer
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/DarthVada36) [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/avadavelazquez/)
+
+**Wilder Aguilar**
+
+Backend Developer, Frontend Developer, Data Scientist
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Wilder-Aguilar) [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/wilderaguilar/)
+
+**César Mercado**
+
+Backend Developer, Frontend Developer 
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/merkandez) [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/cesarmercadoh/)
+
+
+**Sara Alcaraz**
+
+UI/UX Designer, Frontend Developer, Backend Developer
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Sarixav) [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/saraalcarazvalverde/)
+
+
+**Jennifer Tello**
+
+Frontend Developer, Backend Developer, Tester
+
+[![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/jennyfer85) [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/jennytellogarc%C3%ADa/)
 ---
 
 Si tienes alguna duda o necesitas más información, no dudes en contactarnos.

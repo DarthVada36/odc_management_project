@@ -26,7 +26,7 @@ export const sendEmailController = async (req, res) => {
     };
 
     await sendEmail(emailOptions);
-    res.status(200).json({ message: 'Correo enviado exitosamente' });
+    res.status(200).json({ message: 'Te hemos enviado un correo con los datos de tu inscripción' });
   } catch (error) {
     res.status(500).json({ message: 'Error al enviar el correo', error: error.message });
   }

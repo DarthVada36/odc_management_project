@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { getAllCourses } from '../services/coursesServices';
 import { useNavigate } from 'react-router-dom';
-import CookieModal from '../components/CoockieModal';
+import CookieModal from "../components/CoockieModal";
+
+
 const CoursesPage = () => {
     const [courses, setCourses] = useState([])
     const [isLoading, setIsLoading] = useState(true)
     const [error, setError] = useState(null)
+    const [showCookiesModal, setShowCookiesModal] = useState(true); // Estado para mostrar/ocultar el modal
     const navigate = useNavigate()
 
-    // Cargar cursos desde la API
+    
     useEffect(() => {
         const fetchCourses = async () => {
             try {
@@ -29,7 +32,7 @@ const CoursesPage = () => {
     if (error) return <p className="text-red-500">{error}</p>
 
     return (
-        <div className="flex flex-col items-center px-4 mb-8 flex-grow-1">
+        <div className="flex flex-col min-h-screen items-center px-4 mb-0 flex-grow-1">
             {' '}
             {/* Contenedor para Separar el footerpx4.separadelmargen */}
             <h1 className="w-full mt-8 mb-8 text-3xl font-bold text-center">
@@ -44,10 +47,16 @@ const CoursesPage = () => {
                     gap: '16px',
                 }}
             >
+
+                {/* Renderizar el modal condicionalmente */}
+            {showCookiesModal && (
+                <CookieModal onClose={() => setShowCookiesModal(false)} />
+            )} 
+            
                 {courses.map((course) => (
                     <div
                         key={course.id}
-                        className="p-4 border rounded shadow-md "
+                        className="p-4 border shadow-md flex flex-col justify-between h-full"
                     >
                         <h2 className="text-lg font-semibold">
                             {course.title}
@@ -69,7 +78,6 @@ const CoursesPage = () => {
         </div>
         );
       
-      <CookieModal />
     
   
 };
