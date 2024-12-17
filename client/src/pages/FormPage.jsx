@@ -1,10 +1,13 @@
-import React, { useState, useEffect } from "react";
-import MainForm from "../components/MainForm";
-import { createEnrollment } from "../services/enrollmentServices";
-import { getCourseById } from "../services/coursesServices";
-import formImage from "../assets/img/imageform.svg";
-import { useParams } from "react-router-dom";
-import CoockieModal from "../components/CoockieModal";
+import React, { useState, useEffect } from 'react'
+import MainForm from '../components/MainForm'
+import { createEnrollment } from '../services/enrollmentServices'
+import { getCourseById } from '../services/coursesServices'
+import formImage from '../assets/img/imageform.svg'
+import { useParams, useNavigate } from 'react-router-dom'
+import { useAuth } from '../context/AuthContext'
+import CookieModal from "../components/CoockieModal";
+import Summary from '../components/SummaryInscriptionForm' // Añadir esta línea
+
 const FormPage = () => {
     const { id } = useParams() // Capturar el ID del curso desde la URL
     const navigate = useNavigate()
@@ -18,8 +21,10 @@ const FormPage = () => {
     const [isLoading, setIsLoading] = useState(false) // Estado de carga
     const [responseMessage, setResponseMessage] = useState(null) // Mensajes de respuesta
     const [showSummary, setShowSummary] = useState(false) // Controlar si mostrar el resumen
+    const [showCookiesModal, setShowCookiesModal] = useState(true); // Estado para mostrar/ocultar el modal
+    
 
-    // Obtener el título del curso al cargar la página
+
     useEffect(() => {
         const fetchCourseTitle = async () => {
             try {
@@ -124,7 +129,7 @@ const FormPage = () => {
 
     return (
         <div className="flex flex-col items-center justify-center px-4 font">
-            <h1 className="font-sans text-3xl font-bold text-center text-orange">
+            <h1 className="font-sans mt-10 text-3xl font-bold text-center text-orange">
                 Solicitud de inscripción a {courseTitle}
             </h1>
             <div className="flex flex-col gap-6 p-8 px-4 m-10 border border-orange lg:flex-col lg:gap-4">
@@ -149,7 +154,7 @@ const FormPage = () => {
                         <img
                             src={formImage}
                             alt="Formulario Imagen"
-                            className="w-[615px] h-[616px] lg:max-w-full object-contain"
+                            className="w-[615px] h-[616px] pl-14 lg:max-w-full object-contain"
                         />
                     </div>
                     <CoockieModal   />
@@ -157,7 +162,7 @@ const FormPage = () => {
 
                 {!showSummary ? (
                     <button
-                        className="px-4 py-2 mt-4 font-semibold text-white rounded-md bg-orange disabled:opacity-50"
+                        className="px-4 py-2 mt-4 font-semibold text-white bg-orange disabled:opacity-50"
                         onClick={handleShowSummary} // Mostrar el resumen
                         disabled={isLoading}
                     >
@@ -165,7 +170,7 @@ const FormPage = () => {
                     </button>
                 ) : (
                     <button
-                        className="px-4 py-2 mt-4 font-semibold text-white bg-green-500 rounded-md disabled:opacity-50"
+                        className="px-4 py-2 mt-4 font-semibold text-white bg-green-500 disabled:opacity-50"
                         onClick={handleSendToBackend} // Enviar al backend
                         disabled={isLoading}
                     >
@@ -185,6 +190,11 @@ const FormPage = () => {
                     </p>
                 )}
             </div>
+
+            {/* Renderizar el modal condicionalmente */}
+            {showCookiesModal && (
+                <CookieModal onClose={() => setShowCookiesModal(false)} />
+            )}
 
             {/* Renderizar el resumen condicionalmente */}
             {showSummary && (
