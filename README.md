@@ -204,21 +204,21 @@ npx run test adminModel.test.js
 
 ### Panel de Administración (PC/Laptop)
 
-<img src="/client/public/laptopdashboard.png" alt="GIT" width="80%" />
+<img src="/client/public/laptopdashboard.png" alt="GIT" width="90%" />
 
-<img src="/client/public/tabletdashboard.png" alt="GIT" width="80%" />
+<img src="/client/public/tabletdashboard.png" alt="GIT" width="90%" />
 
 ### Página Principal de Cursos (PC/Movil)
 
 <img src="/client/public/cursoslaptop.png" alt="GIT" width="80%" />
 
-<img src="/client/public/cursosmovil.png" alt="GIT" width="60%" />
+<img src="/client/public/cursosmovil.png" alt="GIT" width="50%" />
 
 ### Formulario de Inscripción (PC/Movil)
 
-<img src="/client/public/inscripcionmovil.png" alt="GIT" width="60%" />
+<img src="/client/public/inscripcionmovil.png" alt="GIT" width="50%" />
 
-<img src="/client/public/cursoslaptop.png" alt="GIT" width="80%" /> Pendiente cambiar cuando se arreglle el bug de la imagen
+<img src="/client/public/cursoslaptop.png" alt="GIT" width="90%" /> Pendiente cambiar cuando se arreglle el bug de la imagen
 
 
 ## ![Contribuidores](/client/public/collaborators.png)  
