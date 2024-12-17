@@ -18,6 +18,8 @@ import { useAuth } from '../context/AuthContext.jsx'
 import { useNavigate } from 'react-router-dom'
 
 const EnrollmentsTableByCourse = ({ courseId }) => {
+    const { admin } = useAuth()
+    const isFacilitator = admin?.role_id === 3
     const [enrollments, setEnrollments] = useState([])
     const [filteredEnrollments, setFilteredEnrollments] = useState([])
     const [loading, setLoading] = useState(true)
@@ -82,7 +84,9 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
     }
 
     const handleRegisterClick = () => {
-        navigate(`/inscription/${courseId}`)
+        if (!isFacilitator) {
+            navigate(`/inscription/${courseId}`)
+        }
     }
 
     const handleOpenEmailEditor = (recipients, subject) => {
@@ -154,14 +158,18 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
     }
 
     const handleDeleteClick = (enrollment) => {
-        setSelectedEnrollment(enrollment)
-        setModalMessage(
-            `¿Estás seguro de que deseas eliminar al inscrito ${enrollment.fullname}?`
-        )
-        setIsModalOpen(true)
+        if (!isFacilitator) {
+            setSelectedEnrollment(enrollment)
+            setModalMessage(
+                `¿Estás seguro de que deseas eliminar al inscrito ${enrollment.fullname}?`
+            )
+            setIsModalOpen(true)
+        }
     }
 
     const handleDeleteConfirm = async () => {
+        if (isFacilitator) return
+
         setIsModalOpen(false)
         try {
             await authRequest(
@@ -178,6 +186,8 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
     }
 
     const handleEditClick = async (enrollment) => {
+        if (isFacilitator) return
+
         try {
             const response = await authRequest(
                 `http://localhost:3000/api/enrollments/${enrollment.id}/with-minors`
@@ -202,15 +212,18 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
             onSearch={handleSearch}
         >
             <div className="flex flex-col h-full">
-                {/* Botones de acciones */}
-                <div className="flex flex-col justify-between mb-4 space-y-2 mobile:flex-col tablet:flex-row tablet:space-y-0">
-                    <button
-                        onClick={handleRegisterClick}
-                        className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
-                    >
-                        Registrar nueva inscripción
-                    </button>
-                    <div className="flex items-center justify-start gap-4 tablet:justify-end">
+                <div className="flex flex-col mb-4 space-y-2 mobile:flex-col tablet:flex-row tablet:justify-end">
+                    {!isFacilitator && (
+                        <div className="tablet:mr-auto">
+                            <button
+                                onClick={handleRegisterClick}
+                                className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
+                            >
+                                Registrar nueva inscripción
+                            </button>
+                        </div>
+                    )}
+                    <div className="flex items-center justify-end gap-4">
                         <img
                             src={pdfIcon}
                             alt="Exportar a PDF"
@@ -232,11 +245,11 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
                                     'Inscripciones Generales'
                                 )
                             }
-                            className="flex items-center px-4 py-2 text-black transition-all duration-300 border border-black bg-orange hover:bg-black hover:text-white"
+                            className="flex items-center px-4 py-2 text-white transition-all duration-300 bg-black border-2 border-black px-7 font-helvetica-w20-bold hover:bg-white hover:text-black group"
                         >
                             <img
                                 src={'src/assets/email.png'}
-                                className="w-5 h-5 mr-2"
+                                className="w-5 h-5 mr-2 brightness-0 invert group-hover:brightness-100 group-hover:invert-0"
                                 alt="Email Icon"
                             />
                             <span>Email a todos</span>
@@ -244,7 +257,6 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
                     </div>
                 </div>
 
-                {/* Tabla de inscripciones */}
                 <div className="flex-1 overflow-auto">
                     <table className="w-full mb-4 border-collapse">
                         <thead>
@@ -258,9 +270,11 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
                                 <th className="p-3 text-left font-helvetica-w20-bold">
                                     Menores
                                 </th>
-                                <th className="p-3 text-center font-helvetica-w20-bold">
-                                    Acciones
-                                </th>
+                                {!isFacilitator && (
+                                    <th className="p-3 text-center font-helvetica-w20-bold">
+                                        Acciones
+                                    </th>
+                                )}
                                 <th className="p-3 text-center font-helvetica-w20-bold">
                                     Contacto
                                 </th>
@@ -292,28 +306,32 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
                                             <span>Sin menores registrados</span>
                                         )}
                                     </td>
-                                    <td className="p-3">
-                                        <div className="flex justify-center gap-2">
-                                            <button
-                                                onClick={() =>
-                                                    handleEditClick(enrollment)
-                                                }
-                                                className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
-                                            >
-                                                Editar
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    handleDeleteClick(
-                                                        enrollment
-                                                    )
-                                                }
-                                                className="px-4 py-2 text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
-                                            >
-                                                Eliminar
-                                            </button>
-                                        </div>
-                                    </td>
+                                    {!isFacilitator && (
+                                        <td className="p-3">
+                                            <div className="flex justify-center gap-2">
+                                                <button
+                                                    onClick={() =>
+                                                        handleEditClick(
+                                                            enrollment
+                                                        )
+                                                    }
+                                                    className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
+                                                >
+                                                    Editar
+                                                </button>
+                                                <button
+                                                    onClick={() =>
+                                                        handleDeleteClick(
+                                                            enrollment
+                                                        )
+                                                    }
+                                                    className="px-4 py-2 text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
+                                                >
+                                                    Eliminar
+                                                </button>
+                                            </div>
+                                        </td>
+                                    )}
                                     <td className="p-3">
                                         <div className="flex justify-center">
                                             <button
@@ -340,7 +358,6 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
                     </table>
                 </div>
 
-                {/* Paginación */}
                 <div className="mt-4">
                     <Pagination
                         currentPage={currentPage}
@@ -350,67 +367,69 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
                 </div>
             </div>
 
-            {/* Modal de confirmación */}
-            <ConfirmationModal
-                isOpen={isModalOpen}
-                onClose={() => setIsModalOpen(false)}
-                message={modalMessage}
-                onConfirm={handleDeleteConfirm}
-            />
+            {!isFacilitator && (
+                <>
+                    <ConfirmationModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                        message={modalMessage}
+                        onConfirm={handleDeleteConfirm}
+                    />
 
-            {/* Editor de correos */}
+                    {showModal && (
+                        <EnrollmentForm
+                            initialData={selectedEnrollment}
+                            isEditing={isEditing}
+                            onSubmit={async (formData) => {
+                                try {
+                                    if (isEditing) {
+                                        await authRequest(
+                                            `http://localhost:3000/api/enrollments/${selectedEnrollment.id}`,
+                                            {
+                                                method: 'PUT',
+                                                body: JSON.stringify(formData),
+                                            }
+                                        )
+                                    } else {
+                                        await authRequest(
+                                            'http://localhost:3000/api/enrollments',
+                                            {
+                                                method: 'POST',
+                                                body: JSON.stringify(formData),
+                                            }
+                                        )
+                                    }
+                                    await fetchEnrollments()
+                                    setShowModal(false)
+                                    return true
+                                } catch (error) {
+                                    console.error('Error:', error)
+                                    alert(error.message)
+                                    return false
+                                }
+                            }}
+                            onCancel={() => {
+                                setShowModal(false)
+                                setSelectedEnrollment(null)
+                                setIsEditing(false)
+                            }}
+                            title={
+                                isEditing
+                                    ? 'Editar Inscripción'
+                                    : 'Crear nueva Inscripción'
+                            }
+                            submitText={isEditing ? 'Guardar cambios' : 'Crear'}
+                        />
+                    )}
+                </>
+            )}
+
             {showEmailEditor && (
                 <EmailEditorComponent
                     onSendEmail={handleSendEmail}
                     onClose={handleCloseEmailEditor}
                     subject={selectedSubject}
                     recipients={selectedRecipients}
-                />
-            )}
-
-            {showModal && (
-                <EnrollmentForm
-                    initialData={selectedEnrollment}
-                    isEditing={isEditing}
-                    onSubmit={async (formData) => {
-                        try {
-                            if (isEditing) {
-                                await authRequest(
-                                    `http://localhost:3000/api/enrollments/${selectedEnrollment.id}`,
-                                    {
-                                        method: 'PUT',
-                                        body: JSON.stringify(formData),
-                                    }
-                                )
-                            } else {
-                                await authRequest(
-                                    'http://localhost:3000/api/enrollments',
-                                    {
-                                        method: 'POST',
-                                        body: JSON.stringify(formData),
-                                    }
-                                )
-                            }
-                            await fetchEnrollments()
-                            setShowModal(false)
-                            return true
-                        } catch (error) {
-                            console.error('Error:', error)
-                            alert(error.message)
-                            return false
-                        }
-                    }}
-                    onCancel={() => {
-                        setShowModal(false)
-                        setSelectedEnrollment(null)
-                        setIsEditing(false)
-                    }}
-                    title={
-                        isEditing
-                            ? 'Editar Inscripción'
-                            : 'Crear nueva Inscripción'
-                    }
-                    submitText={isEditing ? 'Guardar cambios' : 'Crear'}
                 />
             )}
         </MainPanel>

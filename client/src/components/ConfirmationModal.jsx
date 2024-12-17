@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 
 const ConfirmationModal = ({
     title,
@@ -7,18 +7,31 @@ const ConfirmationModal = ({
     message,
     onConfirm,
     showButtons = true,
+    showInput = false,
+    inputPlaceholder = '',
+    initialInputValue = '',
 }) => {
+    const [inputValue, setInputValue] = useState(initialInputValue)
+
     useEffect(() => {
         if (isOpen && !showButtons) {
             const timer = setTimeout(() => {
                 onClose()
             }, 3000)
-
             return () => clearTimeout(timer)
         }
     }, [isOpen, onClose, showButtons])
 
-    if (!isOpen) return null
+    const handleConfirm = () => {
+        if (showInput) {
+            onConfirm(inputValue)
+        } else {
+            onConfirm()
+        }
+        onClose()
+    }
+
+  if (!isOpen) return null;
 
     return (
         <div
@@ -26,10 +39,9 @@ const ConfirmationModal = ({
             onClick={onClose}
         >
             <div
-                className="relative w-full max-w-md p-6 bg-white border-2 border-gray-300 shadow-md sm:max-w-sm sm:px-4 "
+                className="relative w-full max-w-md p-6 bg-white border-2 border-gray-300 shadow-md sm:max-w-sm sm:px-4"
                 onClick={(e) => e.stopPropagation()}
             >
-                {/* Botón de cierre */}
                 <button
                     className="absolute text-base font-black text-black top-2 right-2"
                     onClick={onClose}
@@ -37,17 +49,27 @@ const ConfirmationModal = ({
                     ✕
                 </button>
 
-                {/* Título del modal */}
                 <h3 className="mb-4 text-lg font-bold text-black font-helvetica-w20-bold">
                     {title}
                 </h3>
 
-                {/* Mensaje */}
                 <p className="mb-6 text-gray-700 font-helvetica-w20-bold">
                     {message}
                 </p>
 
-                {/* Botones */}
+                {showInput && (
+                    <div className="mb-6">
+                        <input
+                            type="text"
+                            value={inputValue}
+                            onChange={(e) => setInputValue(e.target.value)}
+                            placeholder={inputPlaceholder}
+                            className="w-full p-3 transition-colors duration-300 border-2 border-black focus:outline-none hover:border-primary focus:border-primary"
+                            autoFocus
+                        />
+                    </div>
+                )}
+
                 <div className="flex justify-end gap-4">
                     {showButtons && (
                         <>
@@ -55,24 +77,15 @@ const ConfirmationModal = ({
                                 className="px-4 py-2 font-bold text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
                                 onClick={onClose}
                             >
-                                Cancel
+                                Cancelar
                             </button>
                             <button
                                 className="px-4 py-2 font-bold text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
-                                onClick={onConfirm}
+                                onClick={handleConfirm}
                             >
-                                Confirm
+                                Confirmar
                             </button>
                         </>
-                    )}
-
-                    {!showButtons && (
-                        <button
-                            className="px-4 py-2 font-bold text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
-                            onClick={onConfirm}
-                        >
-                            Confirm
-                        </button>
                     )}
                 </div>
             </div>
@@ -80,4 +93,4 @@ const ConfirmationModal = ({
     )
 }
 
-export default ConfirmationModal
+export default ConfirmationModal;
