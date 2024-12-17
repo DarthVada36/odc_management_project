@@ -22,10 +22,15 @@ Enrollment.belongsTo(Admin, { foreignKey: 'id_admin', as: 'admin' })
 Enrollment.hasMany(Minor, { foreignKey: 'enrollment_id', as: 'minors' })
 Minor.belongsTo(Enrollment, { foreignKey: 'enrollment_id', as: 'enrollment' })
 
+// Relación para obtener otros adultos del mismo grupo
+Enrollment.hasMany(Enrollment, { foreignKey: 'group_id', as: 'adults', });
+
+Enrollment.belongsTo(Enrollment, { foreignKey: 'group_id', as: 'group', });
+
 // Exportar modelos y función de sincronización
 const syncModels = async () => {
     try {
-        await connectionDb.sync({ alter: true })
+        await connectionDb.sync({ force: true })
         console.log(
             'Modelos sincronizados con la base de datos (^_-)db(-_^) 🚀'
         )

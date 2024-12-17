@@ -2,7 +2,6 @@
 
        **ODC: Manager** es una aplicación diseñada para gestionar y centralizar las inscripciones a los cursos que se imparten en ODC (Orange Digital Center) de manera eficiente, ofreciendo un panel de administración intuitivo y funcionalidades clave para simplificar el proceso de registro y seguimiento de datos.
 
-
 ### Índice
 - [Características](#características-principales)
 - [Tecnologías Utilizadas](#tecnologías)
@@ -16,7 +15,6 @@
 - [Visionado de la Web](#visionado-de-la-web)
 - [Autores](#Autores)
 
-
 ## Características Principales
 
 - **Gestión de Inscripciones**: Permite registrar, editar, eliminar y monitorear las inscripciones a los cursos presenciales en ODC sin tener que redirigirse a una plataforma externa.
@@ -26,7 +24,6 @@
 - **Panel Administrativo**: Acceso para gestionar cursos y inscripciones y administradores. El administrador tiene acceso a estadísticas y datos relevantes de cada curso y sus inscripciones, añadiendo la funcionalidad de descargar los datos en formato CSV y PDF.
 
 ![Panel Administrativo](public/images/panel-admin.png)
-
 
 - **Seguridad**: Autenticación y autorización de los administradores y facilitadores mediante JWT y bcrypt.
 
@@ -79,9 +76,7 @@
 
 [![Supertst](https://img.shields.io/badge/Supertst-blue?style=for-the-badge&logo=supertest&logoColor=white)](https://supertest.js.org/) Librería para pruebas HTTP.
 
-## ![Instalación](/client/public/installl.png) 
-
-
+## ![Instalación](/client/public/installl.png)
 
 ### Prerrequisitos
 
@@ -175,5 +170,4 @@ Las pruebas cubren:
 
 ---
 
-Si tienes alguna duda o necesitas más información, no dudes en contactarnos.
-
+Si tienes alguna duda o necesitas más información, no dudes en contactarnos

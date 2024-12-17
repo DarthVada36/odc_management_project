@@ -16,13 +16,22 @@ const EnrollmentForm = ({
         age: '',
         is_first_activity: false,
         minors: [],
+        adults: [],
     })
 
     const [newMinor, setNewMinor] = useState({ name: '', age: '' })
     const [errorMessage, setErrorMessage] = useState('')
     const [errors, setErrors] = useState({})
 
+    const [newAdult, setNewAdult] = useState({
+        fullname: '',
+        age: '',
+        email: '',
+        gender: 'NS/NC',
+    });
+
     useEffect(() => {
+        console.log('initialData:', initialData); // Verifica los datos aquí
         if (isEditing && initialData) {
             setFormData({
                 fullname: initialData.fullname || '',
@@ -31,13 +40,26 @@ const EnrollmentForm = ({
                 age: initialData.age || '',
                 is_first_activity: initialData.is_first_activity || false,
                 minors: initialData.minors || [],
-            })
+                adults: initialData.adults || [], // Asegúrate de que `adults` también sea un array vacío
+                adultFullname: initialData.adults?.[0]?.fullname || '', // Asegúrate de asignar valores por defecto
+                adultEmail: initialData.adults?.[0]?.email || '',
+                adultAge: initialData.adults?.[0]?.age || '',
+                adultGender: initialData.adults?.[0]?.gender || 'NS/NC',
+            });
         }
     }, [isEditing, initialData])
 
     const validateForm = () => {
         const newErrors = {}
 
+
+        // // Validación para el acompañante
+        // if (formData.adultAge && formData.adultAge < 15) {
+        //     newErrors.adultAge = 'El acompañante debe ser mayor de 15 años.';
+        // }
+        // if (formData.adultEmail && !/\S+@\S+\.\S+/.test(formData.adultEmail)) {
+        //     newErrors.adultEmail = 'Por favor, ingresa un correo electrónico válido para el acompañante';
+        // }
         // Validation for fullname length
         if (!formData.fullname) {
             newErrors.fullname = 'El nombre completo es obligatorio'
@@ -96,6 +118,24 @@ const EnrollmentForm = ({
         }))
     }
 
+    const handleAdultChange = (e) => {
+        const { name, value } = e.target;
+        setNewAdult((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
+    const handleAdultEdit = (index, field, value) => {
+        console.log("Antes de actualizar: ", formData.adults); 
+        setFormData((prev) => {
+            const updatedAdults = [...prev.adults];
+            updatedAdults[index][field] = value;
+            return { ...prev, adults: updatedAdults };
+        });
+        console.log("Después de actualizar: ", formData.adults);
+    };
+
     const handleMinorEdit = (index, field, value) => {
         setFormData((prev) => {
             const updatedMinors = [...prev.minors]
@@ -147,13 +187,31 @@ const EnrollmentForm = ({
         }
     }
 
+    const addAdult = () => {
+        if (!newAdult.fullname || !newAdult.age || !newAdult.email) {
+            setErrorMessage('Todos los campos del acompañante son obligatorios.');
+            return;
+        }
+        if (formData.adults.length >= 1) {
+            setErrorMessage('Solo puedes añadir un acompañante adulto.');
+            return;
+        }
+
+        setFormData((prev) => ({
+            ...prev,
+            adults: [...prev.adults, { ...newAdult }],
+        }));
+
+        setNewAdult({ fullname: '', age: '', email: '', gender: 'NS/NC' });
+        setErrorMessage('');
+    };
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             <div className="absolute inset-0 bg-black/50" onClick={onCancel} />
             <div
-                className={`relative w-full max-w-md bg-white ${
-                    errorMessage ? 'mt-16' : 'mt-4'
-                } mx-4 transition-all duration-300`}
+                className={`relative w-full max-w-md bg-white ${errorMessage ? 'mt-16' : 'mt-4'
+                    } mx-4 transition-all duration-300`}
                 onClick={(e) => e.stopPropagation()}
             >
                 <MessageBanner
@@ -310,6 +368,133 @@ const EnrollmentForm = ({
                                 </div>
                             )}
                         </div>
+
+
+                        <div>
+                            <h3 className="mb-4 font-bold text-dark">Añadir Acompañante Adulto</h3>
+                            {formData.adults.map((adult, index) => (
+                                <div
+                                    key={index}
+                                    className="flex flex-col gap-2 p-3 border-2 border-black"
+                                >
+                                    <input
+                                        type="text"
+                                        value={adult.fullname}
+                                        onChange={(e) =>
+                                            handleAdultEdit(
+                                                index,
+                                                'fullname',
+                                                e.target.value
+                                            )
+                                        }
+                                        className="w-full p-2 border-2 border-black"
+                                    />
+                                    <div className="flex items-center gap-2">
+                                        <input
+                                            type="number"
+                                            value={adult.age}
+                                            onChange={(e) =>
+                                                handleAdultEdit(
+                                                    index,
+                                                    'age',
+                                                    e.target.value
+                                                )
+                                            }
+                                            className="w-full p-2 border-2 border-black"
+                                        />
+                                        <span className="text-gray-500">
+                                            años
+                                        </span>
+                                    </div>
+
+                                    <input
+                                        type="text"
+                                        value={adult.email}
+                                        onChange={(e) =>
+                                            handleAdultEdit(
+                                                index,
+                                                'email',
+                                                e.target.value
+                                            )
+                                        }
+                                        className="w-full p-2 border-2 border-black"
+                                    />
+
+                                    <input
+                                        type="text"
+                                        value={adult.gender}
+                                        onChange={(e) =>
+                                            handleAdultEdit(
+                                                index,
+                                                'gender',
+                                                e.target.value
+                                            )
+                                        }
+                                        className="w-full p-2 border-2 border-black"
+                                    />
+
+                                    <button
+                                        type="button"
+                                        onClick={() =>
+                                            setFormData((prev) => ({
+                                                ...prev,
+                                                adults: prev.adults.filter((_, i) => i !== index),
+                                            }))
+                                        }
+                                        className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black hover:bg-black hover:text-white"
+                                    >
+                                        Eliminar
+                                    </button>
+                                </div>
+                            ))}
+
+                            {formData.adults.length < 1 && (
+                                <div className="flex flex-col gap-2 p-3 border-2 border-black">
+                                    <input
+                                        type="text"
+                                        name="fullname"
+                                        value={newAdult.fullname}
+                                        onChange={handleAdultChange}
+                                        placeholder="Nombre Completo"
+                                        className="w-full p-2 border-2 border-black"
+                                    />
+                                    <input
+                                        type="number"
+                                        name="age"
+                                        value={newAdult.age}
+                                        onChange={handleAdultChange}
+                                        placeholder="Edad"
+                                        className="w-full p-2 border-2 border-black"
+                                    />
+                                    <input
+                                        type="email"
+                                        name="email"
+                                        value={newAdult.email}
+                                        onChange={handleAdultChange}
+                                        placeholder="Correo Electrónico"
+                                        className="w-full p-2 border-2 border-black"
+                                    />
+                                    <select
+                                        name="gender"
+                                        value={newAdult.gender}
+                                        onChange={handleAdultChange}
+                                        className="w-full p-2 border-2 border-black"
+                                    >
+                                        <option value="Mujer">Mujer</option>
+                                        <option value="Hombre">Hombre</option>
+                                        <option value="Otro">Otro</option>
+                                    </select>
+                                    <button
+                                        type="button"
+                                        onClick={addAdult}
+                                        className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black hover:bg-black hover:text-white"
+                                    >
+                                        Añadir Acompañante
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
 
                         <div className="flex flex-col items-center justify-end gap-4 pt-4 tablet:flex-row">
                             <button

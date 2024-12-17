@@ -2,6 +2,8 @@ import Enrollment from '../models/enrollmentModel.js';
 import Course from '../models/courseModel.js';
 import Minor from '../models/minorModel.js';
 import sequelize from '../database/connectionDb.js';
+import { Sequelize } from 'sequelize';
+import { Op } from 'sequelize';
 
 // Función auxiliar para obtener inscripción con menores
 const getEnrollmentWithMinors = async (id) => {
@@ -44,30 +46,50 @@ export const getEnrollmentById = async (req, res) => {
   try {
     const { id } = req.params;
 
+    // Buscar la inscripción principal
     const enrollment = await Enrollment.findByPk(id, {
       include: [
         {
           model: Minor,
-          as: "minors",
-          attributes: ["id", "name", "age"], // Campos específicos de los menores
-        },
-        {
-          model: Enrollment, // Relación con otros adultos del mismo grupo
-          as: "adults",
-          attributes: ["id", "fullname", "email", "age", "gender", "is_first_activity"],
-          where: { group_id: Sequelize.col("Enrollment.group_id") },
-          required: false, // No es obligatorio que existan adultos adicionales
+          as: 'minors',
+          attributes: ['id', 'name', 'age'],
         },
       ],
     });
 
     if (!enrollment) {
-      return res.status(404).json({ message: "Inscripción no encontrada" });
+      return res.status(404).json({ message: 'Inscripción no encontrada.' });
     }
 
-    res.status(200).json(enrollment);
+    // Si el group_id es nulo, no buscamos adultos asociados
+    let adults = [];
+    if (enrollment.group_id) {
+      // Buscar adultos adicionales del mismo grupo (excluyendo el actual)
+      adults = await Enrollment.findAll({
+        where: {
+          group_id: enrollment.group_id, // Mismo group_id
+          id: { [Op.ne]: id }, // Excluir el titular
+        },
+        attributes: [
+          'id',
+          'fullname',
+          'email',
+          'age',
+          'gender',
+        ],
+      });
+    }
+
+    // Construir la respuesta
+    const response = {
+      ...enrollment.toJSON(),
+      adults, // Añadir la lista de adultos al resultado (vacío si group_id es nulo)
+    };
+
+    res.status(200).json(response);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error('Error en la consulta GET:', error);
+    res.status(500).json({ message: 'Error al obtener la inscripción.' });
   }
 };
 
@@ -180,102 +202,102 @@ export const createEnrollment = async (req, res) => {
 };
 
 // UPDATE ENROLLMENT BY ID
-export const updateEnrollmentById = async (req, res) => {
-  const transaction = await sequelize.transaction();
-  try {
-    const { id } = req.params;
-    const {
-      fullname,
-      email,
-      gender,
-      age,
-      is_first_activity,
-      id_admin,
-      id_course,
-      group_id,
-      accepts_newsletter,
-      minors,
-      adults,
-    } = req.body;
+// export const updateEnrollmentById = async (req, res) => {
+//   const transaction = await sequelize.transaction();
+//   try {
+//     const { id } = req.params;
+//     const {
+//       fullname,
+//       email,
+//       gender,
+//       age,
+//       is_first_activity,
+//       id_admin,
+//       id_course,
+//       group_id,
+//       accepts_newsletter,
+//       minors,
+//       adults,
+//     } = req.body;
 
-    const enrollment = await Enrollment.findByPk(id, { transaction });
-    if (!enrollment) {
-      await transaction.rollback();
-      return res.status(404).json({ message: "Inscripción no encontrada" });
-    }
+//     const enrollment = await Enrollment.findByPk(id, { transaction });
+//     if (!enrollment) {
+//       await transaction.rollback();
+//       return res.status(404).json({ message: "Inscripción no encontrada" });
+//     }
 
-    // Actualizar titular
-    await enrollment.update(
-      {
-        fullname,
-        email,
-        gender,
-        age,
-        is_first_activity,
-        id_admin,
-        id_course,
-        group_id, // Usar el mismo group_id existente
-        accepts_newsletter,
-      },
-      { transaction }
-    );
+//     // Actualizar titular
+//     await enrollment.update(
+//       {
+//         fullname,
+//         email,
+//         gender,
+//         age,
+//         is_first_activity,
+//         id_admin,
+//         id_course,
+//         group_id, // Usar el mismo group_id existente
+//         accepts_newsletter,
+//       },
+//       { transaction }
+//     );
 
-    // Actualizar menores asociados
-    if (minors && minors.length > 0) {
-      for (const minor of minors) {
-        if (minor.id) {
-          await Minor.update(
-            { name: minor.name, age: minor.age },
-            { where: { id: minor.id, enrollment_id: id }, transaction }
-          );
-        } else {
-          await Minor.create({ ...minor, enrollment_id: id }, { transaction });
-        }
-      }
-    }
+//     // Actualizar menores asociados
+//     if (minors && minors.length > 0) {
+//       for (const minor of minors) {
+//         if (minor.id) {
+//           await Minor.update(
+//             { name: minor.name, age: minor.age },
+//             { where: { id: minor.id, enrollment_id: id }, transaction }
+//           );
+//         } else {
+//           await Minor.create({ ...minor, enrollment_id: id }, { transaction });
+//         }
+//       }
+//     }
 
-    // Actualizar o agregar segundo adulto
-    if (adults && adults.length > 0) {
-      for (const adult of adults) {
-        if (adult.id) {
-          await Enrollment.update(
-            {
-              fullname: adult.fullname,
-              email: adult.email,
-              gender: adult.gender,
-              age: adult.age,
-            },
-            { where: { id: adult.id, group_id }, transaction }
-          );
-        } else {
-          await Enrollment.create(
-            {
-              fullname: adult.fullname,
-              email: adult.email,
-              gender: adult.gender,
-              age: adult.age,
-              is_first_activity: adult.is_first_activity || false,
-              id_admin: adult.id_admin || id_admin,
-              id_course,
-              group_id,
-            },
-            { transaction }
-          );
-        }
-      }
-    }
+//     // Actualizar o agregar segundo adulto
+//     if (adults && adults.length > 0) {
+//       for (const adult of adults) {
+//         if (adult.id) {
+//           await Enrollment.update(
+//             {
+//               fullname: adult.fullname,
+//               email: adult.email,
+//               gender: adult.gender,
+//               age: adult.age,
+//             },
+//             { where: { id: adult.id, group_id }, transaction }
+//           );
+//         } else {
+//           await Enrollment.create(
+//             {
+//               fullname: adult.fullname,
+//               email: adult.email,
+//               gender: adult.gender,
+//               age: adult.age,
+//               is_first_activity: adult.is_first_activity || false,
+//               id_admin: adult.id_admin || id_admin,
+//               id_course,
+//               group_id,
+//             },
+//             { transaction }
+//           );
+//         }
+//       }
+//     }
 
-    // Confirmar transacción
-    await transaction.commit();
+//     // Confirmar transacción
+//     await transaction.commit();
 
-    // Respuesta exitosa
-    res.status(200).json({ message: "Inscripción actualizada con éxito." });
-  } catch (error) {
-    await transaction.rollback();
-    console.error("Error al actualizar la inscripción:", error);
-    res.status(500).json({ message: error.message });
-  }
-};
+//     // Respuesta exitosa
+//     res.status(200).json({ message: "Inscripción actualizada con éxito." });
+//   } catch (error) {
+//     await transaction.rollback();
+//     console.error("Error al actualizar la inscripción:", error);
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 
 
 // DELETE ENROLLMENT BY ID
@@ -323,6 +345,451 @@ export const getAllEnrollmentsByCourseId = async (req, res) => {
     });
     res.status(200).json(enrollments);
   } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+// UPDATE ENROLLMENT BY ID
+//  export const updateEnrollmentById = async (req, res) => {
+//   const transaction = await sequelize.transaction();
+//   try {
+//     const { id } = req.params;
+//     const {
+//       fullname,
+//       email,
+//       gender,
+//       age,
+//       is_first_activity,
+//       id_admin,
+//       id_course,
+//       accepts_newsletter,
+//       minors = [],
+//       adults = [],
+//     } = req.body;
+
+//     const enrollment = await Enrollment.findByPk(id, { transaction });
+//     if (!enrollment) {
+//       await transaction.rollback();
+//       return res.status(404).json({ message: "Inscripción no encontrada" });
+//     }
+
+//     // Verificar si el curso ha cambiado
+//     const previousCourseId = enrollment.id_course;
+//     if (id_course && id_course !== previousCourseId) {
+//       // Liberar un ticket en el curso anterior
+//       const previousCourse = await Course.findByPk(previousCourseId, { transaction });
+//       if (previousCourse) {
+//         await previousCourse.increment("tickets", { by: 1, transaction });
+//       }
+
+//       // Verificar y descontar ticket en el nuevo curso
+//       const newCourse = await Course.findByPk(id_course, { transaction });
+//       if (!newCourse || newCourse.tickets <= 0) {
+//         await transaction.rollback();
+//         return res.status(400).json({
+//           message: "No hay tickets disponibles para el nuevo curso.",
+//         });
+//       }
+//       await newCourse.decrement("tickets", { by: 1, transaction });
+//     }
+
+//     // Actualizar la inscripción principal
+//     await enrollment.update(
+//       {
+//         fullname,
+//         email,
+//         gender,
+//         age,
+//         is_first_activity,
+//         id_admin,
+//         id_course,
+//         accepts_newsletter,
+//       },
+//       { transaction }
+//     );
+
+//     // Actualizar menores asociados
+//     if (minors && minors.length > 0) {
+//       for (const minor of minors) {
+//         if (minor.id) {
+//           // Actualizar menor existente
+//           await Minor.update(
+//             { name: minor.name, age: minor.age },
+//             { where: { id: minor.id, enrollment_id: id }, transaction }
+//           );
+//         } else {
+//           // Agregar nuevo menor
+//           await Minor.create({ ...minor, enrollment_id: id }, { transaction });
+//         }
+//       }
+//     }
+
+//     // Eliminar menores que ya no estén en la lista
+//     const existingMinors = await Minor.findAll({ where: { enrollment_id: id }, transaction });
+//     const minorIdsToKeep = minors.map((minor) => minor.id);
+//     for (const existingMinor of existingMinors) {
+//       if (!minorIdsToKeep.includes(existingMinor.id)) {
+//         await existingMinor.destroy({ transaction });
+//       }
+//     }
+
+//     // Actualizar adultos asociados
+//     if (adults && adults.length > 0) {
+//       for (const adult of adults) {
+//         if (adult.id) {
+//           // Actualizar adulto existente
+//           await Enrollment.update(
+//             {
+//               fullname: adult.fullname,
+//               email: adult.email,
+//               gender: adult.gender,
+//               age: adult.age,
+//             },
+//             { where: { id: adult.id, group_id: enrollment.group_id }, transaction }
+//           );
+//         } else {
+//           // Agregar nuevo adulto
+//           await Enrollment.create(
+//             {
+//               fullname: adult.fullname,
+//               email: adult.email,
+//               gender: adult.gender,
+//               age: adult.age,
+//               is_first_activity: adult.is_first_activity || false,
+//               id_admin: adult.id_admin || id_admin,
+//               id_course,
+//               group_id: enrollment.group_id, // Mantener el mismo group_id
+//             },
+//             { transaction }
+//           );
+//         }
+//       }
+//     }
+
+//     // Eliminar adultos que ya no estén en la lista
+//     const existingAdults = await Enrollment.findAll({
+//       where: { group_id: enrollment.group_id, id: { [sequelize.Op.ne]: enrollment.id } },
+//       transaction,
+//     });
+//     const adultIdsToKeep = adults.map((adult) => adult.id);
+//     for (const existingAdult of existingAdults) {
+//       if (!adultIdsToKeep.includes(existingAdult.id)) {
+//         await existingAdult.destroy({ transaction });
+//       }
+//     }
+
+//     // Confirmar transacción
+//     await transaction.commit();
+
+//     res.status(200).json({ message: "Inscripción actualizada con éxito." });
+//   } catch (error) {
+//     await transaction.rollback();
+//     console.error("Error al actualizar la inscripción:", error);
+//     res.status(500).json({ message: error.message });
+//   }
+// }; 
+
+//*********************************************************************************** */
+
+// //UPDATE ENROLLMENT BY ID (modificado)
+// export const updateEnrollmentById = async (req, res) => {
+//   const transaction = await sequelize.transaction();
+//   try {
+//     const { id } = req.params;
+//     const {
+//       fullname,
+//       email,
+//       gender,
+//       age,
+//       is_first_activity,
+//       id_admin,
+//       id_course,
+//       group_id,
+//       accepts_newsletter,
+//       minors = [],
+//       adults = [],
+//     } = req.body;
+
+//     // Obtener la inscripción actual con menores y adultos
+//     const existingEnrollment = await Enrollment.findByPk(id, {
+//       include: [
+//         { model: Minor, as: 'minors' },
+//         { model: Enrollment, as: 'adults', where: { group_id }, required: false },
+//       ],
+//       transaction,
+//     });
+
+//     if (!existingEnrollment) {
+//       await transaction.rollback();
+//       return res.status(404).json({ message: 'Inscripción no encontrada' });
+//     }
+
+//     // Obtener el curso para verificar los tickets disponibles
+//     const course = await Course.findByPk(id_course, { transaction });
+//     if (!course) {
+//       await transaction.rollback();
+//       return res.status(404).json({ message: 'Curso no encontrado' });
+//     }
+
+//     // Calcular diferencias en menores
+//     const currentMinors = existingEnrollment.minors.length;
+//     const newMinors = minors.length;
+//     const minorsDifference = newMinors - currentMinors;
+
+//     // Calcular diferencias en adultos (incluye el titular y otros adultos del grupo)
+//     const currentAdults = existingEnrollment.adults.length + 1; // +1 por el titular actual
+//     const newAdults = adults.length + 1; // +1 por el titular actualizado
+//     const adultsDifference = newAdults - currentAdults;
+
+//     // Calcular tickets totales necesarios
+//     const totalDifference = minorsDifference + adultsDifference;
+
+//     if (totalDifference > 0 && course.tickets < totalDifference) {
+//       await transaction.rollback();
+//       return res.status(400).json({
+//         message: 'No hay suficientes tickets disponibles para completar la inscripción.',
+//       });
+//     }
+
+//     // Actualizar la inscripción principal
+//     await existingEnrollment.update(
+//       {
+//         fullname,
+//         email,
+//         gender,
+//         age,
+//         is_first_activity,
+//         id_admin,
+//         id_course,
+//         group_id,
+//         accepts_newsletter,
+//       },
+//       { transaction }
+//     );
+
+//     // Actualizar menores asociados
+//     const existingMinorIds = existingEnrollment.minors.map((minor) => minor.id);
+//     const updatedMinorIds = minors.map((minor) => minor.id).filter(Boolean);
+
+//     // Eliminar menores que ya no están
+//     const minorsToDelete = existingMinorIds.filter(
+//       (id) => !updatedMinorIds.includes(id)
+//     );
+//     if (minorsToDelete.length > 0) {
+//       await Minor.destroy({
+//         where: { id: minorsToDelete },
+//         transaction,
+//       });
+//     }
+
+//     // Crear o actualizar menores
+//     for (const minor of minors) {
+//       if (minor.id) {
+//         // Actualizar menor existente
+//         await Minor.update(
+//           { name: minor.name, age: minor.age },
+//           { where: { id: minor.id, enrollment_id: id }, transaction }
+//         );
+//       } else {
+//         // Crear nuevo menor
+//         await Minor.create({ ...minor, enrollment_id: id }, { transaction });
+//       }
+//     }
+
+//     // Manejo de adultos: actualizar o crear
+//     let updatedAdultCount = 0;
+//     for (const adult of adults) {
+//       console.log(`Procesando adulto: ${JSON.stringify(adult)}`);
+//       if (adult.id) {
+//         // Si el adulto tiene un id, verificamos si ya existe y pertenece al grupo
+//         const existingAdult = await Enrollment.findOne({
+//           where: { id: adult.id, group_id },
+//           transaction,
+//         });
+
+//         console.log(`Adulto encontrado: ${JSON.stringify(existingAdult)}`);
+
+//         if (existingAdult) {
+//           // Si ya existe, actualizamos el adulto
+//           await existingAdult.update(
+//             {
+//               fullname: adult.fullname,
+//               email: adult.email,
+//               gender: adult.gender,
+//               age: adult.age,
+//             },
+//             { transaction }
+//           );
+//           updatedAdultCount++;
+//         } else {
+//           // Si no existe el adulto, mostramos un error
+//           await transaction.rollback();
+//           return res.status(400).json({
+//             message: 'El adulto no pertenece a este grupo.',
+//           });
+//         }
+//       } else {
+//         // Si no tiene id, es un nuevo adulto
+//         // Verificamos si ya hay un acompañante en el grupo
+//         const existingAdultsCount = await Enrollment.count({
+//           where: { group_id },
+//           transaction,
+//         });
+
+//         console.log(`Cantidad de acompañantes existentes: ${existingAdultsCount}`);
+
+//         if (existingAdultsCount >= 1) {
+//           // Ya existe un adulto en el grupo, no permitimos agregar otro
+//           await transaction.rollback();
+//           return res.status(400).json({
+//             message: 'Solo se puede tener un acompañante por inscripción.',
+//           });
+//         }
+
+//         // Si no hay adultos, podemos crear uno nuevo
+//         await Enrollment.create(
+//           {
+//             fullname: adult.fullname,
+//             email: adult.email,
+//             gender: adult.gender,
+//             age: adult.age,
+//             is_first_activity: adult.is_first_activity || false,
+//             id_admin: adult.id_admin || id_admin,
+//             id_course,
+//             group_id,
+//           },
+//           { transaction }
+//         );
+//         updatedAdultCount++;
+//       }
+//     }
+
+//     // Verificar si algún adulto fue actualizado o creado correctamente
+//     console.log(`Número de adultos actualizados/creados: ${updatedAdultCount}`);
+
+//     // Actualizar tickets del curso
+//     if (totalDifference !== 0) {
+//       course.tickets -= totalDifference;
+//       await course.save({ transaction });
+//     }
+
+//     // Confirmar transacción
+//     await transaction.commit();
+//     res.status(200).json({ message: 'Inscripción actualizada con éxito.' });
+//   } catch (error) {
+//     await transaction.rollback();
+//     console.error('Error al actualizar la inscripción:', error);
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+// UPDATE ENROLLMENT
+export const updateEnrollmentById = async (req, res) => {
+  const transaction = await sequelize.transaction();
+  try {
+    const { id } = req.params;
+    const {
+      fullname,
+      email,
+      gender,
+      age,
+      is_first_activity,
+      id_admin,
+      id_course,
+      group_id,
+      accepts_newsletter,
+      minors = [],
+      adults = [],
+    } = req.body;
+
+    // Buscar la inscripción principal
+    const enrollment = await Enrollment.findByPk(id, { transaction });
+
+    if (!enrollment) {
+      return res.status(404).json({ message: "Inscripción no encontrada." });
+    }
+
+    // Validación de edad del titular
+    if (age < 14) {
+      return res.status(400).json({ message: "El titular debe ser mayor de 14 años." });
+    }
+
+    // Actualizar los datos principales
+    await enrollment.update(
+      {
+        fullname,
+        email,
+        gender,
+        age,
+        is_first_activity,
+        id_admin,
+        id_course,
+        group_id,
+        accepts_newsletter,
+      },
+      { transaction }
+    );
+
+    // Actualizar menores asociados
+    if (Array.isArray(minors)) {
+      // Borrar menores existentes
+      await Minor.destroy({ where: { enrollment_id: id }, transaction });
+
+      // Crear nuevos menores
+      if (minors.length > 0) {
+        const minorData = minors.map((minor) => ({
+          ...minor,
+          enrollment_id: id,
+        }));
+        await Minor.bulkCreate(minorData, { transaction });
+      }
+    }
+
+    // Actualizar adultos asociados (segundo adulto)
+    if (Array.isArray(adults)) {
+      // Eliminar adultos existentes del grupo con el mismo `group_id`, excluyendo al titular
+      await Enrollment.destroy({
+        where: { group_id: enrollment.group_id, id: { [Op.ne]: id } },
+        transaction,
+      });
+
+      // Crear nuevos adultos
+      if (adults.length > 0) {
+        const adultData = adults.map((adult) => ({
+          fullname: adult.fullname,
+          email: adult.email,
+          gender: adult.gender,
+          age: adult.age,
+          is_first_activity: adult.is_first_activity || false,
+          id_admin: adult.id_admin || id_admin,
+          id_course,
+          group_id: group_id || enrollment.group_id, // Reutilizar el mismo group_id
+          accepts_newsletter: adult.accepts_newsletter || false,
+        }));
+        await Enrollment.bulkCreate(adultData, { transaction });
+      }
+    }
+
+    // Confirmar la transacción
+    await transaction.commit();
+
+    // Respuesta exitosa
+    res.status(200).json({ message: "Inscripción actualizada con éxito." });
+  } catch (error) {
+    // Rollback de la transacción en caso de error
+    await transaction.rollback();
+    console.error("Error al actualizar la inscripción:", error);
     res.status(500).json({ message: error.message });
   }
 };

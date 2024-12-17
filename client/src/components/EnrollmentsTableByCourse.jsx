@@ -180,7 +180,7 @@ const EnrollmentsTableByCourse = ({ courseId }) => {
     const handleEditClick = async (enrollment) => {
         try {
             const response = await authRequest(
-                `http://localhost:3000/api/enrollments/${enrollment.id}/with-minors`
+                `http://localhost:3000/api/enrollments/${enrollment.id}`
             )
             const enrollmentData = await response.json()
             setSelectedEnrollment(enrollmentData)
