@@ -85,7 +85,7 @@
 
 ### Prerrequisitos
 
-- **Node.js** (v14 o superior)
+- **Node.js** [![NODE.JS](/client/public/nodejsLight.svg){ width=300px }] (v14 o superior)
 - **MySQL Workbench** (versión 8.x o superior)
 - **Git**
 
