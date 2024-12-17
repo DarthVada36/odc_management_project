@@ -44,7 +44,7 @@ const Summary = ({ formData, minors, adult, courseTitle, handleSubmit }) => {
   };
 
   return (
-    <div className="w-full max-w-screen-lg mx-auto mt-8 p-6 border border-orange bg-light shadow-md">
+    <div className="w-3/4 mb-10 mx-auto mt-8 p-6 border border-orange bg-white shadow-md">
       {/* Título del resumen */}
       <h2 className="font-bold text-2xl text-orange text-center mb-4">
         Resumen de tu inscripción
