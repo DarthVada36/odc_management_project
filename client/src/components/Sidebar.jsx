@@ -7,15 +7,18 @@ const Sidebar = () => {
     const { admin } = useAuth()
 
     const menuItems = [
-        { id: 'dashboard', label: 'Dashboard' },
+        { id: 'dashboard', label: 'Dashboard', requiredRole: 1 },
         { id: 'administrators', label: 'Administradores', requiredRole: 1 },
-        { id: 'enrollments', label: 'Inscripciones' },
+        { id: 'enrollments', label: 'Inscripciones', requiredRole: 1 },
         { id: 'courses', label: 'Cursos' },
     ]
 
-    const filteredMenuItems = menuItems.filter(
-        (item) => !item.requiredRole || admin?.role_id === item.requiredRole
-    )
+    const filteredMenuItems = menuItems.filter((item) => {
+        if (admin?.role_id === 2) {
+            return item.id === 'courses'
+        }
+        return !item.requiredRole || admin?.role_id === item.requiredRole
+    })
 
     return (
         <div className="pt-[0.5rem] hidden font-bold font-helvetica-w20-bold laptop:block desktop:w-[11.3rem] min-h-screen bg-black">

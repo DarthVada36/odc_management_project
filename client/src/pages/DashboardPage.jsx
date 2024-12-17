@@ -1,5 +1,4 @@
-// src/pages/DashboardPage.jsx
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Sidebar from '../components/Sidebar'
 import AdministratorsTable from '../components/AdministratorsTable'
 import CoursesTable from '../components/CoursesTable'
@@ -8,10 +7,23 @@ import EnrollmentsTable from '../components/EnrollmentsTable'
 import EnrollmentsTableByCourse from '../components/EnrollmentsTableByCourse'
 import AdminDashboard from '../components/AdminDashboard'
 import { useDashboard } from '../context/DashboardContext'
+import { useAuth } from '../context/AuthContext'
 
 const DashboardPage = () => {
     const { activeComponent, setActiveComponent } = useDashboard()
     const [selectedCourseId, setSelectedCourseId] = useState(null)
+    const { admin } = useAuth()
+    const isFacilitator = admin?.role_id === 3
+
+    useEffect(() => {
+        if (
+            isFacilitator &&
+            activeComponent !== 'courses' &&
+            activeComponent !== 'enrollmentsByCourse'
+        ) {
+            setActiveComponent('courses')
+        }
+    }, [isFacilitator, activeComponent, setActiveComponent])
 
     const renderComponent = () => {
         switch (activeComponent) {
@@ -33,12 +45,21 @@ const DashboardPage = () => {
             case 'enrollmentsByCourse':
                 return <EnrollmentsTableByCourse courseId={selectedCourseId} />
             default:
-                return <MainPanel title="Dashboard" />
+                return isFacilitator ? (
+                    <CoursesTable
+                        onShowEnrollmentsByCourse={(courseId) => {
+                            setSelectedCourseId(courseId)
+                            setActiveComponent('enrollmentsByCourse')
+                        }}
+                    />
+                ) : (
+                    <MainPanel title="Dashboard" />
+                )
         }
     }
 
     return (
-        <div className="flex min-h-screen ">
+        <div className="flex min-h-screen">
             <Sidebar />
             <main className="flex flex-col flex-1 overflow-x-hidden">
                 {renderComponent()}

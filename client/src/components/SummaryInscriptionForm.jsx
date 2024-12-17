@@ -220,7 +220,7 @@ const Summary = ({
   };
 
   return (
-    <div className='w-full max-w-screen-lg mx-auto mt-8 p-6 border border-orange bg-light shadow-md'>
+    <div className="w-3/4 mb-10 mx-auto mt-8 p-6 border border-orange bg-white shadow-md">
       {/* Título del resumen */}
       <h2 className='font-bold text-2xl text-orange text-center mb-4'>
         Resumen de tu inscripción
@@ -297,13 +297,13 @@ const Summary = ({
         <div className='flex justify-center gap-4'>
           <button
             onClick={handleInscription}
-            className='bg-orange text-white px-6 py-2 rounded-md font-semibold hover:bg-orange-600 cursor-pointer'
+            className="bg-orange text-black px-6 py-2 font-semibold hover:bg-orange-600 cursor-pointer"
           >
             Inscribirse
           </button>
           <button
             onClick={handleExportPDF}
-            className='bg-orange text-white px-6 py-2 rounded-md font-semibold hover:bg-orange-600 cursor-pointer'
+            className="bg-orange text-black px-6 py-2 font-semibold hover:bg-orange-600 cursor-pointer"
           >
             Descargar PDF
           </button>

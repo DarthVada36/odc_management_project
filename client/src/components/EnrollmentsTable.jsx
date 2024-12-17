@@ -14,7 +14,7 @@ import pdfIcon from '../assets/icons/file-pdf.svg'
 import ConfirmationModal from './ConfirmationModal'
 
 const EnrollmentsTable = () => {
-    const { authRequest } = useAuth() // Añadir esta línea aquí
+    const { authRequest } = useAuth()
     const [enrollments, setEnrollments] = useState([])
     const [filteredEnrollments, setFilteredEnrollments] = useState([])
     const [loading, setLoading] = useState(true)
@@ -24,8 +24,8 @@ const EnrollmentsTable = () => {
     const [selectedRecipients, setSelectedRecipients] = useState(null)
     const [selectedEnrollment, setSelectedEnrollment] = useState(null)
     const [isModalOpen, setIsModalOpen] = useState(false)
-    const [selectedSubject, setSelectedSubject] = useState('') // Asunto del correo
-    const itemsPerPage = 8 // Items por página
+    const [selectedSubject, setSelectedSubject] = useState('')
+    const itemsPerPage = 8
 
     const totalPages = Math.ceil(filteredEnrollments.length / itemsPerPage)
     const indexOfLastItem = currentPage * itemsPerPage
@@ -186,11 +186,11 @@ const EnrollmentsTable = () => {
                             'Inscripciones Generales'
                         )
                     }
-                    className="flex items-center px-4 py-2 text-black transition-all duration-300 border border-black bg-orange hover:bg-black hover:text-white"
+                    className="flex items-center px-4 py-2 text-white transition-all duration-300 bg-black border-2 border-black font-helvetica-w20-bold hover:bg-white hover:text-black group"
                 >
                     <img
                         src={'src/assets/email.png'}
-                        className="w-5 h-5 mr-2"
+                        className="w-5 h-5 mr-2 brightness-0 invert group-hover:brightness-100 group-hover:invert-0"
                         alt="Email Icon"
                     />
                     <span>Email a todos</span>

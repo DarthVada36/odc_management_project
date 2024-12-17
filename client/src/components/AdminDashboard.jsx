@@ -288,7 +288,7 @@ const AdminDashboard = () => {
 
             const totalParticipants = courseEnrollments.length + totalMinors
 
-            // Count the first time 
+            // Count the first time
             const firstTimeCount = courseEnrollments.reduce(
                 (sum, enrollment) => {
                     let count = enrollment.is_first_activity ? 1 : 0
@@ -706,7 +706,7 @@ const AdminDashboard = () => {
             <div>
                 <div className="flex flex-col gap-4 desktop:flex-row tablet:flex-col tablet:items-start tablet:justify-between">
                     {/* Select y Fechas */}
-                    <div className="flex flex-col gap-4 tablet:flex-row tablet:items-center mobile:flex-row">
+                    <div className="flex flex-col gap-4 tablet:flex-row tablet:items-center mobile:flex-col">
                         <div className="w-64">
                             <label className="block pb-[0.195rem] text-xs font-helvetica-w20-bold text-neutral-600">
                                 Filtrar por curso

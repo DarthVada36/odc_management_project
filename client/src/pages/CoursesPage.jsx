@@ -32,7 +32,7 @@ const CoursesPage = () => {
     if (error) return <p className="text-red-500">{error}</p>
 
     return (
-        <div className="flex flex-col items-center px-4 mb-8 flex-grow-1">
+        <div className="flex flex-col min-h-screen items-center px-4 mb-0 flex-grow-1">
             {' '}
             {/* Contenedor para Separar el footerpx4.separadelmargen */}
             <h1 className="w-full mt-8 mb-8 text-3xl font-bold text-center">
@@ -56,7 +56,7 @@ const CoursesPage = () => {
                 {courses.map((course) => (
                     <div
                         key={course.id}
-                        className="p-4 border rounded shadow-md "
+                        className="p-4 border shadow-md flex flex-col justify-between h-full"
                     >
                         <h2 className="text-lg font-semibold">
                             {course.title}
@@ -64,7 +64,7 @@ const CoursesPage = () => {
                         <p className="text-gray-600">{course.description}</p>
                         <div className="mt-4 text-left">
                             <button
-                                className="px-4 py-2 mt-4 font-bold text-black transition-colors rounded-none bg-orange hover:bg-black hover:text-white"
+                                className="px-4 py-2 mt-4 font-bold text-black transition-colors  bg-orange hover:bg-black hover:text-white"
                                 onClick={() =>
                                     navigate(`/inscription/${course.id}`)
                                 }
