@@ -56,7 +56,7 @@ const CoursesPage = () => {
                 {courses.map((course) => (
                     <div
                         key={course.id}
-                        className="p-4 border rounded shadow-md "
+                        className="p-4 border shadow-md "
                     >
                         <h2 className="text-lg font-semibold">
                             {course.title}
@@ -64,7 +64,7 @@ const CoursesPage = () => {
                         <p className="text-gray-600">{course.description}</p>
                         <div className="mt-4 text-left">
                             <button
-                                className="px-4 py-2 mt-4 font-bold text-black transition-colors rounded-none bg-orange hover:bg-black hover:text-white"
+                                className="px-4 py-2 mt-4 font-bold text-black transition-colors  bg-orange hover:bg-black hover:text-white"
                                 onClick={() =>
                                     navigate(`/inscription/${course.id}`)
                                 }
