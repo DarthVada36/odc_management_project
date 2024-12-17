@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { exportToPDF } from '../utils/exportUtils';
 import { sendEmail } from '../services/emailService';
 import { svgToPngBase64 } from '../utils/svgUtils';
+import ConfirmationModal from './ConfirmationModal';
 const Summary = ({
   formData,
   minors,
@@ -12,9 +13,20 @@ const Summary = ({
   courseSchedule,
   handleSubmit,
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalProps, setModalProps] = useState({
+    title: '',
+    message: '',
+    onConfirm: () => {},
+  });
+
+  const openModal = (title, message, onConfirm) => {
+    setModalProps({ title, message, onConfirm });
+    setIsModalOpen(true);
+  };
   const handleInscription = async () => {
     try {
-      const response = await fetch('../public/orange-logo.svg'); 
+      const response = await fetch('../public/orange-logo.svg');
       const svgContent = await response.text();
       const logoBase64 = await svgToPngBase64(svgContent);
 
@@ -124,27 +136,43 @@ const Summary = ({
       // Asunto del correo
       const subject = `Resumen de tu inscripción al curso "${courseTitle}"`;
 
-      // Enviar correo
-      await sendEmail(
+      // Llamar a sendEmail y capturar la respuesta del backend
+      const result = await sendEmail(
         [formData.email, ...(adult ? [adult.email] : [])],
         subject,
         htmlContent
       );
 
-      // Ejecutar cualquier lógica adicional
-      if (typeof handleSubmit === 'function') {
-        handleSubmit();
+      // Verificar la respuesta del backend y mostrarla en el modal
+      if (result.success) {
+        openModal(
+          'Inscripción Exitosa',
+          result.message || 'Tu inscripción se ha completado con éxito.',
+          () => {
+            setIsModalOpen(false);
+            if (typeof handleSubmit === 'function') {
+              handleSubmit(); // Llama a la lógica de redirección SOLO cuando el usuario acepta
+            }
+          }
+        );
+      } else {
+        openModal(
+          'Error',
+          result.message || 'No se pudo completar la inscripción. Inténtalo de nuevo.',
+          () => setIsModalOpen(false) // Cierra solo el modal sin redirección
+        );
       }
-
-      alert('Inscripción completada y correo enviado exitosamente.');
     } catch (error) {
       console.error('Error al enviar el correo:', error);
-      alert(
-        'Hubo un problema al completar la inscripción. Inténtalo de nuevo.'
+
+      // Capturar errores inesperados y mostrarlos en el modal
+      openModal(
+        'Error',
+        'Hubo un error inesperado. Inténtalo de nuevo más tarde.',
+        () => setIsModalOpen(false)
       );
     }
   };
-
   const handleExportPDF = async () => {
     const title = `Resumen de Inscripción: ${courseTitle || 'Curso'}`;
     const headers = ['Campo', 'Valor'];
@@ -281,6 +309,15 @@ const Summary = ({
           </button>
         </div>
       </div>
+       {/* Confirmation Modal */}
+       <ConfirmationModal
+        title={modalProps.title}
+        message={modalProps.message}
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onConfirm={modalProps.onConfirm} 
+        showButtons={true} 
+      />
     </div>
   );
 };
