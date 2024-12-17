@@ -212,11 +212,11 @@ npx run test adminModel.test.js
 
 <img src="/client/public/cursoslaptop.png" alt="GIT" width="80%" />
 
-<img src="/client/public/cursosmovil.png" alt="GIT" width="80%" />
+<img src="/client/public/cursosmovil.png" alt="GIT" width="60%" />
 
 ### Formulario de Inscripción (PC/Movil)
 
-<img src="/client/public/inscripcionmovil.png" alt="GIT" width="80%" />
+<img src="/client/public/inscripcionmovil.png" alt="GIT" width="60%" />
 
 <img src="/client/public/cursoslaptop.png" alt="GIT" width="80%" /> Pendiente cambiar cuando se arreglle el bug de la imagen
 
