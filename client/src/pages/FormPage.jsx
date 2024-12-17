@@ -56,10 +56,8 @@ const FormPage = () => {
                 return false;
             }
         }
-        return true
-    }
-    return true;
-  };
+        return true; // Este cierre es correcto ahora.
+    };
 
     const handleAddMinor = (minorData) => {
         setMinors((prev) => [...prev, minorData]);
@@ -77,8 +75,7 @@ const FormPage = () => {
         if (validateFormData()) {
             setShowSummary(true); // Activar el resumen
         }
-    }
-  };
+    };
 
     const handleSendToBackend = async () => {
         if (!validateFormData()) return;
@@ -126,10 +123,10 @@ const FormPage = () => {
         } finally {
             setIsLoading(false);
         }
-    }
+    };
 
     return (
-        <div className="flex flex-col items-center justify-center px-4 font">
+        <div className="flex flex-col items-center justify-center px-4">
             <h1 className="font-sans mt-10 text-3xl font-bold text-center text-orange">
                 Solicitud de inscripción a {courseTitle}
             </h1>
@@ -158,7 +155,6 @@ const FormPage = () => {
                             className="w-[615px] h-[616px] pl-14 lg:max-w-full object-contain"
                         />
                     </div>
-
                 </div>
 
                 {!showSummary ? (
@@ -210,8 +206,7 @@ const FormPage = () => {
                 />
             )}
         </div>
-    )
+    );
+};
 
-}
-
-export default FormPage
+export default FormPage;
