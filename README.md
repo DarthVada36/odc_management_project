@@ -85,9 +85,14 @@
 
 ### Prerrequisitos
 
-- **Node.js** [![NODE.JS](/client/public/nodejsLight.svg){ width=300px }] (v14 o superior)
-- **MySQL Workbench** (versión 8.x o superior)
-- **Git**
+- **Node.js**  
+<img src="/client/public/nodejsLight.svg" alt="NODE.JS" width="100" />
+
+- **MySQL Workbench**  
+<img src="/client/public/mysql-logo-svg-vector.svg" alt="MYSQL" width="100" />
+
+- **Git**  
+<img src="/client/public/Git-Icon-1788C.png" alt="GIT" width="100" />
 
 ### Instrucciones
 
