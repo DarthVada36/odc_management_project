@@ -6,6 +6,7 @@ import CourseForm from './CourseForm'
 import ConfirmationModal from './ConfirmationModal'
 import excelIcon from '../assets/icons/file-excel.svg'
 import pdfIcon from '../assets/icons/file-pdf.svg'
+import { useAuth } from '../context/AuthContext'
 
 import {
     getAllCourses,
@@ -15,6 +16,9 @@ import {
 } from '../services/coursesServices'
 
 const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
+    const { admin } = useAuth()
+    const isFacilitator = admin?.role_id === 3
+
     const [courses, setCourses] = useState([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
@@ -52,16 +56,22 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
     }, [])
 
     const handleEdit = (course) => {
-        setSelectedCourse(course)
-        setIsFormOpen(true)
+        if (!isFacilitator) {
+            setSelectedCourse(course)
+            setIsFormOpen(true)
+        }
     }
 
     const handleDeleteClick = (course) => {
-        setSelectedCourse(course)
-        setIsDeleteModalOpen(true)
+        if (!isFacilitator) {
+            setSelectedCourse(course)
+            setIsDeleteModalOpen(true)
+        }
     }
 
     const handleDelete = async (id) => {
+        if (isFacilitator) return
+
         try {
             await removeCourseById(id)
             const updatedCourses = courses.filter((course) => course.id !== id)
@@ -77,6 +87,8 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
     }
 
     const handleSubmit = async (formData) => {
+        if (isFacilitator) return false
+
         try {
             let updatedCourse
             if (selectedCourse) {
@@ -102,6 +114,8 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
     }
 
     const handleExportPDF = async () => {
+        if (isFacilitator) return
+
         try {
             const headers = [
                 'Título',
@@ -126,6 +140,8 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
     }
 
     const handleExportExcel = () => {
+        if (isFacilitator) return
+
         try {
             const headers = [
                 'Title',
@@ -168,33 +184,33 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
             onSearch={handleSearch}
         >
             <div className="flex flex-col h-full">
-                {/* Actions buttons */}
-                <div className="flex flex-col justify-between mb-4 space-y-2 mobile:flex-col tablet:flex-row tablet:space-y-0">
-                    <button
-                        onClick={() => setIsFormOpen(true)}
-                        className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
-                    >
-                        Crear Nuevo Curso
-                    </button>
-                    <div className="flex items-center justify-start gap-4 tablet:justify-end">
-                        <img
-                            src={pdfIcon}
-                            alt="Exportar a PDF"
-                            className="w-8 h-8 transition-opacity duration-300 cursor-pointer opacity-70 hover:opacity-100"
-                            onClick={handleExportPDF}
-                            title="Exportar a PDF"
-                        />
-                        <img
-                            src={excelIcon}
-                            alt="Exportar a Excel"
-                            className="w-8 h-8 transition-opacity duration-300 cursor-pointer opacity-70 hover:opacity-100"
-                            onClick={handleExportExcel}
-                            title="Exportar a Excel"
-                        />
+                {!isFacilitator && (
+                    <div className="flex flex-col justify-between mb-4 space-y-2 mobile:flex-col tablet:flex-row tablet:space-y-0">
+                        <button
+                            onClick={() => setIsFormOpen(true)}
+                            className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
+                        >
+                            Crear Nuevo Curso
+                        </button>
+                        <div className="flex items-center justify-start gap-4 tablet:justify-end">
+                            <img
+                                src={pdfIcon}
+                                alt="Exportar a PDF"
+                                className="w-8 h-8 transition-opacity duration-300 cursor-pointer opacity-70 hover:opacity-100"
+                                onClick={handleExportPDF}
+                                title="Exportar a PDF"
+                            />
+                            <img
+                                src={excelIcon}
+                                alt="Exportar a Excel"
+                                className="w-8 h-8 transition-opacity duration-300 cursor-pointer opacity-70 hover:opacity-100"
+                                onClick={handleExportExcel}
+                                title="Exportar a Excel"
+                            />
+                        </div>
                     </div>
-                </div>
+                )}
 
-                {/* Table of Courses */}
                 <div className="flex-1 overflow-auto">
                     <table className="w-full mb-4 border-collapse">
                         <thead>
@@ -257,22 +273,28 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
                                     </td>
                                     <td className="p-3">
                                         <div className="flex justify-center gap-2">
-                                            <button
-                                                onClick={() =>
-                                                    handleEdit(course)
-                                                }
-                                                className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
-                                            >
-                                                Editar
-                                            </button>
-                                            <button
-                                                onClick={() =>
-                                                    handleDeleteClick(course)
-                                                }
-                                                className="px-4 py-2 text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
-                                            >
-                                                Eliminar
-                                            </button>
+                                            {!isFacilitator && (
+                                                <>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleEdit(course)
+                                                        }
+                                                        className="px-4 py-2 text-black transition-all duration-300 bg-white border-2 border-black font-helvetica-w20-bold hover:bg-black hover:text-white"
+                                                    >
+                                                        Editar
+                                                    </button>
+                                                    <button
+                                                        onClick={() =>
+                                                            handleDeleteClick(
+                                                                course
+                                                            )
+                                                        }
+                                                        className="px-4 py-2 text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
+                                                    >
+                                                        Eliminar
+                                                    </button>
+                                                </>
+                                            )}
                                             <button
                                                 onClick={() =>
                                                     onShowEnrollmentsByCourse(
@@ -291,7 +313,6 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
                     </table>
                 </div>
 
-                {/* Pagination */}
                 <div className="mt-4">
                     <Pagination
                         currentPage={currentPage}
@@ -301,8 +322,7 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
                 </div>
             </div>
 
-            {/* Form Modal */}
-            {isFormOpen && (
+            {isFormOpen && !isFacilitator && (
                 <CourseForm
                     initialData={selectedCourse}
                     isEditing={!!selectedCourse}
@@ -320,17 +340,18 @@ const CoursesTable = ({ onShowEnrollmentsByCourse }) => {
                 />
             )}
 
-            {/* Delete Confirmation Modal */}
-            <ConfirmationModal
-                isOpen={isDeleteModalOpen}
-                title="Eliminar Curso"
-                message={`¿Estás seguro de que deseas eliminar el curso "${selectedCourse?.title}"?`}
-                onConfirm={() => handleDelete(selectedCourse?.id)}
-                onClose={() => {
-                    setIsDeleteModalOpen(false)
-                    setSelectedCourse(null)
-                }}
-            />
+            {isDeleteModalOpen && !isFacilitator && (
+                <ConfirmationModal
+                    isOpen={isDeleteModalOpen}
+                    title="Eliminar Curso"
+                    message={`¿Estás seguro de que deseas eliminar el curso "${selectedCourse?.title}"?`}
+                    onConfirm={() => handleDelete(selectedCourse?.id)}
+                    onClose={() => {
+                        setIsDeleteModalOpen(false)
+                        setSelectedCourse(null)
+                    }}
+                />
+            )}
         </MainPanel>
     )
 }

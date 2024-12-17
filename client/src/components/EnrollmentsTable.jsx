@@ -186,11 +186,11 @@ const EnrollmentsTable = () => {
                             'Inscripciones Generales'
                         )
                     }
-                    className="flex items-center px-4 py-2 text-black transition-all duration-300 border border-black bg-orange hover:bg-black hover:text-white"
+                    className="flex items-center px-4 py-2 text-white transition-all duration-300 bg-black border-2 border-black font-helvetica-w20-bold hover:bg-white hover:text-black group"
                 >
                     <img
                         src={'src/assets/email.png'}
-                        className="w-5 h-5 mr-2"
+                        className="w-5 h-5 mr-2 brightness-0 invert group-hover:brightness-100 group-hover:invert-0"
                         alt="Email Icon"
                     />
                     <span>Email a todos</span>
