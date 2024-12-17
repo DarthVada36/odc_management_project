@@ -6,10 +6,10 @@ import formImage from '../assets/img/imageform.svg';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import CookieModal from '../components/CoockieModal';
-import Summary from '../components/SummaryInscriptionForm'; // Añadir esta línea
+import Summary from '../components/SummaryInscriptionForm';
 
 const FormPage = () => {
-    const { id } = useParams(); // Capturar el ID del curso desde la URL
+    const { id } = useParams();
     const navigate = useNavigate();
     const { isAuthenticated } = useAuth();
     const [includeMinor, setIncludeMinor] = useState(false);
@@ -21,10 +21,10 @@ const FormPage = () => {
     const [courseDescription, setCourseDescription] = useState('');
     const [courseDate, setCourseDate] = useState('');
     const [courseSchedule, setCourseSchedule] = useState('');
-    const [isLoading, setIsLoading] = useState(false); // Estado de carga
-    const [responseMessage, setResponseMessage] = useState(null); // Mensajes de respuesta
-    const [showSummary, setShowSummary] = useState(false); // Controlar si mostrar el resumen
-    const [showCookiesModal, setShowCookiesModal] = useState(true); // Estado para mostrar/ocultar el modal
+    const [isLoading, setIsLoading] = useState(false);
+    const [responseMessage, setResponseMessage] = useState(null);
+    const [showSummary, setShowSummary] = useState(false);
+    const [showCookiesModal, setShowCookiesModal] = useState(true);
 
     useEffect(() => {
         const fetchCourseTitle = async () => {
@@ -56,7 +56,7 @@ const FormPage = () => {
                 return false;
             }
         }
-        return true; // Este cierre es correcto ahora.
+        return true;
     };
 
     const handleAddMinor = (minorData) => {
@@ -64,16 +64,16 @@ const FormPage = () => {
     };
 
     const handleAddAdult = (adultData) => {
-        setAdult(adultData); // Solo se permite un adulto
+        setAdult(adultData);
     };
 
     const handleRemoveAdult = () => {
-        setAdult(null); // Eliminar al adulto
+        setAdult(null);
     };
 
     const handleShowSummary = () => {
         if (validateFormData()) {
-            setShowSummary(true); // Activar el resumen
+            setShowSummary(true);
         }
     };
 
@@ -87,30 +87,28 @@ const FormPage = () => {
             const payload = {
                 ...formData,
                 minors,
-                adults: adult ? [adult] : [], // Incluir adulto si existe
+                adults: adult ? [adult] : [],
             };
 
-            const response = await createEnrollment(payload);
+            await createEnrollment(payload);
 
             setResponseMessage({
                 type: 'success',
                 text: 'Inscripción realizada con éxito.',
             });
 
-            // Reiniciar formulario
             setFormData({});
             setMinors([]);
             setAdult(null);
-            setShowSummary(false); // Ocultar el resumen tras enviar
+            setShowSummary(false);
 
-            // Redirigir basado en el estado de autenticación
             setTimeout(() => {
                 if (isAuthenticated) {
                     navigate('/dashboard');
                 } else {
                     navigate('/');
                 }
-            }, 2000); // Esperar 2 segundos para que el usuario vea el mensaje de éxito
+            }, 2000);
         } catch (error) {
             const errorMessage =
                 error.response?.data?.message ||
@@ -130,69 +128,70 @@ const FormPage = () => {
             <h1 className="font-sans mt-10 text-3xl font-bold text-center text-orange">
                 Solicitud de inscripción a {courseTitle}
             </h1>
-            <div className="flex flex-col gap-6 p-8 px-4 m-10 border border-orange lg:flex-col lg:gap-4">
-                <div className="flex flex-col-reverse items-center gap-6 lg:flex-row lg:justify-between">
-                    <div>
-                        <MainForm
-                            courseId={id}
-                            setIncludeMinor={setIncludeMinor}
-                            includeMinor={includeMinor}
-                            setIncludeAdult={setIncludeAdult}
-                            includeAdult={includeAdult}
-                            formData={formData}
-                            setFormData={setFormData}
-                            onAddMinor={handleAddMinor}
-                            minors={minors}
-                            onAddAdult={handleAddAdult}
-                            adult={adult}
-                            onRemoveAdult={handleRemoveAdult}
-                        />
-                    </div>
-                    <div className="flex-1">
-                        <img
-                            src={formImage}
-                            alt="Formulario Imagen"
-                            className="w-[615px] h-[616px] pl-14 lg:max-w-full object-contain"
-                        />
-                    </div>
-                </div>
 
+            {/* Contenedor con imagen de fondo, visible solo en pantallas grandes */}
+            <div
+                className="desktop:block flex-wrap lg:flex-nowrap lg:gap-4 p-4 m-4 border-orange w-full max-w-[1200px] bg-cover bg-center"
+                style={{ backgroundImage: `url(${formImage})`}}
+            >
+                {/* Formulario */}
+                <div className="flex-1 w-full lg:w-1/2 min-w-[50%] bg-white bg-opacity-90 p-4  shadow-lg">
+                    <MainForm
+                        courseId={id}
+                        setIncludeMinor={setIncludeMinor}
+                        includeMinor={includeMinor}
+                        setIncludeAdult={setIncludeAdult}
+                        includeAdult={includeAdult}
+                        formData={formData}
+                        setFormData={setFormData}
+                        onAddMinor={handleAddMinor}
+                        minors={minors}
+                        onAddAdult={handleAddAdult}
+                        adult={adult}
+                        onRemoveAdult={handleRemoveAdult}
+                    />
+                </div>
+            </div>
+
+            {/* Botones */}
+            <div className="w-full max-w-[1200px] px-4">
                 {!showSummary ? (
                     <button
-                        className="px-4 py-2 mt-4 font-semibold text-white bg-orange disabled:opacity-50"
-                        onClick={handleShowSummary} // Mostrar el resumen
+                        className="w-full px-4 py-2 mt-4 mb-10 font-semibold text-white bg-orange disabled:opacity-50"
+                        onClick={handleShowSummary}
                         disabled={isLoading}
                     >
                         {isLoading ? 'Cargando...' : 'Siguiente'}
                     </button>
                 ) : (
                     <button
-                        className="px-4 py-2 mt-4 font-semibold text-white bg-green-500 disabled:opacity-50"
-                        onClick={handleSendToBackend} // Enviar al backend
+                        className="w-full px-4 py-2 mt-4 font-semibold text-white bg-green-500 disabled:opacity-50"
+                        onClick={handleSendToBackend}
                         disabled={isLoading}
                     >
                         {isLoading ? 'Enviando...' : 'Confirmar Inscripción'}
                     </button>
                 )}
-
-                {responseMessage && (
-                    <p
-                        className={`text-center mt-4 ${responseMessage.type === 'error'
-                                ? 'text-red-500'
-                                : 'text-green-500'
-                            }`}
-                    >
-                        {responseMessage.text}
-                    </p>
-                )}
             </div>
 
-            {/* Renderizar el modal condicionalmente */}
+            {/* Mensajes */}
+            {responseMessage && (
+                <p
+                    className={`text-center mt-4 ${
+                        responseMessage.type === 'error'
+                            ? 'text-red-500'
+                            : 'text-green-500'
+                    }`}
+                >
+                    {responseMessage.text}
+                </p>
+            )}
+
+            {/* Modales */}
             {showCookiesModal && (
                 <CookieModal onClose={() => setShowCookiesModal(false)} />
             )}
 
-            {/* Renderizar el resumen condicionalmente */}
             {showSummary && (
                 <Summary
                     formData={formData}
