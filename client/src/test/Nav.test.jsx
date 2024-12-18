@@ -18,6 +18,7 @@ describe('Nav Component', () => {
                 </AuthProvider>
             </MemoryRouter>        
         );
+        
         //Seleccionar imag dentro del componente
         const logoSvg = screen.getByTestId('logo-svg');
         expect(logoSvg).toBeInTheDocument();
