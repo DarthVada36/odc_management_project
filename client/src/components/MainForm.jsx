@@ -421,7 +421,7 @@ const MainForm = ({
                                 }}
                             ></span>
                             <span className="text-sm text-gray-600">
-                                ¿Es tu primera actividad en el ODC?
+                                Es mi primera actividad en ODC
                             </span>
                         </label>
 
@@ -442,8 +442,7 @@ const MainForm = ({
                                 }}
                             ></span>
                             <span className="text-sm text-gray-600">
-                                Quiero recibir información sobre nuevos cursos
-                                periódicamente
+                                Quiero recibir newsletter
                             </span>
                         </label>
 
@@ -463,7 +462,7 @@ const MainForm = ({
                                 }}
                             ></span>
                             <span className="text-sm text-gray-600">
-                                Con uno o más menores de 14 años
+                                Inscribir menores de 14 años
                             </span>
                         </label>
 
@@ -495,14 +494,14 @@ const MainForm = ({
                                 Menores
                             </h3>
                             {(formData.minors || []).length < 3 ? (
-                                <div className="flex gap-2">
+                                <div className="flex flex-col gap-4 sm:flex-row sm:gap-2">
                                     <input
                                         type="text"
                                         name="name"
                                         placeholder="Nombre del menor"
                                         value={minor.name}
                                         onChange={handleMinorChange}
-                                        className="flex-1 p-3 transition-colors duration-300 border-2 border-black outline-none hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
+                                        className="w-full p-3 transition-colors duration-300 border-2 border-black outline-none hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
                                     />
                                     <input
                                         type="number"
@@ -510,12 +509,12 @@ const MainForm = ({
                                         placeholder="Edad"
                                         value={minor.age}
                                         onChange={handleMinorChange}
-                                        className="w-32 p-3 transition-colors duration-300 border-2 border-black outline-none hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
+                                        className="w-full p-3 transition-colors duration-300 border-2 border-black outline-none sm:w-32 hover:border-primary focus:border-primary placeholder-neutral-500 ring-0"
                                     />
                                     <button
                                         type="button"
                                         onClick={addMinor}
-                                        className="flex items-center justify-center w-12 h-12 text-black bg-orange hover:bg-opacity-80"
+                                        className="flex items-center justify-center w-full h-12 text-black sm:w-12 bg-orange hover:bg-opacity-80"
                                     >
                                         <img
                                             src={plus}
@@ -669,11 +668,10 @@ const MainForm = ({
                                 <button
                                     type="button"
                                     onClick={addAdult}
-                                    className="px-6 py-3 font-bold text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
+                                    className="w-full px-6 py-3 font-bold text-black transition-all duration-300 bg-primary font-helvetica-w20-bold hover:bg-black hover:text-white"
                                 >
                                     Agregar Adulto
                                 </button>
-
                                 {adultError && (
                                     <p className="mt-2 text-sm text-red-500">
                                         {adultError}
