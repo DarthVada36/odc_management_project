@@ -19,7 +19,7 @@ const MainForm = ({
     adult,
     onRemoveAdult,
     courseId,
-    onValidationComplete, // Añadir este prop
+    onValidationComplete, // Añadir este
 }) => {
     const {
         register,

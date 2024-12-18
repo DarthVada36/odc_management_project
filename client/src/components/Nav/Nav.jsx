@@ -73,7 +73,8 @@ const Nav = () => {
         }
 
         if (isInscriptionRoute) {
-            return []
+            // Return Dashboard if authenticated, Cursos if not
+            return isAuthenticated ? ['Dashboard'] : ['Cursos']
         }
 
         return ['Panel de administrador']
@@ -213,12 +214,15 @@ const Nav = () => {
             if (dashboardOptions[item]) {
                 dashboardContext.setActiveComponent(dashboardOptions[item])
             }
-        } else if (item === 'Panel de administrador') {
+        } else if (item === 'Panel de administrador' || item === 'Dashboard') {
             navigate('/dashboard')
         } else {
             switch (item) {
                 case 'Inscripción':
                     navigate('/inscription')
+                    break
+                case 'Cursos':
+                    navigate('/')
                     break
                 case 'Contacto':
                     break
