@@ -27,5 +27,10 @@ export default defineConfig({
     proxy: {
       '/api': 'http://localhost:3000', // Proxy para las rutas del backend
     },
+  }, test: {
+    globals: true,
+    environment: 'jsdom',
+  
   },
+
 });

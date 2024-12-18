@@ -159,6 +159,7 @@ const Nav = () => {
 
     const Logo = () => (
         <svg
+            data-testid="logo-svg" // Atributo DOM para el test
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 283.46 283.46"
             className="w-full h-full desktop:ml-[2.3rem] laptop:-ml-[4.2rem] mobile:-ml-[0.3rem] tablet:-ml-[1.9rem]"
