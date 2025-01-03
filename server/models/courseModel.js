@@ -25,21 +25,9 @@ const Course = connectionDb.define('Course', {
     allowNull: false,
   },
   date: {
-    type: DataTypes.DATE,
-    allowNull: false,
-    get() {
-      const rawValue = this.getDataValue('date'); // Obtén la fecha en crudo
-      if (!rawValue) return null;
-
-      // Formatear a "dd/mm/yyyy"
-      const formattedDate = new Intl.DateTimeFormat('es-ES', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      }).format(new Date(rawValue));
-
-      return formattedDate; // Devuelve la fecha formateada
-    },
+        type: DataTypes.DATE, // Asegúrate de usar DataTypes.DATE
+        allowNull: true,
+    
   },
   schedule: {
     type: DataTypes.TIME,
