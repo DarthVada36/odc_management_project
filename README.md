@@ -57,7 +57,7 @@
 ![Select](https://img.shields.io/badge/Select-Library-orange?style=flat-square
 ) Libreria usada para personalizar los menús de cascada y las opciones de selección.
 
-![Tremor](https://img.shields.io/badge/Tremor-Framework-black?style=flat-square
+![Shadcn](https://img.shields.io/badge/Shadcn-Library-orange?style=flat-square
 ) usado para crear y personalizar las gráficas del dashboard principal de administración.
 
 ---
@@ -214,14 +214,14 @@ npx run test adminModel.test.js
 
 <img src="/client/public/inscripcionmovil.png" alt="GIT" width="50%" />
 
-<img src="/client/public/cursoslaptop.png" alt="GIT" width="90%" /> Pendiente cambiar cuando se arreglle el bug de la imagen
+<img src="/client/public/cursoslaptop.png" alt="GIT" width="90%" /> 
 
 
 ## ![Autores](/client/public/collaborators.png)  
 
 **José Ruiz**
 
-Proyect Owner, Frontend Developer Backend Developer
+Proyect Owner, Frontend Developer, Backend Developer
 
 [![GitHub](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white)](https://github.com/jruizndev) [![linkedin](https://img.shields.io/badge/linkedin-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/josealfonsoruiz/)
 
